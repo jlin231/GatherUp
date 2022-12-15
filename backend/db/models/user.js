@@ -1,9 +1,7 @@
 'use strict';
 const { Model, Validator, QueryInterface } = require('sequelize');
 const bcrypt = require('bcryptjs');
-const {
-  Model
-} = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
