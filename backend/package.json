@@ -21,6 +21,7 @@
     "sqlite3": "^5.1.4"
   },
   "dependencies": {
+    "brcypt": "^1.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "csurf": "^1.11.0",
