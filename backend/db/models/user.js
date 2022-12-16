@@ -9,9 +9,10 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
+    //edit? find where is this is being used
     toSafeObject(){
-      const { id, username, email } = this; // context will be the User instance
-      return { id, username, email };
+      const { id, username, email , firstName, lastName} = this; // context will be the User instance
+      return { id, firstName, lastName, username, email};
     }
     validatePassword(password) {
       return bcrypt.compareSync(password, this.hashedPassword.toString())
@@ -36,12 +37,14 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
 
-    static async signup({ username, email, password }) {
+    static async signup({ username, firstName, lastName, email, password }) {
       const hashedPassword = bcrypt.hashSync(password);
       const user = await User.create({
         username,
         email,
-        hashedPassword
+        hashedPassword,
+        firstName,
+        lastName
       });
       return await User.scope('currentUser').findByPk(user.id);
     }
@@ -71,6 +74,20 @@ module.exports = (sequelize, DataTypes) => {
       validate:{
         isEmail: true,
         len: [3,256]
+      }
+    },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull:false,
+      validate: {
+        len: [1,256]
+      }
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        len: [1,256]
       }
     },
     hashedPassword: {

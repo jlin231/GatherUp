@@ -5,6 +5,8 @@ const router = express.Router();
 const {setTokenCookie, restoreUser} = require('../../utils/auth');
 const {User} = require('../../db/models');
 
+
+// /api/session Logs in a user already added to the database
 router.post('/', async (req, res, next)=>{
     const { credential, password } = req.body;
 
@@ -24,7 +26,7 @@ router.post('/', async (req, res, next)=>{
       user: user
     });
 });
-
+//deletes token from cookies, means no user is present
 router.delete(
     '/',
     (_req, res) => {
