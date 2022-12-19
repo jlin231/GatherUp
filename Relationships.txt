@@ -1,0 +1,142 @@
+One(user) to Many(group)
+user aliased as organizer
+FK organizerID on groups table
+
+One(group) to Many(events) 
+FK groupId on events table
+
+One(venue) to Many(events)
+FK venueId on events table 
+
+
+
+Many(groups) to Many (users)
+join table groupUsers
+
+Many(venues) to Many (groups)
+join table venueGroups
+
+Many (group) to many (images)
+join table groupImages
+
+Many (events) to many (images)
+join table eventImages
+
+Many (users) to many (events)
+join table eventAtendees
+
+Table users {
+  id INTEGER [pk, increment]
+  firstName TEXT [not null]
+  lastName TEXT [not null]
+  email TEXT
+  username TEXT
+}
+
+Table groups {
+  id INTEGER [pk, increment]
+  organizerId INTEGER 
+  name TEXT
+  about TEXT
+  type TEXT
+  private boolean
+  city TEXT
+  state TEXT
+  createdAt DATE
+  updatedAt DATE
+  numMembers INTEGER
+  previewImage TEXT
+}
+
+
+
+Table images {
+  id INTEGER [pk, increment]
+  url TEXT
+  preview BOOLEAN
+}
+
+Table venues {
+  id INTEGER [pk, increment]
+  address TEXT
+  city TEXT
+  state TEXT
+  lat decimal
+  lng decimal
+}
+
+Table events {
+  id INTEGER [pk, increment]
+  groupId INTEGER
+  venueId INTEGER
+  name TEXT
+  type TEXT
+  capacity INTEGER
+  price decimal
+  description TEXT
+  startDate DATE
+  endDate DATE
+  numAttending INTEGER
+  previewImg TEXT
+}
+
+Table eventAtendees{
+  id INTEGER [pk, increment]
+  eventId INTEGER [not null]
+  userId INTEGER [not null]
+  status TEXT
+}
+
+Table groupUsers{
+  id INTEGER [pk, increment]
+  groupId INTEGER [not null]
+  userId INTEGER [not null]
+  status TEXT
+}
+
+Table venueGroups{
+  id INTEGER [pk, increment]
+  venueId INTEGER [not null]
+  groupId INTEGER [not null]
+}
+
+Table groupImages{
+  id INTEGER [pk, increment]
+  groupId INTEGER [not null]
+  imageId INTEGER [not null]
+}
+
+Table eventImages{
+  id INTEGER [pk, increment]
+  eventId INTEGER [not null]
+  imageId INTEGER [not null]
+}
+
+
+Ref: "users"."id" < "groups"."organizerId"
+
+Ref: "groupUsers"."groupId" < "groups"."id"
+
+Ref: "groupUsers"."userId" < "users"."id"
+
+Ref: "events"."groupId" < "groups"."id"
+
+Ref: "events"."venueId" < "venues"."id"
+
+Ref: "images"."id" < "eventImages"."imageId"
+
+Ref: "images"."id" < "groupImages"."imageId"
+
+
+Ref: "venues"."id" < "venueGroups"."venueId"
+
+Ref: "groups"."id" < "venueGroups"."groupId"
+
+Ref: "events"."id" < "eventImages"."eventId"
+
+Ref: "events"."id" < "eventAtendees"."eventId"
+
+Ref: "users"."id" < "eventAtendees"."userId"
+
+Ref: "groups"."id" < "groupImages"."groupId"
+
