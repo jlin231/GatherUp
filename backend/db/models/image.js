@@ -2,6 +2,9 @@
 const {
   Model
 } = require('sequelize');
+
+const {eventImage, Event, Group, groupImage } = require('../models');
+
 module.exports = (sequelize, DataTypes) => {
   class Image extends Model {
     /**
@@ -11,6 +14,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+
+      //many to many event to images
+      Image.belongsToMany(models.Event,
+        {
+          through: models.eventImage,
+          foreignKey: "imageId",
+          otherKey: "eventId"
+        })
+    
+      //many to many group to images
+      Image.belongsToMany(models.Group,
+        {
+          through: models.groupImage,
+          foreignKey: "imageId",
+          otherKey: "groupId"
+        })
     }
   }
   Image.init({

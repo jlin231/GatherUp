@@ -17,11 +17,19 @@ module.exports = {
       },
       eventId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: "Events",
+          key: 'id'
+        }
       },
       imageId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: "Images",
+          key: 'id'
+        }
       },
       createdAt: {
         allowNull: false,

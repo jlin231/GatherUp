@@ -17,7 +17,11 @@ module.exports = {
       },
       organizerId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references:{
+          model: 'Users',
+          key: 'id'
+        }
       },
       name: {
         type: Sequelize.STRING,

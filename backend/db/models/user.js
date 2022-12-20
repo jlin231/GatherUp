@@ -2,6 +2,8 @@
 const { Model, Validator, QueryInterface } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
+const { Group, eventAttendee, Event } = require('../models');
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -10,15 +12,15 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     //edit? find where is this is being used
-    toSafeObject(){
-      const { id, username, email , firstName, lastName} = this; // context will be the User instance
-      return { id, firstName, lastName, username, email};
+    toSafeObject() {
+      const { id, username, email, firstName, lastName } = this; // context will be the User instance
+      return { id, firstName, lastName, username, email };
     }
     validatePassword(password) {
       return bcrypt.compareSync(password, this.hashedPassword.toString())
     }
     //make sure this works
-    static async getCurrentUserById(id){
+    static async getCurrentUserById(id) {
       return await User.scope("currentUser").findByPk(id);
     }
 
@@ -51,51 +53,71 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
       // define association here
+
+      //one to many User to Groups, aliased as organizer
+      User.hasMany(models.Group, {
+        foreignKey: 'organizerId',
+      })
+
+      //many to many event to attendees(user)
+      User.belongsToMany(models.Event,
+        {
+          through: models.eventAttendee,
+          foreignKey: "userId",
+          otherKey: "eventId"
+        })
       
+      //many to many users to groups
+      User.belongsToMany(models.Group,
+        {
+          through: models.groupUser,
+          foreignKey: "userId",
+          otherKey: "groupId"
+        })
     }
   }
   User.init({
     username: {
-      type:DataTypes.STRING,
+      type: DataTypes.STRING,
       unique: true,
       allowNull: false,
-      validate:{
-        isNotEmail(value){
-          if(Validator.isEmail(value)){
+      validate: {
+        isNotEmail(value) {
+          if (Validator.isEmail(value)) {
             throw new Error("Cannot be an email.");
           }
         },
-        len: [4,30]
+        len: [4, 30]
       }
     },
     email: {
-      type:DataTypes.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate:{
+      validate: {
         isEmail: true,
-        len: [3,256]
+        len: [3, 256]
       }
     },
     firstName: {
       type: DataTypes.STRING,
-      allowNull:false,
+      allowNull: false,
       validate: {
-        len: [1,256]
+        len: [1, 256]
       }
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [1,256]
+        len: [1, 256]
       }
     },
     hashedPassword: {
       type: DataTypes.STRING.BINARY,
       allowNull: false,
       validate: {
-        len: [60,60]
+        len: [60, 60]
       }
     },
   }, {
@@ -103,7 +125,7 @@ module.exports = (sequelize, DataTypes) => {
     modelName: 'User',
     defaultScope: {
       attributes: {
-        exclude: ['hashedPassword', 'updatedAt', 'email','createdAt']
+        exclude: ['hashedPassword', 'updatedAt', 'email', 'createdAt']
       }
     },
     scopes: {
