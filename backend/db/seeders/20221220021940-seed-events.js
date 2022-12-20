@@ -54,7 +54,7 @@ module.exports = {
     }
     ]
     options.tableName = 'Events';
-    await Event.bulkCreate(data);
+    await queryInterface.bulkInsert(options, data);
   },
 
   async down(queryInterface, Sequelize) {
