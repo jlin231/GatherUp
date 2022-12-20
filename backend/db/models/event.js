@@ -22,30 +22,48 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true
     },
+    //be at least 5 characters
     name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        len: [5,999]
+      }
     },
     type: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        check(value){
+          if(value !== "Online" && value !== "In person"){
+            throw new Error("Type must be 'Online' or 'In person'");
+          }
+        }
+      }
     },
     capacity: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    //throws error if price is invalid has to be in normal form
     price: {
       type: DataTypes.FLOAT,
       allowNull: false
     },
+    //required
     description: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        len: [50, 999]
+      }
     },
+    //must be in the future
     startDate: {
       type: DataTypes.DATE,
       allowNull: false
     },
+    //less than the start date
     endDate: {
       type: DataTypes.DATE,
       allowNull: false
