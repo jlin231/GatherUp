@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 
-const {Venue, Group, User,eventAttendee, Image,eventImage} = require('../models');
+// const {Venue, Group, User,eventAttendee, Image,eventImage} = require('./');
 
 module.exports = (sequelize, DataTypes) => {
   class Event extends Model {
@@ -46,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
   Event.init({
     groupId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     venueId: {
       type: DataTypes.INTEGER,

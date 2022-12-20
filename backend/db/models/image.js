@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 
-const {eventImage, Event, Group, groupImage } = require('../models');
+// const {eventImage, Event, Group, groupImage } = require('../models');
 
 module.exports = (sequelize, DataTypes) => {
   class Image extends Model {

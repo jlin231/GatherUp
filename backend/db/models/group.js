@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 
-const { Event, User, eventImage, Image, groupUser, venueGroup, Venue } = require('../models');
+// const { Event, User, eventImage, Image, groupUser, venueGroup, Venue } = require('../models');
 
 module.exports = (sequelize, DataTypes) => {
   class Group extends Model {
@@ -48,7 +48,6 @@ module.exports = (sequelize, DataTypes) => {
           foreignKey: "groupId",
           otherKey: "venueId"
         })
-
     }
   }
   Group.init({

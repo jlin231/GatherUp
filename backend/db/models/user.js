@@ -2,7 +2,7 @@
 const { Model, Validator, QueryInterface } = require('sequelize');
 const bcrypt = require('bcryptjs');
 
-const { Group, eventAttendee, Event } = require('../models');
+// const { Group, eventAttendee, Event } = require('../models');
 
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
