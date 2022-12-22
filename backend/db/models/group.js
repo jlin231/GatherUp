@@ -22,7 +22,8 @@ module.exports = (sequelize, DataTypes) => {
 
       //one to many User to Groups, aliased as organizer
       Group.belongsTo(models.User, {
-        foreignKey: "organizerId"
+        foreignKey: "organizerId",
+        as: "Organizer"
       })
 
       //many to many group to images
@@ -30,7 +31,8 @@ module.exports = (sequelize, DataTypes) => {
         {
           through: models.groupImage,
           foreignKey: "groupId",
-          otherKey: "imageId"
+          otherKey: "imageId",
+          as: "GroupImages"
         })
 
       //many to many users to groups
@@ -38,7 +40,8 @@ module.exports = (sequelize, DataTypes) => {
         {
           through: models.groupUser,
           foreignKey: "groupId",
-          otherKey: "userId"
+          otherKey: "userId",
+          as: "GroupUsers"
         })
 
       //many to many groups to venues
@@ -86,11 +89,16 @@ module.exports = (sequelize, DataTypes) => {
     },
     previewImage: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     }
   }, {
     sequelize,
     modelName: 'Group',
+    defaultScope: {
+      attributes: {
+        exclude: ['createdAt', 'updatedAt']
+      }
+    }
   });
   return Group;
 };

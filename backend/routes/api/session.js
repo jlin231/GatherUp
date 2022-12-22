@@ -2,7 +2,7 @@
 const express = require('express')
 const router = express.Router();
 
-const {setTokenCookie, restoreUser} = require('../../utils/auth');
+const {setTokenCookie, restoreUser, requireAuth} = require('../../utils/auth');
 const {User} = require('../../db/models');
 
 
@@ -10,12 +10,29 @@ const {User} = require('../../db/models');
 router.post('/', async (req, res, next)=>{
     const { credential, password } = req.body;
 
+    if(!credential){
+      const err = new Error('Validation error');
+      err.status = 400;
+      err.errors = {
+        "email": "Email is required"
+      };
+      return next(err);
+    }
+    else if(!password){
+      const err = new Error('Validation error');
+      err.status = 400;
+      err.errors = {
+        "password": "Password is required"
+      };
+      return next(err);
+    }
+
     const user = await User.login({ credential, password });
 
     if (!user) {
       const err = new Error('Login failed');
       err.status = 401;
-      err.title = 'Login failed';
+      err.message = "Invalid credentials"
       err.errors = ['The provided credentials were invalid.'];
       return next(err);
     }
@@ -51,4 +68,3 @@ router.get(
 
 
 module.exports = router;
-

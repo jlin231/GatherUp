@@ -54,9 +54,19 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
+      //many to many users to groups
+      User.belongsToMany(models.Group,
+        {
+          through: models.groupUser,
+          foreignKey: "userId",
+          otherKey: "groupId",
+          as: "usersBelongToGroups"
+        })
+
       //one to many User to Groups, aliased as organizer
       User.hasMany(models.Group, {
         foreignKey: 'organizerId',
+        as: "Organizer"
       })
 
       //many to many event to attendees(user)
@@ -66,21 +76,14 @@ module.exports = (sequelize, DataTypes) => {
           foreignKey: "userId",
           otherKey: "eventId"
         })
-      
-      //many to many users to groups
-      User.belongsToMany(models.Group,
-        {
-          through: models.groupUser,
-          foreignKey: "userId",
-          otherKey: "groupId"
-        })
+
     }
   }
   User.init({
     username: {
       type: DataTypes.STRING,
       unique: true,
-      allowNull: false,
+      allowNull: true,
       validate: {
         isNotEmail(value) {
           if (Validator.isEmail(value)) {

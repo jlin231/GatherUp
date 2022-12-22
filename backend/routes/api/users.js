@@ -30,15 +30,59 @@ const validateSignup = [
 ];
 
 // /api/users, Sign up a user
-router.post('/', validateSignup, async (req, res) => {
-    const {firstName, lastName, email, password, username } = req.body;
-    const user = await User.signup({firstName, lastName, email, username, password });
+router.post('/', validateSignup, async (req, res, next) => {
+  let { firstName, lastName, email, password, username } = req.body;
+  if (!username) {
+    username = null
+  }
 
-    await setTokenCookie(res, user);
+  //body validation
+  let err = new Error("Validation Error");
+  if(!email){
+    err.status = 400;
+    err.errors = {
+      "email": "Invalid email"
+    }
+    return next(err);
+  }
+  else if(!firstName){
+    err.status = 400;
+    err.errors = {
+      "firstName": "First Name is required"
+    }
+    return next(err);
+  }
+  else if(!lastName){
+    err.status = 400;
+    err.errors = {
+      "lastName": "Last Name is required"
+    }
+    return next(err);
+  }
 
-    return res.json({
-      user: user
-    });
+  //look through users see if something is found by email
+  let oldUser = await User.scope('currentUser').findOne({
+    where: {
+      email
+    }
+  });
+
+  if(oldUser){
+    const err = new Error("User already exists");
+    err.message = "User already exists";
+    err.status = 403;
+    err.errors = [
+      "User with that email already exists"
+    ];
+    return next(err);
+  };
+
+  const user = await User.signup({ firstName, lastName, email, username, password });
+  await setTokenCookie(res, user);
+
+  return res.json({
+    user: user
+  });
 });
 
 module.exports = router;
