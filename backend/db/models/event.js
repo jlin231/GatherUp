@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         {
           through: models.eventAttendee,
           foreignKey: "eventId",
-          otherKey: "userId"
+          otherKey: "userId",
         })
 
       //many to many event to images
@@ -38,7 +38,8 @@ module.exports = (sequelize, DataTypes) => {
         {
           through: models.eventImage,
           foreignKey: "eventId",
-          otherKey: "imageId"
+          otherKey: "imageId",
+          as: "EventImages"
         })
     
     }

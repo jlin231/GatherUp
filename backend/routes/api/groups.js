@@ -2,7 +2,7 @@
 const express = require('express')
 const router = express.Router();
 
-const { Group, User, Image, Venue, groupImage, groupUser, venueGroup} = require('../../db/models');
+const { Group, User, Image, Venue, groupImage, groupUser, venueGroup, Event } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 
 
@@ -374,7 +374,7 @@ router.post('/:groupId/venues', requireAuth, async (req, res, next) => {
             status: 'co-host'
         }
     });
-    if ((groupUsers.length === 0 && user.id !== group.organizerId)){
+    if ((groupUsers.length === 0 && user.id !== group.organizerId)) {
         let err = new Error("User is not a member and a co-host.");
         err.status = 401;
         err.message = "User is not a member and a co-host. authorization error"
@@ -442,7 +442,44 @@ router.post('/:groupId/venues', requireAuth, async (req, res, next) => {
     return res.json(result);
 });
 
+//Get all Events of a Group specified by its id
+//GET, /api/groups/:groupId/events
+router.get('/:groupId/events', async (req, res, next) => {
+    const groupId = +req.params.groupId;
+    let group = await Event.findAll({
+        where: {
+            groupId: groupId
+        },
+        attributes: {
+            exclude: ['capacity', 'price', 'createdAt', 'updatedAt', 'description']
+        },
+        include: [{
+            model: Group,
+            attributes: ['id', 'name', 'city', 'state']
+        },
+        {
+            model: Venue,
+            attributes: ['id', 'city', 'state']
+        }
+        ]
+    });
 
+    //error handling
+    //handles if group is not found
+    if (group.length === 0) {
+        let err = new Error("Group couldn't be found");
+        err.status = 404;
+        err.message = "Group couldn't be found"
+        return next(err);
+    };
 
+    return res.json(group);
+});
+
+//POST, URL: /api/groups/:groupId/events
+//Create an Event for a Group specified by its id
+router.post('/:groupId/events', async(req, res, next)=>{
+    
+});
 
 module.exports = router;

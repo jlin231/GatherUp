@@ -27,6 +27,19 @@ module.exports = {
         previewImg: "insert/url"
       },
       {
+        groupId: 1,
+        venueId: 2,
+        name: "Taylor Swift event in the park",
+        type: "Online",
+        capacity: 50,
+        price: 30.00,
+        description: "A Taylor Swift fan group event.",
+        startDate: date,
+        endDate: date,
+        numAttending: 10,
+        previewImg: "insert/url"
+      },
+      {
         groupId: 2,
         venueId: 2,
         name: "Dog Park event",
