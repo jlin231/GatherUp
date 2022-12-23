@@ -101,7 +101,6 @@ router.put('/:venueId', requireAuth, async (req, res, next) => {
     delete result.updatedAt;
 
     return res.json(result)
-
 });
 
 
