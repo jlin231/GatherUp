@@ -21,10 +21,6 @@ module.exports = {
       {
         venueId: 3,
         groupId: 3,
-      },
-      {
-        venueId: 3,
-        groupId: 2,
       }
     ]
     await queryInterface.bulkInsert(options, data);
