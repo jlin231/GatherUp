@@ -2,14 +2,15 @@
 const express = require('express')
 const router = express.Router();
 
-const { Group, User, Image, Venue, groupImage, groupUser, venueGroup, Event } = require('../../db/models');
+const { Group, User} = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
-const {Op} = require('sequelize');
+const { Op } = require('sequelize');
 
 // /api/groups GET Returns all the groups.
 router.get('/', async (req, res, next) => {
+    console.log('test')
     let groups = await Group.findAll();
-
+    console.log(groups)
     const groupList = [];
     groups.forEach((group) => {
         groupList.push(group.toJSON())
@@ -478,10 +479,10 @@ router.get('/:groupId/events', async (req, res, next) => {
 
 //POST, URL: /api/groups/:groupId/events
 //Create an Event for a Group specified by its id
-router.post('/:groupId/events',requireAuth, async(req, res, next)=>{
+router.post('/:groupId/events', requireAuth, async (req, res, next) => {
     const { user } = req;
     const groupId = +req.params.groupId;
-    const {venueId, name, type, capacity, price, description, startDate, endDate} = req.body;
+    const { venueId, name, type, capacity, price, description, startDate, endDate } = req.body;
 
     let group = await Group.findByPk(groupId);
     let venue = await Group.findByPk(venueId);
@@ -528,7 +529,7 @@ router.post('/:groupId/events',requireAuth, async(req, res, next)=>{
         }
         return next(bodyErr);
     }
-    else if (type !== "Online" && type!== "In person") {
+    else if (type !== "Online" && type !== "In person") {
         bodyErr.status = 400;
         bodyErr.errors = {
             "type": "Type must be Online or In person"
@@ -545,11 +546,11 @@ router.post('/:groupId/events',requireAuth, async(req, res, next)=>{
     else if (!+price) {
         bodyErr.status = 400;
         bodyErr.errors = {
-            "price":"Price is invalid"
+            "price": "Price is invalid"
         }
         return next(bodyErr);
     }
-    else if(!description){
+    else if (!description) {
         bodyErr.status = 400;
         bodyErr.errors = {
             "description": "Description is required"
@@ -565,14 +566,14 @@ router.post('/:groupId/events',requireAuth, async(req, res, next)=>{
     startDates = startDates.getTime();
     endDates = endDates.getTime();
 
-    if(currentDate > startDates){
+    if (currentDate > startDates) {
         bodyErr.status = 400;
         bodyErr.errors = {
             "startDate": "Start date must be in the future"
         }
         return next(bodyErr);
     }
-    else if(endDates < startDate){
+    else if (endDates < startDate) {
         bodyErr.status = 400;
         bodyErr.errors = {
             "endDate": "End date is less than start date"

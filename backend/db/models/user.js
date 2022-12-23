@@ -54,35 +54,37 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
 
-      //many to many users to groups
-      User.belongsToMany(models.Group,
-        {
-          through: models.groupUser,
-          foreignKey: "userId",
-          otherKey: "groupId",
-          as: "usersBelongToGroups"
-        })
-
-      //one to many User to Groups, aliased as organizer
+      //one to many User to Groups
       User.hasMany(models.Group, {
         foreignKey: 'organizerId',
+        onDelete: "CASCADE",
+        hooks: true,
         as: "Organizer"
+      });
+
+      //many to many users and events
+      User.belongsToMany(models.Event,{
+        through: models.Attendance,
+        foreignKey: "userId",
+        otherKey: "eventId",
+        onDelete: "CASCADE",
+        hooks: true
       })
-
-      //many to many event to attendees(user)
-      User.belongsToMany(models.Event,
-        {
-          through: models.eventAttendee,
-          foreignKey: "userId",
-          otherKey: "eventId"
-        })
-
+      // many to many, group to users
+      User.belongsToMany(models.Group,{
+        through: models.Membership,
+        foreignKey: "userId",
+        otherKey: "groupId",
+        onDelete: "CASCADE",
+        hooks: true
+      });
+      
     }
   }
   User.init({
     username: {
-      type: DataTypes.STRING,
-      unique: true,
+      type: DataTypes.CHAR,
+      unique: false,
       allowNull: true,
       validate: {
         isNotEmail(value) {
@@ -94,7 +96,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     email: {
-      type: DataTypes.STRING,
+      type: DataTypes.CHAR,
       allowNull: false,
       unique: true,
       validate: {
@@ -103,14 +105,14 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     firstName: {
-      type: DataTypes.STRING,
+      type: DataTypes.CHAR,
       allowNull: false,
       validate: {
         len: [1, 256]
       }
     },
     lastName: {
-      type: DataTypes.STRING,
+      type: DataTypes.CHAR,
       allowNull: false,
       validate: {
         len: [1, 256]

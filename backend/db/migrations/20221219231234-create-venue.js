@@ -15,6 +15,15 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      groupId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references:{
+          model: 'Users',
+          key: 'id'
+        },
+        onDelete: "CASCADE"
+      },
       address: {
         type: Sequelize.STRING,
         allowNull: false
@@ -48,6 +57,6 @@ module.exports = {
     },options);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Venues');
+    await queryInterface.dropTable('Venues',options);
   }
 };

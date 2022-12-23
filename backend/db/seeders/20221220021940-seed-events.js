@@ -21,8 +21,8 @@ module.exports = {
         capacity: 100,
         price: 12.99,
         description: "A concert for Taylor Swift.",
-        startDate: date,
-        endDate: date
+        startDate: "2021-11-19 20:00:00",
+        endDate: "2021-11-21 20:00:00"
       },
       {
         groupId: 1,
@@ -32,8 +32,8 @@ module.exports = {
         capacity: 50,
         price: 30.00,
         description: "A Taylor Swift fan group event.",
-        startDate: date,
-        endDate: date
+        startDate: "2021-11-19 20:00:00",
+        endDate: "2021-11-21 20:00:00"
       },
       {
         groupId: 2,
@@ -43,8 +43,8 @@ module.exports = {
         capacity: 502,
         price: 2.00,
         description: "Dogs play together",
-        startDate: date,
-        endDate: date
+        startDate: "2021-11-19 20:00:00",
+        endDate: "2021-11-20 20:00:00"
       },
       {
         groupId: 3,
@@ -54,8 +54,8 @@ module.exports = {
         capacity: 502,
         price: 3.00,
         description: "College Tennis players",
-        startDate: date,
-        endDate: date
+        startDate: "2021-11-19 20:00:00",
+        endDate: "2021-11-20 20:00:00"
     }
     ]
     options.tableName = 'Events';

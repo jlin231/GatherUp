@@ -11,6 +11,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     const data = [
       {
+        groupId: 1,
         address: "1001 Stadium Dr",
         city: "Inglewood",
         state: "CA",
@@ -18,6 +19,7 @@ module.exports = {
         lng:18.3390
       },
       {
+        groupId: 2,
         address: "124-02 Roosevelt Ave",
         city: "Flushing",
         state: "NY",
@@ -25,6 +27,7 @@ module.exports = {
         lng: 73.8470
       },
       {
+        groupId: 3,
         address: "20357 Studebaker Rd",
         city: "Lakewood",
         state: "CA",

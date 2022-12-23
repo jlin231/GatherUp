@@ -14,34 +14,63 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      
-      //one to many Groups to Events
-      Event.belongsTo(models.Group,{
-        foreignKey: 'groupId'
-      });
 
-      //one to many Venue to Events 
+      // //one to many Groups to Events
+      // Event.belongsTo(models.Group,{
+      //   foreignKey: 'groupId'
+      // });
+
+      // //one to many Venue to Events 
+      // Event.belongsTo(models.Venue, {
+      //   foreignKey: 'venueId'
+      // });
+
+      // //many to many event to attendees(user)
+      // Event.belongsToMany(models.User,
+      //   {
+      //     through: models.eventAttendee,
+      //     foreignKey: "eventId",
+      //     otherKey: "userId",
+      //   })
+
+      // //many to many event to images
+      // Event.belongsToMany(models.Image,
+      //   {
+      //     through: models.eventImage,
+      //     foreignKey: "eventId",
+      //     otherKey: "imageId",
+      //     as: "EventImages"
+      //   })
+
+      // one to many, group to events 
+      Event.belongsTo(models.Group, {
+        foreignKey: 'groupId',
+        onDelete: "CASCADE",
+        hooks: true
+      });
+      // one to Many, venue to Event
       Event.belongsTo(models.Venue, {
-        foreignKey: 'venueId'
+        foreignKey: 'venueId',
+        onDelete: "CASCADE",
+        hooks: true
       });
 
-      //many to many event to attendees(user)
+      Event.hasMany(models.EventImage, {
+        foreignKey: 'eventId',
+        onDelete: "CASCADE",
+        hooks: true
+      });
+
+      //many to many users and events
       Event.belongsToMany(models.User,
         {
-          through: models.eventAttendee,
+          through: models.Attendance,
           foreignKey: "eventId",
           otherKey: "userId",
-        })
+          onDelete: "CASCADE",
+          hooks: true
+        });
 
-      //many to many event to images
-      Event.belongsToMany(models.Image,
-        {
-          through: models.eventImage,
-          foreignKey: "eventId",
-          otherKey: "imageId",
-          as: "EventImages"
-        })
-    
     }
   }
   Event.init({
@@ -58,15 +87,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [5,999]
+        len: [5, 999]
       }
     },
     type: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        check(value){
-          if(value !== "Online" && value !== "In person"){
+        check(value) {
+          if (value !== "Online" && value !== "In person") {
             throw new Error("Type must be 'Online' or 'In person'");
           }
         }
@@ -89,12 +118,10 @@ module.exports = (sequelize, DataTypes) => {
         len: [50, 999]
       }
     },
-    //must be in the future
     startDate: {
       type: DataTypes.DATE,
       allowNull: false
     },
-    //less than the start date
     endDate: {
       type: DataTypes.DATE,
       allowNull: false

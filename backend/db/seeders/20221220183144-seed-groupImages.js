@@ -4,7 +4,7 @@ let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
 }
-options.tableName = 'groupImages';
+options.tableName = 'GroupImages';
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -12,31 +12,28 @@ module.exports = {
     const data = [
       {
         groupId: 1,
-        imageId: 1,
+        url: "https://upload.wikimedia.org/wikipedia/en/4/47/Taylor_Swift_-_Red_%28Taylor%27s_Version%29.png?20211226114756",
+        preview: true 
+      },
+      {
+        groupId: 2,
+        url: "https://photoresources.wtatennis.com/photo-resources/2019/08/15/dbb59626-9254-4426-915e-57397b6d6635/tennis-origins-e1444901660593.jpg?width=1200&height=630",
+        preview: false
+      },
+      {
+        groupId: 3,
+        url: "https://paradepets.com/.image/c_limit%2Ccs_srgb%2Cq_auto:good%2Cw_700/MTkxMzY1Nzg4NjczMzIwNTQ2/cutest-dog-breeds-jpg.webp",
+        preview: true 
+      },
+      {
+        groupId: 2,
+        url: "http://cdn.akc.org/content/hero/cute_puppies_hero.jpg",
+        preview: false
       },
       {
         groupId: 1,
-        imageId: 2,
-      },
-      {
-        groupId: 2,
-        imageId: 2,
-      },
-      {
-        groupId: 2,
-        imageId: 3,
-      },
-      {
-        groupId: 3,
-        imageId: 5,
-      },
-      {
-        groupId: 3,
-        imageId: 4,
-      },
-      {
-        groupId: 3,
-        imageId: 3,
+        url: "https://img.hoodline.com/2021/11/levi_s_concert-1.webp?h=400&w=930&fit=crop&crop=faces,center",
+        preview: true 
       }
     ]
     await queryInterface.bulkInsert(options, data);

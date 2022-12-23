@@ -5,56 +5,30 @@ let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
 }
-
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Groups', {
+    await queryInterface.createTable('EventImages', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      organizerId: {
+      eventId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references:{
-          model: 'Users',
+        references: {
+          model: "Events",
           key: 'id'
-        },
-        onDelete: "CASCADE"
+        }
       },
-      name: {
+      url: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      about: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      type: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      private: {
+      preview: {
         type: Sequelize.BOOLEAN,
         allowNull: false
-      },
-      city: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      state: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      numMembers: {
-        type: Sequelize.INTEGER,
-        allowNull: false
-      },
-      previewImage: {
-        type: Sequelize.STRING,
-        allowNull: true
       },
       createdAt: {
         allowNull: false,
@@ -69,6 +43,6 @@ module.exports = {
     },options);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Groups');
+    await queryInterface.dropTable('EventImages',options);
   }
 };

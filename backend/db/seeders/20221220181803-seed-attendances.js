@@ -1,46 +1,51 @@
 'use strict';
+
 let options = {};
 if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
 }
-options.tableName = 'eventImages';
+options.tableName = 'Attendances';
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
     const data = [
       {
         eventId: 1,
-        imageId: 1,
+        userId: 1,
+        status: "member"
       },
       {
         eventId: 1,
-        imageId: 2,
+        userId: 2,
+        status: "waitlist"
       },
       {
         eventId: 2,
-        imageId: 3,
+        userId: 2,
+        status: "member"
       },
       {
         eventId: 2,
-        imageId: 2,
+        userId: 1,
+        status: "pending"
       },
       {
         eventId: 3,
-        imageId: 3,
+        userId: 1,
+        status: "pending"
       },
       {
         eventId: 3,
-        imageId: 4,
-      },
-      {
-        eventId: 3,
-        imageId: 5,
-      },
+        userId: 3,
+        status: "member"
+      }
     ]
     await queryInterface.bulkInsert(options, data);
   },
 
   async down (queryInterface, Sequelize) {
+    
     await queryInterface.bulkDelete(options);
   }
 };

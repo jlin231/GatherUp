@@ -13,44 +13,44 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
 
-      //one to many Groups to Events
-      Group.hasMany(models.Event, {
-        foreignKey: 'groupId'
-      })
-
-      //one to many User to Groups, aliased as organizer
+      //one to many User to Groups
       Group.belongsTo(models.User, {
-        foreignKey: "organizerId",
+        foreignKey: 'organizerId',
+        hooks: true,
+        onDelete: "CASCADE",
         as: "Organizer"
-      })
+      });
 
-      //many to many group to images
-      Group.belongsToMany(models.Image,
-        {
-          through: models.groupImage,
-          foreignKey: "groupId",
-          otherKey: "imageId",
-          as: "GroupImages"
-        })
+      // one to Many, Group to Venue
+      Group.hasMany(models.Venue, {
+        foreignKey: 'groupId',
+        onDelete: "CASCADE",
+        hooks: true
+      });
+      // one to many, group to events 
+      Group.hasMany(models.Event,{
+        foreignKey: "groupId",
+        onDelete: "CASCADE",
+        hooks: true
+      });
 
-      //many to many users to groups
-      Group.belongsToMany(models.User,
-        {
-          through: models.groupUser,
-          foreignKey: "groupId",
-          otherKey: "userId",
-          as: "GroupUsers"
-        })
+      // one to many, group to groupImages
+      Group.hasMany(models.GroupImage,{
+        foreignKey: "groupId",
+        onDelete: "CASCADE",
+        hooks: true
+      });
 
-      //many to many groups to venues
-      Group.belongsToMany(models.Venue,
-        {
-          through: models.venueGroup,
-          foreignKey: "groupId",
-          otherKey: "venueId"
-        })
+      // many to many, group to users
+      Group.belongsToMany(models.User,{
+        through: models.Membership,
+        foreignKey: "groupId",
+        otherKey: "userId",
+        onDelete: "CASCADE",
+        hooks: true
+      });
+
     }
   }
   Group.init({
@@ -81,15 +81,6 @@ module.exports = (sequelize, DataTypes) => {
     state: {
       type: DataTypes.STRING,
       allowNull: false
-    },
-    numMembers: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 0
-    },
-    previewImage: {
-      type: DataTypes.STRING,
-      allowNull: true
     }
   }, {
     sequelize,

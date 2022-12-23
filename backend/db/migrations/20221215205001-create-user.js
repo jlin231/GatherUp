@@ -16,25 +16,25 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       username: {
-        type: Sequelize.STRING,
+        type: Sequelize.CHAR,
         allowNull: true,
-        unique: true
+        unique: false
       },
       firstName: {
-        type: Sequelize.STRING,
+        type: Sequelize.CHAR,
         allowNull: false,
       },
       lastName:{
-        type: Sequelize.STRING,
+        type: Sequelize.CHAR,
         allowNull: false
       },
       email: {
-        type: Sequelize.STRING,
+        type: Sequelize.CHAR,
         allowNull: false,
         unique: true
       },
       hashedPassword: {
-        type: Sequelize.STRING,
+        type: Sequelize.CHAR,
         allowNull: false
       },
       createdAt: {

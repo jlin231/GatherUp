@@ -19,20 +19,16 @@ module.exports = {
         type: "Online",
         private: false,
         city: "Plano",
-        state: "TX",
-        numMembers: 0,
-        previewImage: "taylorSwift/url"
+        state: "TX"
       },
       {
         organizerId: 2,
         name: "Dog Fans",
         about: "A group for Dog fans to enjoy dogs.",
         type: "In Person",
-        private: false,
+        private: true,
         city: "Los Angeles",
-        state: "CA",
-        numMembers: 0,
-        previewImage: "dog/url"
+        state: "CA"
       },
       {
         organizerId: 3,
@@ -41,9 +37,7 @@ module.exports = {
         type: "In Person",
         private: false,
         city: "New York City",
-        state: "New York",
-        numMembers: 0,
-        previewImage: "newYork/url"
+        state: "New York"
       }
     ]
 
