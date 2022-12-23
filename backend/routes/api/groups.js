@@ -4,7 +4,7 @@ const router = express.Router();
 
 const { Group, User, Image, Venue, groupImage, groupUser, venueGroup, Event } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
-
+const {Op} = require('sequelize');
 
 // /api/groups GET Returns all the groups.
 router.get('/', async (req, res, next) => {
@@ -478,8 +478,125 @@ router.get('/:groupId/events', async (req, res, next) => {
 
 //POST, URL: /api/groups/:groupId/events
 //Create an Event for a Group specified by its id
-router.post('/:groupId/events', async(req, res, next)=>{
-    
+router.post('/:groupId/events',requireAuth, async(req, res, next)=>{
+    const { user } = req;
+    const groupId = +req.params.groupId;
+    const {venueId, name, type, capacity, price, description, startDate, endDate} = req.body;
+
+    let group = await Group.findByPk(groupId);
+    let venue = await Group.findByPk(venueId);
+    //error handling
+    //handles if group is not found
+    if (!group) {
+        let err = new Error("Group couldn't be found");
+        err.status = 404;
+        err.message = "Group couldn't be found"
+        return next(err);
+    };
+
+    //handles user authorization, Current User must be the organizer of the group 
+    //or a member of the group with a status of "co-host"
+
+    let groupUsers = await groupUser.findAll({
+        where: {
+            userId: user.id,
+            groupId: groupId,
+            status: 'co-host'
+        }
+    });
+    if ((groupUsers.length === 0 && user.id !== group.organizerId)) {
+        let err = new Error("User is not a member and a co-host.");
+        err.status = 401;
+        err.message = "User is not a member and a co-host. authorization error"
+        return next(err);
+    }
+
+
+    //handles body errors and validation error 
+    let bodyErr = new Error("Validation error")
+    if (!venue) {
+        bodyErr.status = 400;
+        bodyErr.errors = {
+            "address": "Venue does not exist"
+        }
+        return next(bodyErr);
+    }
+    else if (name.length < 5) {
+        bodyErr.status = 400;
+        bodyErr.errors = {
+            "name": "Name must be at least 5 characters"
+        }
+        return next(bodyErr);
+    }
+    else if (type !== "Online" && type!== "In person") {
+        bodyErr.status = 400;
+        bodyErr.errors = {
+            "type": "Type must be Online or In person"
+        }
+        return next(bodyErr);
+    }
+    else if (!+capacity || (+capacity && !Number.isInteger(+capacity))) {
+        bodyErr.status = 400;
+        bodyErr.errors = {
+            "capacity": "Capacity must be an integer"
+        }
+        return next(bodyErr);
+    }
+    else if (!+price) {
+        bodyErr.status = 400;
+        bodyErr.errors = {
+            "price":"Price is invalid"
+        }
+        return next(bodyErr);
+    }
+    else if(!description){
+        bodyErr.status = 400;
+        bodyErr.errors = {
+            "description": "Description is required"
+        }
+        return next(bodyErr);
+    }
+    //add startDate and endDate comparisons
+    let currentDate = new Date();
+    currentDate = currentDate.getTime();
+
+    let startDates = new Date(startDate);
+    let endDates = new Date(endDate);
+    startDates = startDates.getTime();
+    endDates = endDates.getTime();
+
+    if(currentDate > startDates){
+        bodyErr.status = 400;
+        bodyErr.errors = {
+            "startDate": "Start date must be in the future"
+        }
+        return next(bodyErr);
+    }
+    else if(endDates < startDate){
+        bodyErr.status = 400;
+        bodyErr.errors = {
+            "endDate": "End date is less than start date"
+        }
+        return next(bodyErr);
+    }
+
+    //create a new venue
+    let newEvent = await Event.create({
+        groupId,
+        venueId,
+        name,
+        type,
+        capacity,
+        price,
+        description,
+        startDate,
+        endDate
+    });
+
+    return res.json(newEvent);
 });
+
+
+
 
 module.exports = router;

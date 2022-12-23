@@ -13,7 +13,7 @@ module.exports = {
       {
         groupId: 1,
         userId: 1,
-        status: "Pending"
+        status: "pending"
       },
       {
         groupId: 1,
@@ -23,7 +23,7 @@ module.exports = {
       {
         groupId: 2,
         userId: 3,
-        status: "Pending"
+        status: "member"
       },
       {
         groupId: 2,
@@ -33,12 +33,12 @@ module.exports = {
       {
         groupId: 3,
         userId: 1,
-        status: "Pending"
+        status: "member"
       },
       {
         groupId: 3,
         userId: 3,
-        status: "Pending"
+        status: "pending"
       }
     ]
     await queryInterface.bulkInsert(options, data);

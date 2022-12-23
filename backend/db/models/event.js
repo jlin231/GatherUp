@@ -98,14 +98,6 @@ module.exports = (sequelize, DataTypes) => {
     endDate: {
       type: DataTypes.DATE,
       allowNull: false
-    },
-    numAttending: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-    previewImg: {
-      type: DataTypes.STRING,
-      allowNull: false
     }
   }, {
     sequelize,

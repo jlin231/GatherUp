@@ -22,9 +22,7 @@ module.exports = {
         price: 12.99,
         description: "A concert for Taylor Swift.",
         startDate: date,
-        endDate: date,
-        numAttending: 10,
-        previewImg: "insert/url"
+        endDate: date
       },
       {
         groupId: 1,
@@ -35,9 +33,7 @@ module.exports = {
         price: 30.00,
         description: "A Taylor Swift fan group event.",
         startDate: date,
-        endDate: date,
-        numAttending: 10,
-        previewImg: "insert/url"
+        endDate: date
       },
       {
         groupId: 2,
@@ -48,9 +44,7 @@ module.exports = {
         price: 2.00,
         description: "Dogs play together",
         startDate: date,
-        endDate: date,
-        numAttending: 20,
-        previewImg: "insert/url"
+        endDate: date
       },
       {
         groupId: 3,
@@ -61,9 +55,7 @@ module.exports = {
         price: 3.00,
         description: "College Tennis players",
         startDate: date,
-        endDate: date,
-        numAttending: 25,
-        previewImg: "insert/url"
+        endDate: date
     }
     ]
     options.tableName = 'Events';
