@@ -213,7 +213,7 @@ router.put('/:groupId', requireAuth, async (req, res, next) => {
         return next(err);
     }
     //check if user is group's organizer
-    if (user.id === group.organizerId) {
+    if (user.id !== group.organizerId) {
         let err = new Error("Group is not organized by user");
         err.status = 401;
         err.message = "Group is not organized by user, authorization error"
