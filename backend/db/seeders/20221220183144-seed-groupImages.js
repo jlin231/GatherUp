@@ -28,12 +28,12 @@ module.exports = {
       {
         groupId: 2,
         url: "http://cdn.akc.org/content/hero/cute_puppies_hero.jpg",
-        preview: false
+        preview: true
       },
       {
         groupId: 1,
         url: "https://img.hoodline.com/2021/11/levi_s_concert-1.webp?h=400&w=930&fit=crop&crop=faces,center",
-        preview: true 
+        preview: false
       }
     ]
     await queryInterface.bulkInsert(options, data);

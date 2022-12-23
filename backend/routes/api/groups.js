@@ -2,19 +2,48 @@
 const express = require('express')
 const router = express.Router();
 
-const { Group, User} = require('../../db/models');
+const { Group, User, Attendance, GroupImage, Venue } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
+const group = require('../../db/models/group');
 
-// /api/groups GET Returns all the groups.
+// /api/groups GET Returns all the groups.DONE
 router.get('/', async (req, res, next) => {
     console.log('test')
     let groups = await Group.findAll();
-    console.log(groups)
     const groupList = [];
     groups.forEach((group) => {
         groupList.push(group.toJSON())
-    })
+    });
+    //find attendees
+    const attendees = await Attendance.findAll();
+    let attendeeNumber = {};
+    attendees.forEach((attendee) => {
+        attendee = attendee.toJSON();
+        if (!attendeeNumber[attendee.eventId]) {
+            attendeeNumber[attendee.eventId] = 1;
+        }
+        else {
+            attendeeNumber[attendee.eventId] += 1;
+        }
+    });
+
+    //find preview images
+    const images = await GroupImage.findAll();
+    let previewImages = {}
+    images.forEach((image) => {
+        image = image.toJSON();
+        if (image.preview === true) {
+            previewImages[image.groupId] = image.url;
+        }
+    });
+
+    //add preview images and urls to group output
+    for (let i = 0; i < groupList.length; i++) {
+        groupList[i].url = previewImages[groupList[i].id];
+        groupList[i].numMembers = attendeeNumber[groupList[i].id];
+    }
+
     let output = { "Groups": groupList }
     return res.json(output);
 });
@@ -33,7 +62,6 @@ router.get('/current', requireAuth, async (req, res, next) => {
     let joined = await User.findByPk(user.id, {
         include: {
             model: Group,
-            as: "usersBelongToGroups",
             required: true
         }
     });
@@ -43,9 +71,9 @@ router.get('/current', requireAuth, async (req, res, next) => {
         groupList.push(group.toJSON());
     });
 
-    joined.usersBelongToGroups.forEach((group) => {
+    joined.Groups.forEach((group) => {
         group = group.toJSON();
-        delete group.groupUser;
+        delete group.Membership;
         let obj = groupList.find(groupList => groupList.id === group.id)
         if (!obj) groupList.push(group);
     });
@@ -64,17 +92,13 @@ router.get('/:groupId', async (req, res, next) => {
 
     let group = await Group.findByPk(+req.params.groupId, {
         include: [{
-            model: Image,
-            as: "GroupImages",
-            through: {
-                attributes: []
+            model: GroupImage,
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
             }
         },
         {
-            model: Venue,
-            through: {
-                attributes: []
-            }
+            model: Venue
         }]
     });
 
@@ -87,6 +111,7 @@ router.get('/:groupId', async (req, res, next) => {
 
     let organizer = await group.getOrganizer();
     group = group.toJSON();
+    delete group.username;
     group.Organizer = organizer;
 
     return res.json(group);
@@ -175,15 +200,12 @@ router.post('/:groupId/images', requireAuth, async (req, res, next) => {
         return next(err);
     };
 
-    let image = await Image.create({
+    let image = await GroupImage.create({
+        groupId,
         url,
         preview
     });
 
-    await groupImage.create({
-        groupId: groupId,
-        imageId: image.id
-    });
     image = image.toJSON();
     delete image.createdAt;
     delete image.updatedAt;
@@ -196,15 +218,9 @@ router.post('/:groupId/images', requireAuth, async (req, res, next) => {
 router.put('/:groupId', requireAuth, async (req, res, next) => {
     const { name, about, type, private, city, state } = req.body;
     const { user } = req;
-    const id = req.params.groupId;
+    const id = +req.params.groupId;
 
-    let group = await Group.findByPk(id, {
-        attributes: {
-            include: ["id", "organizerId", "name", "about", "type",
-                "private", "state", "createdAt", "updatedAt"],
-            exclude: ["numMembers", "previewImage"]
-        }
-    });
+    let group = await Group.findByPk(id);
 
     //error handling
     if (!group) {

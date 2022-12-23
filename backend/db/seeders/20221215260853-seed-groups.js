@@ -53,8 +53,6 @@ module.exports = {
      * await queryInterface.bulkDelete('People', null, {});
      */
     options.tableName = 'Groups';
-    await queryInterface.bulkDelete(options, {
-      name: { [Op.in]: ['Taylor Swift Fans', 'Dog Fans', 'Tennis Fans'] }
-    });
+    await queryInterface.bulkDelete(options);
   }
 };
