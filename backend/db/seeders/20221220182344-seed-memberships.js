@@ -13,12 +13,12 @@ module.exports = {
       {
         groupId: 1,
         userId: 1,
-        status: "co-host"
+        status: "pending"
       },
       {
         groupId: 1,
         userId: 2,
-        status: "pending"
+        status: "co-host"
       },
       {
         groupId: 2,
@@ -29,6 +29,11 @@ module.exports = {
         groupId: 2,
         userId: 1,
         status: "co-host"
+      },
+      {
+        groupId: 2,
+        userId: 2,
+        status: "pending"
       },
       {
         groupId: 3,

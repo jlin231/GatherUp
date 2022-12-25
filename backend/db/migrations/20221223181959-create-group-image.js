@@ -19,7 +19,8 @@ module.exports = {
           model: "Groups",
           key: 'id'
         },
-        allowNull: false
+        allowNull: false,
+        onDelete: "CASCADE"
       },
       url: {
         type: Sequelize.STRING,

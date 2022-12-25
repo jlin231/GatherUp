@@ -2,12 +2,12 @@
 const express = require('express')
 const router = express.Router();
 
-const { Group, User, Attendance, GroupImage, Venue } = require('../../db/models');
+const { Group, User, Attendance, GroupImage, Venue, Membership, Event, EventImage } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 const group = require('../../db/models/group');
 
-// /api/groups GET Returns all the groups.DONE
+// /api/groups GET Returns all the groups
 router.get('/', async (req, res, next) => {
     console.log('test')
     let groups = await Group.findAll();
@@ -15,7 +15,7 @@ router.get('/', async (req, res, next) => {
     groups.forEach((group) => {
         groupList.push(group.toJSON())
     });
-    //find attendees
+    //find attendees, WRONG FIND MEMBERS NOT ATTENDEES
     const attendees = await Attendance.findAll();
     let attendeeNumber = {};
     attendees.forEach((attendee) => {
@@ -321,35 +321,37 @@ router.get('/:groupId/venues', requireAuth, async (req, res, next) => {
 
     let group = await Group.findByPk(groupId, {
         include: {
-            model: Venue,
-            through: {
-                attributes: []
-            }
-        },
-        attributes: {
-            exclude: ['createdAt', 'updatedAt']
+            model: Venue
         }
     });
     //error handling for group
+    //check if the user was a member with status of co-host
+    const userStatus = await Membership.findAll({
+        where: {
+            groupId,
+            userId: user.id,
+            status: "co-host"
+        }
+    })
     if (!group) {
         let err = new Error("Group couldn't be found");
         err.status = 404;
         err.message = "Group couldn't be found"
         return next(err);
     }
-    else if (group.organizerId !== user.id) {
-        let err = new Error("Group is not organized by user");
+    else if ((group.organizerId !== user.id && userStatus.length === 0)) {
+        let err = new Error("User is not a co-host of group or an organizer of group.");
         err.status = 401;
         err.message = "Group is not organized by user, authorization error"
         return next(err);
     };
+
     const result = {
         "Venues": []
     };
 
     group.Venues.forEach((venue) => {
         let newVenue = venue.toJSON();
-        newVenue.groupId = groupId;
         result.Venues.push(newVenue);
     });
 
@@ -367,36 +369,30 @@ router.post('/:groupId/venues', requireAuth, async (req, res, next) => {
 
     let group = await Group.findByPk(groupId, {
         include: {
-            model: User,
-            as: "GroupUsers"
+            model: Venue
         }
     });
-
-    //error handling
-    //handles if group is not found
+    //error handling for group
+    //check if the user was a member with status of co-host
+    const userStatus = await Membership.findAll({
+        where: {
+            groupId,
+            userId: user.id,
+            status: "co-host"
+        }
+    });
     if (!group) {
         let err = new Error("Group couldn't be found");
         err.status = 404;
         err.message = "Group couldn't be found"
         return next(err);
-    };
-
-    //handles user authorization, Current User must be the organizer of the group 
-    //or a member of the group with a status of "co-host"
-
-    let groupUsers = await groupUser.findAll({
-        where: {
-            userId: user.id,
-            groupId: groupId,
-            status: 'co-host'
-        }
-    });
-    if ((groupUsers.length === 0 && user.id !== group.organizerId)) {
-        let err = new Error("User is not a member and a co-host.");
-        err.status = 401;
-        err.message = "User is not a member and a co-host. authorization error"
-        return next(err);
     }
+    else if ((group.organizerId !== user.id && userStatus.length === 0)) {
+        let err = new Error("User is not a co-host of group or an organizer of group.");
+        err.status = 401;
+        err.message = "Group is not organized by user, authorization error"
+        return next(err);
+    };
 
     //handles body errors 
     let bodyErr = new Error("Validation error")
@@ -421,14 +417,14 @@ router.post('/:groupId/venues', requireAuth, async (req, res, next) => {
         }
         return next(bodyErr);
     }
-    else if (!lat || !+lat || lat > 90 || lat < -90) {
+    else if (!lat || lng === true || lng === false || !+lat || lat > 90 || lat < -90) {
         bodyErr.status = 400;
         bodyErr.errors = {
             "lat": "Latitude is not valid"
         }
         return next(bodyErr);
     }
-    else if (!lng || !+lng || lng > 180 || lng < -180) {
+    else if (!lng || lng === true || lng === false || !+lng || lng > 180 || lng < -180) {
         bodyErr.status = 400;
         bodyErr.errors = {
             "lng": "Longitude is not valid"
@@ -438,17 +434,12 @@ router.post('/:groupId/venues', requireAuth, async (req, res, next) => {
 
     //create a new venue
     let newVenue = await Venue.create({
+        groupId,
         address,
         city,
         state,
         lat,
         lng
-    });
-
-    //add association between group and venue
-    let association = await venueGroup.create({
-        groupId: groupId,
-        venueId: newVenue.id
     });
 
     let result = newVenue.toJSON();
@@ -463,7 +454,7 @@ router.post('/:groupId/venues', requireAuth, async (req, res, next) => {
 //GET, /api/groups/:groupId/events
 router.get('/:groupId/events', async (req, res, next) => {
     const groupId = +req.params.groupId;
-    let group = await Event.findAll({
+    let events = await Event.findAll({
         where: {
             groupId: groupId
         },
@@ -483,17 +474,57 @@ router.get('/:groupId/events', async (req, res, next) => {
 
     //error handling
     //handles if group is not found
-    if (group.length === 0) {
+    if (events.length === 0) {
         let err = new Error("Group couldn't be found");
         err.status = 404;
         err.message = "Group couldn't be found"
         return next(err);
     };
 
-    return res.json(group);
+    //find numAttending
+    //find attendees
+    const attendees = await Attendance.findAll();
+    let attendeeNumber = {};
+    attendees.forEach((attendee) => {
+        attendee = attendee.toJSON();
+        if (!attendeeNumber[attendee.eventId]) {
+            attendeeNumber[attendee.eventId] = 1;
+        }
+        else {
+            attendeeNumber[attendee.eventId] += 1;
+        }
+    });
+
+    //find preview images
+    const images = await EventImage.findAll();
+    let previewImages = {}
+    images.forEach((image) => {
+        image = image.toJSON();
+        if (image.preview === true) {
+            previewImages[image.eventId] = image.url;
+        }
+    });
+
+    let eventList = [];
+    events.forEach((event) => {
+        eventList.push(event.toJSON());
+    })
+    //add preview images and urls to group output
+    for (let i = 0; i < eventList.length; i++) {
+        eventList[i].previewImage = previewImages[eventList[i].id];
+        eventList[i].numAttending = attendeeNumber[eventList[i].id];
+        if (!attendeeNumber[eventList[i].id]) {
+            eventList[i].numAttending = 0;
+        }
+    }
+
+    let result = {
+        "Events": eventList
+    }
+    return res.json(result);
 });
 
-//POST, URL: /api/groups/:groupId/events
+//POST, URL: /api/groups/:groupId/events, NOT DONE
 //Create an Event for a Group specified by its id
 router.post('/:groupId/events', requireAuth, async (req, res, next) => {
     const { user } = req;
@@ -589,7 +620,7 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
         }
         return next(bodyErr);
     }
-    else if (endDates < startDate) {
+    else if (endDates < startDates) {
         bodyErr.status = 400;
         bodyErr.errors = {
             "endDate": "End date is less than start date"
@@ -613,7 +644,215 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
     return res.json(newEvent);
 });
 
+//GET, /api/groups/:groupId/members
+// Get all Members of a Group specified by its id
+router.get('/:groupId/members', async (req, res, next) => {
+    const groupId = +req.params.groupId;
+    const { user } = req;
 
+    let groupInfo = await Group.findByPk(groupId,{
+        include: {
+            model: User,
+            through: {
+                attributes: {
+                    exclude: ['username']
+                }
+            }
+        }
+    });
 
+    if(!groupInfo){
+        let err = new Error("Group couldn't be found");
+        err.status = 404;
+        err.message = "Group couldn't be found"
+        return next(err);
+    }
 
+    //extract user information from members array and put into users array
+    let users = [];
+    groupInfo.Users.forEach((user)=>{
+        user = user.toJSON();
+        users.push(user);
+    });
+    
+    //process users object for presentation
+    users.forEach((user)=>{
+        delete user.username;
+        delete user.Membership.userId;
+        delete user.Membership.groupId;
+        delete user.Membership.createdAt;
+        delete user.Membership.updatedAt;
+    })
+
+    //check if current user is organizer of group or co-host member of group
+    let membership = await Membership.findAll({
+        where: {
+            userId: user.id,
+            groupId: groupId,
+            status: 'co-host'
+        }
+    });
+    //case where user is not organizer or co-host member of group
+    if(user.id !== groupInfo.organizerId && membership.length === 0){
+        for(let i = 0; i< users.length; i++){
+            if(users[i].Membership.status === "pending"){
+                users.splice(i,1);
+            }
+        }
+        return res.json(users);
+    }
+
+    return res.json(users);
+});
+
+//POST URL: /api/groups/:groupId/membership
+//Request a new membership for a group specified by id.
+router.post('/:groupId/membership',requireAuth, async(req, res, next)=>{
+    const groupId = +req.params.groupId;
+    const { user } = req;
+
+    const groupInfo = await Group.findByPk(groupId);
+    //handles group not found
+    if(!groupInfo){
+        let err = new Error("Group couldn't be found");
+        err.status = 404;
+        err.statusCode = 404;
+        err.message = "Group couldn't be found"
+        return next(err);
+    }
+
+    const currentMembership = await Membership.findOne({
+        where: {
+            groupId,
+            userId: user.id
+        }
+    });
+    //no membership found, membership is requested
+    if(!currentMembership){
+        const newMember = await Membership.create({
+            userId: user.id,
+            groupId,
+            status: "pending"
+        });
+        return res.json({
+            "memberId": newMember.userId,
+            "status": "pending"
+        })
+    }
+    //current user already has pending membership
+    else if(currentMembership.status === 'pending'){
+        let err = new Error("Membership has already been requested");
+        err.status = 400;
+        err.message = "Membership has already been requested"
+        return next(err);
+    }
+    //current user already has membership
+    else if(currentMembership.status === 'member' || currentMembership.status === 'co-host'){
+        let err = new Error("User is already a member of the group");
+        err.status = 400;
+        err.message = "User is already a member of the group"
+        return next(err);
+    }
+    return res.json();
+
+});
+
+//PUT URL: /api/groups/:groupId/membership
+//Change the status of a membership for a group specified by id.
+router.put('/:groupId/membership', requireAuth, async(req, res, next)=>{
+    const groupId = +req.params.groupId;
+    const { user } = req;
+    const {memberId, status} = req.body;
+    console.log("memberId: ", memberId)
+    //check if membership status to change to is pending
+    if(status === 'pending'){
+        let err = new Error("Validations Error");
+        err.status = 400;
+        err.message = "Validations Error"
+        err.errors = {
+            "status" : "Cannot change a membership status to pending"
+        };
+        return next(err);
+    }
+
+    //check group status
+    let groupInfo = await Group.findByPk(groupId);
+    if(!groupInfo){
+        let err = new Error("Group couldn't be found");
+        err.status = 404;
+        err.message = "Group couldn't be found"
+        return next(err);
+    };
+
+    //get current status of user in the group
+    
+    let currentMember = await Membership.findOne({
+        where: {
+            userId: memberId,
+            groupId
+        },
+        attributes: {
+            include: ['id']
+        }
+    });
+    console.log(currentMember)
+    //if membership doesn't exist between user and group
+    if(!currentMember){
+        let err = new Error("Membership between the user and the group does not exits");
+        err.status = 404;
+        err.message = "Membership between the user and the group does not exits"
+        return next(err);
+    }
+
+    const membershipStatus = currentMember.status;
+    //see if user is a organizer, or member of the group with co-host status
+    console.log(membershipStatus)
+    const userStatus = await Membership.findOne({
+        where: {
+            userId: user.id,
+            groupId: groupId,
+            status: "co-host"
+        }
+    });
+
+    // console.log(user.id)
+    // console.log(groupInfo.organizerId)
+    // console.log(userStatus)
+    // console.log(membershipStatus)
+
+    if(membershipStatus === 'pending' && status === "member"){
+        if((user.id === groupInfo.organizerId || userStatus)){
+            //body asks to turn pending to member, and user is an organizer or co-host of group
+            currentMember.update({
+                status: "member"
+            });
+            return res.json({
+                id: currentMember.id,
+                groupId,
+                memberId,
+                status: "member"
+            })
+        }
+    }
+    else if(membershipStatus === 'member' && status === 'co-host'){
+        if((user.id === groupInfo.organizerId)){
+            //body asks to turn member to co-host, and user is an co-host of group
+            currentMember.update({
+                status: "co-host"
+            });
+            return res.json({
+                id: currentMember.id,
+                groupId,
+                memberId,
+                status: "co-host"
+            })
+        }
+    }
+
+    // authorization is not enough
+    let err = new Error("User does not have the correct authorization or status desired invalid");
+    err.status = 401;
+    err.message = "User does not have the correct authorization or status desired invalid."
+    return next(err);
+});
 module.exports = router;

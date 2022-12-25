@@ -37,8 +37,8 @@ router.post('/', async (req, res, next)=>{
       return next(err);
     }
 
-    await setTokenCookie(res, user);
-
+    setTokenCookie(res, user);
+    console.log(user)
     return res.json({
       user: user
     });

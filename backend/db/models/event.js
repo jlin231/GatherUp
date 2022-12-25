@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
         hooks: true
       });
-
+      // one event to Many images, event to image
       Event.hasMany(models.EventImage, {
         foreignKey: 'eventId',
         onDelete: "CASCADE",

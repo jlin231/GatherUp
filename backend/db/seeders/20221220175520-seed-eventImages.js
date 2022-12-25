@@ -31,7 +31,17 @@ module.exports = {
       {
         eventId: 1,
         url: "https://img.hoodline.com/2021/11/levi_s_concert-1.webp?h=400&w=930&fit=crop&crop=faces,center",
+        preview: false 
+      },
+      {
+        eventId: 3,
+        url: "https://img.hoodline.com/2021/11/levi_s_concert-1.webp?h=400&w=930&fit=crop&crop=faces,center",
         preview: true 
+      },
+      {
+        eventId: 1,
+        url: "https://img.hoodline.com/2021/11/levi_s_concert-1.webp?h=400&w=930&fit=crop&crop=faces,center",
+        preview: false 
       }
     ]
     await queryInterface.bulkInsert(options, data);

@@ -2,11 +2,11 @@
 const express = require('express')
 const router = express.Router();
 
-const { Group, User, Image, Venue, groupImage, venueGroup, groupUser } = require('../../db/models');
+const { Group, User, Image, Venue, groupImage, venueGroup, Membership } = require('../../db/models');
 const { requireAuth } = require('../../utils/auth');
 
-//PUT /api/groups/:groupId/venues
-// Creates and returns a new venue for a group specified by its id
+//PUT /api/venues/:venueId
+//Edit a new venue specified by its id
 
 router.put('/:venueId', requireAuth, async (req, res, next) => {
     const { user } = req;
@@ -15,7 +15,7 @@ router.put('/:venueId', requireAuth, async (req, res, next) => {
 
     let venue = await Venue.findByPk(venueId);
     //error handling
-    //handles if group is not found
+    //handles if venue is not found
     if (!venue) {
         let err = new Error("Venue couldn't be found");
         err.status = 404;
@@ -25,26 +25,16 @@ router.put('/:venueId', requireAuth, async (req, res, next) => {
 
     //handles user authorization, Current User must be the organizer of the group 
     //or a member of the group with a status of "co-host"
+    let group = await Group.findByPk(venue.groupId);
 
-    //find group associated with venue
-    let venueGroups = await venueGroup.findOne({
-        where: {
-            venueId: venueId
-        }
-    });
-    let group = await Group.findByPk(venueGroups.groupId);
-
-    //handles user authorization, Current User must be the organizer of the group 
-    //or a member of the group with a status of "co-host"
-
-    let groupUsers = await groupUser.findAll({
+    let Memberships = await Membership.findAll({
         where: {
             userId: user.id,
-            groupId: venueGroups.groupId,
+            groupId: venue.groupId,
             status: 'co-host'
         }
     });
-    if (groupUsers.length === 0 && user.id !== group.organizerId) {
+    if (Memberships.length === 0 && user.id !== group.organizerId) {
         let err = new Error("User is not a member and a co-host or an organizer.");
         err.status = 401;
         err.message = "User is not a member and a co-host or an organizer. authorization error"
@@ -74,14 +64,14 @@ router.put('/:venueId', requireAuth, async (req, res, next) => {
         }
         return next(bodyErr);
     }
-    else if (!lat || !+lat || lat > 90 || lat < -90) {
+    else if (!lat || lng === true || lng === false || !+lat || lat > 90 || lat < -90) {
         bodyErr.status = 400;
         bodyErr.errors = {
             "lat": "Latitude is not valid"
         }
         return next(bodyErr);
     }
-    else if (!lng || !+lng || lng > 180 || lng < -180) {
+    else if (!lng || lng === true || lng === false || !+lng || lng > 180 || lng < -180) {
         bodyErr.status = 400;
         bodyErr.errors = {
             "lng": "Longitude is not valid"
@@ -96,7 +86,6 @@ router.put('/:venueId', requireAuth, async (req, res, next) => {
 
     //format result
     let result = venue.toJSON();
-    result.groupId = venueGroups.groupId;
     delete result.createdAt;
     delete result.updatedAt;
 
