@@ -10,6 +10,25 @@ const membership = require('../../db/models/membership');
 
 //GET URL: /api/events, Returns all the events.
 router.get('/', async (req, res, next) => {
+    let {page, size, name, type, startDate} = req.query;
+
+    //error handling
+
+    if(!page) page = 1;
+    if(!size) size = 20;
+    //convert page and size to integers
+    const pagination = {}
+
+    page = +page;
+    size = +size;
+
+    where = {};
+
+    if (page >= 1 && size >= 1) {
+        pagination.limit = size;
+        pagination.offset = size * (page - 1)
+    }
+
     let events = await Event.findAll({
         attributes: {
             exclude: ['capacity', 'price', 'createdAt', 'updatedAt', 'description']
@@ -21,8 +40,11 @@ router.get('/', async (req, res, next) => {
         {
             model: Venue,
             attributes: ['id', 'city', 'state']
-        }
-        ]
+        },
+        
+        ],
+        where,
+        ...pagination
     });
 
     //find numAttending
@@ -504,5 +526,17 @@ router.put('/:eventId/attendance', requireAuth, async(req, res, next)=>{
 
     return res.json(result);
 });
+
+// GET, /api/events
+// Return events filtered by query parameters
+router.get('/', async(req, res, next)=>{
+    
+
+    let query = Event.findAll({
+        where,
+        ...pagination
+    });
+});
+
 
 module.exports = router;
