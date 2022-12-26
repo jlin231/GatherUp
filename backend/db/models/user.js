@@ -19,7 +19,6 @@ module.exports = (sequelize, DataTypes) => {
     validatePassword(password) {
       return bcrypt.compareSync(password, this.hashedPassword.toString())
     }
-    //make sure this works
     static async getCurrentUserById(id) {
       return await User.scope("currentUser").findByPk(id);
     }
@@ -35,6 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         }
       });
       console.log(user, "IN LOGIN");
+      console.log(user.validatePassword(password))
       if (user && user.validatePassword(password)) {
         return await User.scope('currentUser').findByPk(user.id);
       }
