@@ -21,8 +21,7 @@ module.exports = {
         references: {
           model: "Groups",
           key: 'id'
-        },
-        onDelete: "CASCADE"
+        }
       },
       venueId: {
         type: Sequelize.INTEGER,
@@ -30,8 +29,7 @@ module.exports = {
         references: {
           model: "Venues",
           key: 'id'
-        },
-        onDelete: "CASCADE"
+        }
       },
       name: {
         type: Sequelize.STRING,
@@ -71,9 +69,9 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
-    },options);
+    }, options);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Events',options);
+    await queryInterface.dropTable('Events', options);
   }
 };

@@ -294,7 +294,6 @@ router.put('/:groupId', requireAuth, async (req, res, next) => {
 
 //DELETE, /api/groups/:groupId, Deletes an existing group.
 router.delete('/:groupId', requireAuth, async (req, res, next) => {
-    const { user } = req;
     const groupId = req.params.groupId;
 
     let group = await Group.findByPk(groupId);
@@ -305,12 +304,12 @@ router.delete('/:groupId', requireAuth, async (req, res, next) => {
         return next(err);
     };
 
-    group.destroy();
+    await group.destroy();
 
     return res.json({
         "message": "Successfully deleted",
         "statusCode": 200
-    })
+    });
 });
 
 //get all venues for a group specified by its id
@@ -650,7 +649,7 @@ router.get('/:groupId/members', async (req, res, next) => {
     const groupId = +req.params.groupId;
     const { user } = req;
 
-    let groupInfo = await Group.findByPk(groupId,{
+    let groupInfo = await Group.findByPk(groupId, {
         include: {
             model: User,
             through: {
@@ -661,7 +660,7 @@ router.get('/:groupId/members', async (req, res, next) => {
         }
     });
 
-    if(!groupInfo){
+    if (!groupInfo) {
         let err = new Error("Group couldn't be found");
         err.status = 404;
         err.message = "Group couldn't be found"
@@ -670,13 +669,13 @@ router.get('/:groupId/members', async (req, res, next) => {
 
     //extract user information from members array and put into users array
     let users = [];
-    groupInfo.Users.forEach((user)=>{
+    groupInfo.Users.forEach((user) => {
         user = user.toJSON();
         users.push(user);
     });
-    
+
     //process users object for presentation
-    users.forEach((user)=>{
+    users.forEach((user) => {
         delete user.username;
         delete user.Membership.userId;
         delete user.Membership.groupId;
@@ -693,10 +692,10 @@ router.get('/:groupId/members', async (req, res, next) => {
         }
     });
     //case where user is not organizer or co-host member of group
-    if(user.id !== groupInfo.organizerId && membership.length === 0){
-        for(let i = 0; i< users.length; i++){
-            if(users[i].Membership.status === "pending"){
-                users.splice(i,1);
+    if (user.id !== groupInfo.organizerId && membership.length === 0) {
+        for (let i = 0; i < users.length; i++) {
+            if (users[i].Membership.status === "pending") {
+                users.splice(i, 1);
             }
         }
         return res.json(users);
@@ -707,13 +706,13 @@ router.get('/:groupId/members', async (req, res, next) => {
 
 //POST URL: /api/groups/:groupId/membership
 //Request a new membership for a group specified by id.
-router.post('/:groupId/membership',requireAuth, async(req, res, next)=>{
+router.post('/:groupId/membership', requireAuth, async (req, res, next) => {
     const groupId = +req.params.groupId;
     const { user } = req;
 
     const groupInfo = await Group.findByPk(groupId);
     //handles group not found
-    if(!groupInfo){
+    if (!groupInfo) {
         let err = new Error("Group couldn't be found");
         err.status = 404;
         err.statusCode = 404;
@@ -728,7 +727,7 @@ router.post('/:groupId/membership',requireAuth, async(req, res, next)=>{
         }
     });
     //no membership found, membership is requested
-    if(!currentMembership){
+    if (!currentMembership) {
         const newMember = await Membership.create({
             userId: user.id,
             groupId,
@@ -740,14 +739,14 @@ router.post('/:groupId/membership',requireAuth, async(req, res, next)=>{
         })
     }
     //current user already has pending membership
-    else if(currentMembership.status === 'pending'){
+    else if (currentMembership.status === 'pending') {
         let err = new Error("Membership has already been requested");
         err.status = 400;
         err.message = "Membership has already been requested"
         return next(err);
     }
     //current user already has membership
-    else if(currentMembership.status === 'member' || currentMembership.status === 'co-host'){
+    else if (currentMembership.status === 'member' || currentMembership.status === 'co-host') {
         let err = new Error("User is already a member of the group");
         err.status = 400;
         err.message = "User is already a member of the group"
@@ -759,25 +758,25 @@ router.post('/:groupId/membership',requireAuth, async(req, res, next)=>{
 
 //PUT URL: /api/groups/:groupId/membership
 //Change the status of a membership for a group specified by id.
-router.put('/:groupId/membership', requireAuth, async(req, res, next)=>{
+router.put('/:groupId/membership', requireAuth, async (req, res, next) => {
     const groupId = +req.params.groupId;
     const { user } = req;
-    const {memberId, status} = req.body;
+    const { memberId, status } = req.body;
     console.log("memberId: ", memberId)
     //check if membership status to change to is pending
-    if(status === 'pending'){
+    if (status === 'pending') {
         let err = new Error("Validations Error");
         err.status = 400;
         err.message = "Validations Error"
         err.errors = {
-            "status" : "Cannot change a membership status to pending"
+            "status": "Cannot change a membership status to pending"
         };
         return next(err);
     }
 
     //check group status
     let groupInfo = await Group.findByPk(groupId);
-    if(!groupInfo){
+    if (!groupInfo) {
         let err = new Error("Group couldn't be found");
         err.status = 404;
         err.message = "Group couldn't be found"
@@ -785,7 +784,7 @@ router.put('/:groupId/membership', requireAuth, async(req, res, next)=>{
     };
 
     //get current status of user in the group
-    
+
     let currentMember = await Membership.findOne({
         where: {
             userId: memberId,
@@ -797,7 +796,7 @@ router.put('/:groupId/membership', requireAuth, async(req, res, next)=>{
     });
     console.log(currentMember)
     //if membership doesn't exist between user and group
-    if(!currentMember){
+    if (!currentMember) {
         let err = new Error("Membership between the user and the group does not exits");
         err.status = 404;
         err.message = "Membership between the user and the group does not exits"
@@ -820,8 +819,8 @@ router.put('/:groupId/membership', requireAuth, async(req, res, next)=>{
     // console.log(userStatus)
     // console.log(membershipStatus)
 
-    if(membershipStatus === 'pending' && status === "member"){
-        if((user.id === groupInfo.organizerId || userStatus)){
+    if (membershipStatus === 'pending' && status === "member") {
+        if ((user.id === groupInfo.organizerId || userStatus)) {
             //body asks to turn pending to member, and user is an organizer or co-host of group
             currentMember.update({
                 status: "member"
@@ -834,8 +833,8 @@ router.put('/:groupId/membership', requireAuth, async(req, res, next)=>{
             })
         }
     }
-    else if(membershipStatus === 'member' && status === 'co-host'){
-        if((user.id === groupInfo.organizerId)){
+    else if (membershipStatus === 'member' && status === 'co-host') {
+        if ((user.id === groupInfo.organizerId)) {
             //body asks to turn member to co-host, and user is an co-host of group
             currentMember.update({
                 status: "co-host"

@@ -5,7 +5,7 @@ if (process.env.NODE_ENV === 'production') {
   options.schema = process.env.SCHEMA;  // define your schema in options object
 }
 
-const { Event } = require('../models')
+const { Group, Venue } = require('../models')
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -13,10 +13,18 @@ module.exports = {
     const startDate = new Date('2021-11-19 20:00:00');
     const endDate = new Date('2021-11-21 20:00:00');
     let date = new Date();
+
+    let groups = await Group.findAll();
+    let venues = await Venue.findAll();
+
+    function getId(array, num) {
+      return array[num - 1].id;
+    };
+
     const data = [
       {
-        groupId: 1,
-        venueId: 1,
+        groupId: getId(groups, 1),
+        venueId: getId(venues, 1),
         name: "Taylor Swift concert",
         type: "Online",
         capacity: 100,
@@ -26,18 +34,18 @@ module.exports = {
         endDate
       },
       {
-        groupId: 1,
-        venueId: 2,
+        groupId: getId(groups, 1),
+        venueId: getId(venues, 2),
         name: "Taylor Swift event in the park",
         type: "Online",
         capacity: 50,
         price: 30.00,
         description: "A Taylor Swift fan group event.",
-        startDate : new Date('2021-12-19 20:00:00'),
+        startDate: new Date('2021-12-19 20:00:00'),
         endDate
       },
       {
-        groupId: 1,
+        groupId: getId(groups, 1),
         venueId: null,
         name: "Amazing Taylor Swift Online concert",
         type: "Online",
@@ -48,8 +56,8 @@ module.exports = {
         endDate
       },
       {
-        groupId: 2,
-        venueId: 2,
+        groupId: getId(groups, 2),
+        venueId: getId(venues, 2),
         name: "Dog Park event",
         type: "In Person",
         capacity: 502,
@@ -59,8 +67,8 @@ module.exports = {
         endDate
       },
       {
-        groupId: 3,
-        venueId: 3,
+        groupId: getId(groups, 3),
+        venueId: getId(venues, 3),
         name: "Tennis Event",
         type: "In Person",
         capacity: 502,

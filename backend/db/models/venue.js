@@ -28,9 +28,7 @@ module.exports = (sequelize, DataTypes) => {
 
       // one to Many, Group to Venue
       Venue.belongsTo(models.Group,{
-        foreignKey: 'groupId',
-        hooks:true,
-        onDelete: "CASCADE",
+        foreignKey: 'groupId'
       });
 
       // one to Many, venue to Event

@@ -6,20 +6,29 @@ if (process.env.NODE_ENV === 'production') {
 }
 options.tableName = 'Venues';
 
+const { Group} = require('../models')
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
+
+    let groups = await Group.findAll();
+
+    function getId(array, num) {
+      return array[num - 1].id;
+    };
+
     const data = [
       {
-        groupId: 1,
+        groupId: getId(groups, 1),
         address: "1001 Stadium Dr",
         city: "Inglewood",
         state: "CA",
         lat: 33.9535,
-        lng:18.3390
+        lng: 18.3390
       },
       {
-        groupId: 2,
+        groupId: getId(groups, 2),
         address: "124-02 Roosevelt Ave",
         city: "Flushing",
         state: "NY",
@@ -27,7 +36,7 @@ module.exports = {
         lng: 73.8470
       },
       {
-        groupId: 3,
+        groupId: getId(groups, 3),
         address: "20357 Studebaker Rd",
         city: "Lakewood",
         state: "CA",

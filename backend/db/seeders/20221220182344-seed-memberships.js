@@ -6,43 +6,51 @@ if (process.env.NODE_ENV === 'production') {
 }
 options.tableName = 'Memberships';
 
+const { Group, User } = require('../models')
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
+    let groups = await Group.findAll();
+    let users = await User.findAll();
+
+    function getId(array, num) {
+      return array[num - 1].id;
+    }
     const data = [
       {
-        groupId: 1,
-        userId: 1,
+        groupId: getId(groups, 1),
+        userId: getId(users, 1),
         status: "pending"
       },
       {
-        groupId: 1,
-        userId: 2,
+        groupId: getId(groups, 1),
+        userId: getId(users, 2),
         status: "co-host"
       },
       {
-        groupId: 2,
-        userId: 3,
+        groupId: getId(groups, 2),
+        userId: getId(users, 3),
         status: "member"
       },
       {
-        groupId: 2,
-        userId: 1,
+        groupId: getId(groups, 2),
+        userId: getId(users, 1),
         status: "co-host"
       },
       {
-        groupId: 2,
-        userId: 2,
+        groupId: getId(groups, 2),
+        userId: getId(users, 2),
         status: "pending"
       },
       {
-        groupId: 3,
-        userId: 1,
+        groupId: getId(groups, 3),
+        userId: getId(users, 1),
         status: "member"
       },
       {
-        groupId: 3,
-        userId: 3,
+        groupId: getId(groups, 3),
+        userId: getId(users, 3),
         status: "pending"
       }
     ]

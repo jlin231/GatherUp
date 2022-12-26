@@ -6,15 +6,20 @@ if (process.env.NODE_ENV === 'production') {
 }
 options.tableName = 'Groups';
 
-const {Group} = require('../models')
-const {Op} = require('sequelize')
+const { Group, User } = require('../models')
+const { Op } = require('sequelize')
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
+  async up(queryInterface, Sequelize) {
+    let users = await User.findAll();
+
+    function getId(array, num) {
+      return array[num - 1].id;
+    };
     const data = [
       {
-        organizerId: 1,
+        organizerId: getId(users, 1),
         name: "Taylor Swift Fans",
         about: "A group for Taylor Swift fans to enjoy her music and her events.",
         type: "Online",
@@ -23,7 +28,7 @@ module.exports = {
         state: "TX"
       },
       {
-        organizerId: 2,
+        organizerId: getId(users, 2),
         name: "Dog Fans",
         about: "A group for Dog fans to enjoy dogs.",
         type: "In Person",
@@ -32,7 +37,7 @@ module.exports = {
         state: "CA"
       },
       {
-        organizerId: 3,
+        organizerId: getId(users, 3),
         name: "Tennis Fans",
         about: "A group for Tennis fans to enjoy tennis and play together.",
         type: "In Person",
@@ -46,7 +51,7 @@ module.exports = {
     await queryInterface.bulkInsert(options, data);
   },
 
-  async down (queryInterface, Sequelize) {
+  async down(queryInterface, Sequelize) {
     /**
      * Add commands to revert seed here.
      *

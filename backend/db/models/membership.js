@@ -15,15 +15,15 @@ module.exports = (sequelize, DataTypes) => {
   }
   Membership.init({
     userId: {
-      type:DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     groupId: {
-      type:DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     status: {
-      type:DataTypes.STRING,
+      type: DataTypes.STRING,
       allowNull: false
     }
   }, {
