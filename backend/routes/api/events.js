@@ -4,25 +4,135 @@ const router = express.Router();
 
 const { setTokenCookie, restoreUser, requireAuth } = require('../../utils/auth');
 const { User, Event, Group, Venue, EventImage, Image, Attendance, Membership } = require('../../db/models');
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const group = require('../../db/models/group');
 const membership = require('../../db/models/membership');
 
+
+function checkDate(startDate) {
+    let dateParts = startDate.split(' ');
+    console.log(dateParts)
+    if (dateParts.length !== 2) {
+        return false;
+    }
+    let ymd = dateParts[0].split('-');
+    let dayTime = dateParts[1].split(':');
+    if (ymd.length !== 3 || dayTime.length !== 3) {
+        return false;
+    }
+
+    //check if values are numbers and proper length
+    if (ymd[0].length !== 4 || !+ymd[0]) {
+        return false;
+    }
+    if (ymd[1].length !== 2 || !+ymd[1]) {
+        return false;
+    }
+    if (ymd[2].length !== 2 || !+ymd[2]) {
+        return false;
+    }
+    if (dayTime[0].length !== 2 || (!+dayTime[0] && +dayTime[0] !== 0)) {
+        return false;
+    }
+    if (dayTime[1].length !== 2 || (!+dayTime[1] && +dayTime[1] !== 0)) {
+        return false;
+    }
+    if (dayTime[2].length !== 2 || (!+dayTime[2] && +dayTime[2] !== 0)) {
+        return false;
+    }
+
+    const day = parseInt(ymd[2], 10);
+    const month = parseInt(ymd[1], 10);
+    const year = parseInt(ymd[0], 10);
+    const hour = parseInt(dayTime[0], 10);
+    const minute = parseInt(dayTime[1], 10);
+    const second = parseInt(dayTime[2], 10);
+
+
+    if (year < 1000 || year > 3000 || month == 0 || month > 12) {
+        return false;
+    }
+
+    var monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    // Adjust for leap years
+    if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+        monthLength[1] = 29;
+
+    // Check the range of the day
+    if (day <= 0 || day > monthLength[month - 1]) {
+        return false;
+    };
+
+    //check if hour is valid value
+    if (hour < 0 || hour > 24) {
+        return false;
+    }
+
+    //check if minute is valid value
+    if (minute < 0 || minute >= 60) {
+        console.log('test3');
+        return false;
+    }
+    //check if second is value value
+    if (second < 0 || second >= 60) {
+        return false;
+    }
+    return true;
+};
+
 //GET URL: /api/events, Returns all the events.
 router.get('/', async (req, res, next) => {
-    let {page, size, name, type, startDate} = req.query;
-
+    let { page, size, name, type, startDate } = req.query;
     //error handling
+    let err = new Error("Validation Error")
+    err.status = 400;
+    err.errors = {};
+    let check = false;
+    if ((+page || +page === 0) && +page < 1) {
+        err.errors.page = "Page must be greater than or equal to 1"
+        check = true;
+    }
+    if ((+size || +size === 0) && +size < 1) {
+        err.errors.size = "Size must be greater than or equal to 1"
+        check = true;
+    }
+    if (name && +name) {
+        err.errors.name = "Name must be a string"
+        check = true;
+    }
+    if (type && type !== "Online" && type !== "In Person") {
+        err.errors.type = "Type must be 'Online' or 'In Person'"
+        check = true;
+    }
 
-    if(!page) page = 1;
-    if(!size) size = 20;
+    //check that the format is in the following string "2021-11-20 20:00:00"
+
+    if (!checkDate(startDate)) {
+        err.errors.startDate = "Start date must be a valid datetime"
+        check = true;
+    }
+
+
+    //throws error if any conditions are met
+    if (check) {
+        return next(err);
+    }
+
+    if (!page) page = 1;
+    if (!size) size = 20;
     //convert page and size to integers
     const pagination = {}
 
     page = +page;
     size = +size;
 
-    where = {};
+    const where = {}
+
+
+    if (name) where.name = name;
+    if (type) where.type = type;
+    if (startDate) where.startDate = new Date(startDate);
 
     if (page >= 1 && size >= 1) {
         pagination.limit = size;
@@ -41,12 +151,11 @@ router.get('/', async (req, res, next) => {
             model: Venue,
             attributes: ['id', 'city', 'state']
         },
-        
+
         ],
         where,
         ...pagination
     });
-
     //find numAttending
     //find attendees
     const attendees = await Attendance.findAll();
@@ -446,13 +555,13 @@ router.post('/:eventId/attendance', requireAuth, async (req, res, next) => {
         delete result.eventId;
         return res.json(result);
     }
-    else if(attendance.status === 'pending' || attendance.status === 'waitlist'){
+    else if (attendance.status === 'pending' || attendance.status === 'waitlist') {
         let err = new Error("Attendance has already been requested")
         err.status = 400;
         err.message = "Attendance has already been requested";
         return next(err);
     }
-    else if(attendance.status === 'attending'){
+    else if (attendance.status === 'attending') {
         let err = new Error("User is already an attendee of the event")
         err.status = 400;
         err.message = "User is already an attendee of the event";
@@ -463,12 +572,12 @@ router.post('/:eventId/attendance', requireAuth, async (req, res, next) => {
 
 // PUT, /api/events/:eventId/attendance
 // Change the status of an attendance for an event specified by id.
-router.put('/:eventId/attendance', requireAuth, async(req, res, next)=>{
+router.put('/:eventId/attendance', requireAuth, async (req, res, next) => {
     let eventId = +req.params.eventId;
     const { userId, status } = req.body;
-    const { user } = req;   
+    const { user } = req;
 
-    if(status === 'pending'){
+    if (status === 'pending') {
         let bodyErr = new Error("Cannot change an attendance status to pending");
         bodyErr.status = 400;
         bodyErr.message = "Cannot change an attendance status to pending";
@@ -503,14 +612,14 @@ router.put('/:eventId/attendance', requireAuth, async(req, res, next)=>{
     let attendance = await Attendance.findOne({
         where: {
             eventId,
-            userId 
+            userId
         },
         attributes: {
             include: ['id']
         }
     });
 
-    if(!attendance){
+    if (!attendance) {
         let bodyErr = new Error("Attendance between the user and the event does not exist");
         bodyErr.status = 404;
         bodyErr.message = "Attendance between the user and the event does not exist";
@@ -527,16 +636,6 @@ router.put('/:eventId/attendance', requireAuth, async(req, res, next)=>{
     return res.json(result);
 });
 
-// GET, /api/events
-// Return events filtered by query parameters
-router.get('/', async(req, res, next)=>{
-    
-
-    let query = Event.findAll({
-        where,
-        ...pagination
-    });
-});
 
 
 module.exports = router;

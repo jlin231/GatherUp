@@ -10,7 +10,8 @@ const { Event } = require('../models')
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-
+    const startDate = new Date('2021-11-19 20:00:00');
+    const endDate = new Date('2021-11-21 20:00:00');
     let date = new Date();
     const data = [
       {
@@ -22,8 +23,8 @@ module.exports = {
         capacity: 100,
         price: 12.99,
         description: "A concert for Taylor Swift.",
-        startDate: "2021-11-19 20:00:00",
-        endDate: "2021-11-21 20:00:00"
+        startDate,
+        endDate
       },
       {
         id: 2,
@@ -34,8 +35,8 @@ module.exports = {
         capacity: 50,
         price: 30.00,
         description: "A Taylor Swift fan group event.",
-        startDate: "2021-11-19 20:00:00",
-        endDate: "2021-11-21 20:00:00"
+        startDate : new Date('2021-12-19 20:00:00'),
+        endDate
       },
       {
         id: 3,
@@ -46,32 +47,32 @@ module.exports = {
         capacity: 50,
         price: 30.00,
         description: "A Taylor Swift fan group event to enjoy music together.",
-        startDate: "2021-11-19 20:00:00",
-        endDate: "2021-11-21 20:00:00"
+        startDate,
+        endDate
       },
       {
         id: 4,
         groupId: 2,
         venueId: 2,
         name: "Dog Park event",
-        type: "In person",
+        type: "In Person",
         capacity: 502,
         price: 2.00,
         description: "Dogs play together",
-        startDate: "2021-11-19 20:00:00",
-        endDate: "2021-11-20 20:00:00"
+        startDate,
+        endDate
       },
       {
         id: 5,
         groupId: 3,
         venueId: 3,
         name: "Tennis Event",
-        type: "In person",
+        type: "In Person",
         capacity: 502,
         price: 3.00,
         description: "College Tennis players",
-        startDate: "2021-11-19 20:00:00",
-        endDate: "2021-11-20 20:00:00"
+        startDate,
+        endDate
       }
     ]
     options.tableName = 'Events';
