@@ -14,6 +14,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     const data = [
       {
+        id: 1,
         organizerId: 1,
         name: "Taylor Swift Fans",
         about: "A group for Taylor Swift fans to enjoy her music and her events.",
@@ -23,6 +24,7 @@ module.exports = {
         state: "TX"
       },
       {
+        id: 2,
         organizerId: 2,
         name: "Dog Fans",
         about: "A group for Dog fans to enjoy dogs.",
@@ -32,6 +34,7 @@ module.exports = {
         state: "CA"
       },
       {
+        id: 3,
         organizerId: 3,
         name: "Tennis Fans",
         about: "A group for Tennis fans to enjoy tennis and play together.",

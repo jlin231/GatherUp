@@ -43,6 +43,7 @@ router.post('/', async (req, res, next) => {
     user: user
   });
 });
+
 //deletes token from cookies, means no user is present
 router.delete(
   '/',

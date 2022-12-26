@@ -15,6 +15,7 @@ module.exports = {
     let date = new Date();
     const data = [
       {
+        id: 1,
         groupId: 1,
         venueId: 1,
         name: "Taylor Swift concert",
@@ -26,6 +27,7 @@ module.exports = {
         endDate
       },
       {
+        id: 2,
         groupId: 1,
         venueId: 2,
         name: "Taylor Swift event in the park",
@@ -37,6 +39,7 @@ module.exports = {
         endDate
       },
       {
+        id: 3,
         groupId: 1,
         venueId: null,
         name: "Amazing Taylor Swift Online concert",
@@ -48,7 +51,7 @@ module.exports = {
         endDate
       },
       {
-
+        id: 4,
         groupId: 2,
         venueId: 2,
         name: "Dog Park event",
@@ -60,6 +63,7 @@ module.exports = {
         endDate
       },
       {
+        id: 5,
         groupId: 3,
         venueId: 3,
         name: "Tennis Event",
