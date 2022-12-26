@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
 
     static async login({ credential, password }) {
       const { Op } = require('sequelize');
+      console.log(password);
       const user = await User.scope('loginUser').findOne({
         where: {
           [Op.or]: {
@@ -65,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       //many to many users and events
-      User.belongsToMany(models.Event,{
+      User.belongsToMany(models.Event, {
         through: models.Attendance,
         foreignKey: "userId",
         otherKey: "eventId",
@@ -73,19 +74,19 @@ module.exports = (sequelize, DataTypes) => {
         hooks: true
       })
       // many to many, group to users
-      User.belongsToMany(models.Group,{
+      User.belongsToMany(models.Group, {
         through: models.Membership,
         foreignKey: "userId",
         otherKey: "groupId",
         onDelete: "CASCADE",
         hooks: true
       });
-      
+
     }
   }
   User.init({
     username: {
-      type: DataTypes.CHAR,
+      type: DataTypes.STRING,
       unique: false,
       allowNull: true,
       validate: {
@@ -98,7 +99,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     email: {
-      type: DataTypes.CHAR,
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true,
       validate: {
@@ -107,14 +108,14 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     firstName: {
-      type: DataTypes.CHAR,
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         len: [1, 256]
       }
     },
     lastName: {
-      type: DataTypes.CHAR,
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         len: [1, 256]

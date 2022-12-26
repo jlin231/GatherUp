@@ -16,25 +16,25 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       username: {
-        type: Sequelize.CHAR,
+        type: Sequelize.STRING,
         allowNull: true,
         unique: false
       },
       firstName: {
-        type: Sequelize.CHAR,
+        type: Sequelize.STRING,
         allowNull: false,
       },
-      lastName:{
-        type: Sequelize.CHAR,
+      lastName: {
+        type: Sequelize.STRING,
         allowNull: false
       },
       email: {
-        type: Sequelize.CHAR,
+        type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
       hashedPassword: {
-        type: Sequelize.CHAR,
+        type: Sequelize.STRING,
         allowNull: false
       },
       createdAt: {
@@ -47,9 +47,9 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
-    },options);
+    }, options);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Users',options);
+    await queryInterface.dropTable('Users', options);
   }
 };

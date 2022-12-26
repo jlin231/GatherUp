@@ -26,7 +26,7 @@ router.post('/', async (req, res, next) => {
     };
     return next(err);
   }
-
+  
   const user = await User.login({ credential, password });
   console.log('wow', user, 'great');
   if (!user) {
@@ -40,7 +40,8 @@ router.post('/', async (req, res, next) => {
   await setTokenCookie(res, user);
   console.log(user)
   return res.json({
-    user: user
+    user: user,
+    token: ''
   });
 });
 
