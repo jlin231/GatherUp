@@ -107,8 +107,8 @@ router.get('/', async (req, res, next) => {
     }
 
     //check that the format is in the following string "2021-11-20 20:00:00"
-
-    if (!checkDate(startDate)) {
+    
+    if (startDate && !checkDate(startDate)) {
         err.errors.startDate = "Start date must be a valid datetime"
         check = true;
     }
