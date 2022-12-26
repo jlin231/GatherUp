@@ -7,6 +7,7 @@ options.tableName = 'EventImages';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
+    
     const data = [
       {
         eventId: 1,

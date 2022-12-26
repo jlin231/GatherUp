@@ -6,9 +6,14 @@ if (process.env.NODE_ENV === 'production') {
 }
 options.tableName = 'Attendances';
 
+const { Event, User } = require('../models')
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
+    let users = await User.findAll();
+    let event = await Event.findAll();
+
     const data = [
       {
         eventId: 1,

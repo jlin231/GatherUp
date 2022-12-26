@@ -44,15 +44,11 @@ module.exports = (sequelize, DataTypes) => {
 
       // one to many, group to events 
       Event.belongsTo(models.Group, {
-        foreignKey: 'groupId',
-        onDelete: "CASCADE",
-        hooks: true
+        foreignKey: 'groupId'
       });
       // one to Many, venue to Event
       Event.belongsTo(models.Venue, {
-        foreignKey: 'venueId',
-        onDelete: "CASCADE",
-        hooks: true
+        foreignKey: 'venueId'
       });
       // one event to Many images, event to image
       Event.hasMany(models.EventImage, {
