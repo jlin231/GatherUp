@@ -18,10 +18,11 @@ module.exports = {
       organizerId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references:{
+        references: {
           model: 'Users',
           key: 'id'
-        }
+        },
+        onDelete: 'CASCADE'
       },
       name: {
         type: Sequelize.STRING,
@@ -57,9 +58,9 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
-    },options);
+    }, options);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Groups',options);
+    await queryInterface.dropTable('Groups', options);
   }
 };

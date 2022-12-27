@@ -26,29 +26,27 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: "CASCADE",
         hooks: true
       });
+
       // one to many, group to events 
-      Group.hasMany(models.Event,{
+      Group.hasMany(models.Event, {
         foreignKey: "groupId",
         onDelete: "CASCADE",
         hooks: true
       });
 
       // one to many, group to groupImages
-      Group.hasMany(models.GroupImage,{
+      Group.hasMany(models.GroupImage, {
         foreignKey: "groupId",
         onDelete: "CASCADE",
         hooks: true
       });
 
       // many to many, group to users
-      Group.belongsToMany(models.User,{
+      Group.belongsToMany(models.User, {
         through: models.Membership,
         foreignKey: "groupId",
-        otherKey: "userId",
-        onDelete: "CASCADE",
-        hooks: true
+        otherKey: "userId"
       });
-
     }
   }
   Group.init({

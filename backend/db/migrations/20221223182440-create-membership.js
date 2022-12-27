@@ -27,7 +27,8 @@ module.exports = {
         references: {
           model: "Groups",
           key: 'id'
-        }
+        },
+        onDelete: "CASCADE"
       },
       status: {
         type: Sequelize.STRING,
@@ -43,9 +44,9 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
-    },options);
+    }, options);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Memberships',options);
+    await queryInterface.dropTable('Memberships', options);
   }
 };

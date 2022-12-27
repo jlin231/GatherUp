@@ -35,9 +35,10 @@ router.put('/:venueId', requireAuth, async (req, res, next) => {
         }
     });
     if (Memberships.length === 0 && user.id !== group.organizerId) {
-        let err = new Error("User is not a member and a co-host or an organizer.");
-        err.status = 401;
-        err.message = "User is not a member and a co-host or an organizer. authorization error"
+        let err = new Error("Forbidden");
+        err.status = 403;
+        err.statusCode = 403;
+        err.message = "Forbidden";
         return next(err);
     }
 

@@ -14,26 +14,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
 
-      // //one to many Venue to Events 
-      // Venue.hasMany(models.Event,
-      //   { foreignKey: 'venueId', hooks: true })
-
-      // //many to many groups to venues
-      // Venue.belongsToMany(models.Group,
-      //   {
-      //     through: models.venueGroup,
-      //     foreignKey: "venueId",
-      //     otherKey: "groupId"
-      //   })
-
       // one to Many, Group to Venue
-      Venue.belongsTo(models.Group,{
+      Venue.belongsTo(models.Group, {
         foreignKey: 'groupId'
       });
 
       // one to Many, venue to Event
-      Venue.hasMany(models.Event,{
-        foreignKey: "groupId",
+      Venue.hasMany(models.Event, {
+        foreignKey: "venueId",
         onDelete: "CASCADE",
         hooks: true
       });

@@ -20,7 +20,8 @@ module.exports = {
         references: {
           model: "Events",
           key: 'id'
-        }
+        },
+        onDelete: "CASCADE"
       },
       userId: {
         type: Sequelize.INTEGER,
@@ -44,9 +45,9 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
-    },options);
+    }, options);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Attendances',options);
+    await queryInterface.dropTable('Attendances', options);
   }
 };

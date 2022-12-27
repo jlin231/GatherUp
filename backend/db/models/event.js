@@ -62,9 +62,7 @@ module.exports = (sequelize, DataTypes) => {
         {
           through: models.Attendance,
           foreignKey: "eventId",
-          otherKey: "userId",
-          onDelete: "CASCADE",
-          hooks: true
+          otherKey: "userId"
         });
 
     }

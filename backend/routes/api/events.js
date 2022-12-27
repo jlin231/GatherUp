@@ -107,7 +107,7 @@ router.get('/', async (req, res, next) => {
     }
 
     //check that the format is in the following string "2021-11-20 20:00:00"
-    
+
     if (startDate && !checkDate(startDate)) {
         err.errors.startDate = "Start date must be a valid datetime"
         check = true;
@@ -202,7 +202,6 @@ router.get('/', async (req, res, next) => {
 //GET URL: /api/events/:eventId, Returns the details of an event specified by its id.
 router.get('/:eventId', async (req, res, next) => {
     const eventId = +req.params.eventId;
-    console.log('test')
     let events = await Event.findByPk(eventId, {
         attributes: {
             exclude: ['createdAt', 'updatedAt']
@@ -287,9 +286,9 @@ router.post('/:eventId/images', requireAuth, async (req, res, next) => {
         }
     });
     //find membership, and co-host status of group
-    let memberShipCheck = await Attendance.findAll({
+    let memberShipCheck = await Membership.findAll({
         where: {
-            eventId: event.groupId,
+            groupId: event.groupId,
             userId: user.id,
             status: 'co-host'
         }
@@ -299,9 +298,10 @@ router.post('/:eventId/images', requireAuth, async (req, res, next) => {
     let group = await Group.findByPk(event.groupId);
 
     if (user.id !== group.organizerId && attendeeCheck.length === 0 && memberShipCheck.length === 0) {
-        let err = new Error("Authorization Error, user is not organizer, attendee, or co-host of group.")
-        err.status = 401;
-        err.message = "Authorization Error, user is not organizer, attendee, or co-host of group.";
+        let err = new Error("Forbidden");
+        err.status = 403;
+        err.statusCode = 403;
+        err.message = "Forbidden";
         return next(err);
     };
 
@@ -352,9 +352,10 @@ router.put('/:eventId', requireAuth, async (req, res, next) => {
     let group = await Group.findByPk(event.groupId)
 
     if ((members.length === 0 && user.id !== group.organizerId)) {
-        let err = new Error("User is not a member or a co-host.");
-        err.status = 401;
-        err.message = "User is not a member or a co-host. authorization error"
+        let err = new Error("Forbidden");
+        err.status = 403;
+        err.statusCode = 403;
+        err.message = "Forbidden";
         return next(err);
     }
 
@@ -445,6 +446,52 @@ router.put('/:eventId', requireAuth, async (req, res, next) => {
     return res.json(result);
 });
 
+//DELETE /api/events/:eventId
+//Delete an event specified by its id
+router.delete('/:eventId', requireAuth, async (req, res, next) => {
+    let eventId = +req.params.eventId;
+    let event = await Event.findByPk(eventId);
+    const { user } = req;
+
+    if (!event) {
+        let bodyErr = new Error("Event couldn't be found")
+        bodyErr.status = 404;
+        bodyErr.statusCode = 404;
+        bodyErr.message = "Event couldn't be found";
+        return next(bodyErr);
+    }
+
+    let group = await Group.findByPk(event.groupId);
+    //find membership, and co-host status of group
+    let memberShipCheck = await Membership.findAll({
+        where: {
+            groupId: group.id,
+            userId: user.id,
+            status: 'co-host'
+        }
+    });
+
+    //find group of event
+
+    if (user.id !== group.organizerId && memberShipCheck.length === 0) {
+        let err = new Error("Forbidden");
+        err.status = 403;
+        err.statusCode = 403;
+        err.message = "Forbidden";
+        return next(err);
+    };
+
+    await Event.destroy({
+        where: {
+            id: eventId
+        }
+    });
+
+    return res.json({
+        "message": "Successfully deleted"
+    })
+});
+
 // GET /api/events/:eventId/attendees
 // Returns the attendees of an event specified by its id.
 router.get('/:eventId/attendees', async (req, res, next) => {
@@ -462,7 +509,7 @@ router.get('/:eventId/attendees', async (req, res, next) => {
         bodyErr.status = 404;
         bodyErr.message = "Event couldn't be found";
         return next(bodyErr);
-    }
+    };
 
     //find group associated with event to find organizer
     let group = await Group.findByPk(event.groupId);
@@ -529,8 +576,9 @@ router.post('/:eventId/attendance', requireAuth, async (req, res, next) => {
     console.log(memberShip)
     //user is not member of the event group
     if (memberShip.length === 0) {
-        let err = new Error("Authorization Error")
+        let err = new Error("Forbidden");
         err.status = 403;
+        err.statusCode = 403;
         err.message = "Forbidden";
         return next(err);
     };
@@ -603,8 +651,9 @@ router.put('/:eventId/attendance', requireAuth, async (req, res, next) => {
     let group = await Group.findByPk(event.groupId)
 
     if ((members.length === 0 && user.id !== group.organizerId)) {
-        let err = new Error("Authorization Error")
+        let err = new Error("Forbidden");
         err.status = 403;
+        err.statusCode = 403;
         err.message = "Forbidden";
         return next(err);
     }
@@ -636,6 +685,68 @@ router.put('/:eventId/attendance', requireAuth, async (req, res, next) => {
     return res.json(result);
 });
 
+//DELETE delete membership to a group specified by id
+//  /api/groups/:groupId/membership
+//proper authorization: Current User must be the host of the group
+router.delete('/:eventId/attendance', requireAuth, async (req, res, next) => {
+    let eventId = +req.params.eventId;
+    const { userId } = req.body;
+    const { user } = req;
 
+    let event = await Event.findByPk(eventId);
+    if (!event) {
+        let err = new Error("Event couldn't be found",);
+        err.status = 404;
+        err.statusCode = 404;
+        err.message = "Event couldn't be found";
+        return next(err);
+    }
+
+    //check if current user is co-host of current group or organizer of group
+    let coHostStatus = await Membership.findAll({
+        where: {
+            groupId: event.groupId,
+            userId: user.id,
+            status: "co-host"
+        }
+    });
+    //find group, based on event object
+    let group = await Group.findByPk(event.groupId);
+
+    if (coHostStatus.length === 0 && group.organizerId !== user.id) {
+        let err = new Error("Forbidden");
+        err.status = 403;
+        err.statusCode = 403;
+        err.message = "Forbidden";
+        return next(err);
+    };
+
+    let attendenceCheck = await Attendance.findOne({
+        where: {
+            eventId,
+            userId
+        }
+    });
+    if (!attendenceCheck) {
+        let err = new Error("Attendance does not exist for this User");
+        err.status = 404;
+        err.statusCode = 404;
+        err.message = "Attendance does not exist for this User";
+        return next(err);
+    };
+
+    //delete membershipCheck
+    await Attendance.destroy({
+        where: {
+            eventId,
+            userId
+        }
+    });
+
+    return res.json({
+        "message": "Successfully deleted attendance from event"
+    });
+
+});
 
 module.exports = router;

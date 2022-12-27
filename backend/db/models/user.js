@@ -60,28 +60,23 @@ module.exports = (sequelize, DataTypes) => {
       //one to many User to Groups
       User.hasMany(models.Group, {
         foreignKey: 'organizerId',
+        as: "Organizer",
         onDelete: "CASCADE",
-        hooks: true,
-        as: "Organizer"
+        hooks: true
       });
 
       //many to many users and events
       User.belongsToMany(models.Event, {
         through: models.Attendance,
         foreignKey: "userId",
-        otherKey: "eventId",
-        onDelete: "CASCADE",
-        hooks: true
+        otherKey: "eventId"
       })
       // many to many, group to users
       User.belongsToMany(models.Group, {
         through: models.Membership,
         foreignKey: "userId",
-        otherKey: "groupId",
-        onDelete: "CASCADE",
-        hooks: true
+        otherKey: "groupId"
       });
-
     }
   }
   User.init({
