@@ -742,26 +742,31 @@ router.get('/:groupId/members', async (req, res, next) => {
         delete user.Membership.createdAt;
         delete user.Membership.updatedAt;
     })
-
+    let where = {
+        groupId,
+        status: 'co-host'
+    }
+    if (user) {
+        where.userId = user.id
+    }
     //check if current user is organizer of group or co-host member of group
     let membership = await Membership.findAll({
-        where: {
-            userId: user.id,
-            groupId: groupId,
-            status: 'co-host'
-        }
+        where
     });
     //case where user is not organizer or co-host member of group
-    if (user.id !== groupInfo.organizerId && membership.length === 0) {
-        for (let i = 0; i < users.length; i++) {
-            if (users[i].Membership.status === "pending") {
-                users.splice(i, 1);
-            }
+    if ((user && user.id === groupInfo.organizerId) || (user && membership.length !== 0)) {
+        let result = {
+            "Members": users
         }
-        return res.json({"Members": users});
+        return res.json(result);
     }
 
-    return res.json({"Members": users});
+    for (let i = 0; i < users.length; i++) {
+        if (users[i].Membership.status === "pending") {
+            users.splice(i, 1);
+        }
+    }
+    return res.json({ "Members": users });
 });
 
 //POST URL: /api/groups/:groupId/membership
@@ -843,6 +848,18 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next) => {
         return next(err);
     };
 
+    //find user
+    let userCheck = await User.findByPk(memberId);
+    if (!userCheck) {
+        let err = new Error("Validation Error");
+        err.status = 400;
+        err.message = "Validation Error"
+        err.errors = {
+            "memberId": "User couldn't be found"
+        }
+        return next(err);
+    }
+
     //get current status of user in the group
 
     let currentMember = await Membership.findOne({
@@ -909,9 +926,10 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next) => {
     }
 
     // authorization is not enough
-    let err = new Error("User does not have the correct authorization or status desired invalid");
-    err.status = 401;
-    err.message = "User does not have the correct authorization or status desired invalid."
+    let err = new Error("Forbidden");
+    err.status = 403;
+    err.statusCode = 403;
+    err.message = "Forbidden";
     return next(err);
 });
 

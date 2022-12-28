@@ -85,9 +85,9 @@ router.delete('/event-images/:imageId', requireAuth, async (req, res, next) => {
 
   let image = await EventImage.findByPk(imageId);
   if (!image) {
-    let err = new Error("Group Image couldn't be found")
+    let err = new Error("Event Image couldn't be found")
     err.status = 404;
-    err.message = "Group Image couldn't be found";
+    err.message = "Event Image couldn't be found";
     return next(err);
   }
 

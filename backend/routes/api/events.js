@@ -536,7 +536,6 @@ router.get('/:eventId/attendees', async (req, res, next) => {
         }
         return res.json(result);
     }
-    console.log('test')
     //remove pending, because user is not a co-host or an organizer of group
     for (let i = 0; i < attendees.length; i++) {
         if (attendees[i].Attendance.status === 'pending') {
@@ -549,7 +548,7 @@ router.get('/:eventId/attendees', async (req, res, next) => {
 });
 
 // POST /api/events/:eventId/attendance
-// Returns the attendees of an event specified by its id.
+// Request attendance for an event specified by id.
 router.post('/:eventId/attendance', requireAuth, async (req, res, next) => {
     let eventId = +req.params.eventId;
     const { user } = req;
@@ -713,7 +712,7 @@ router.delete('/:eventId/attendance', requireAuth, async (req, res, next) => {
         let err = new Error("Forbidden");
         err.status = 403;
         err.statusCode = 403;
-        err.message = "Forbidden";
+        err.message = "Only the User or organizer may delete an Attendance";
         return next(err);
     };
 
