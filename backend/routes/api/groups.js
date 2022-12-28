@@ -6,31 +6,37 @@ const { Group, User, Attendance, GroupImage, Venue, Membership, Event, EventImag
 const { requireAuth } = require('../../utils/auth');
 const { Op } = require('sequelize');
 const group = require('../../db/models/group');
+const { body } = require('express-validator');
 
 // /api/groups GET Returns all the groups
 router.get('/', async (req, res, next) => {
     console.log('test')
-    let groups = await Group.findAll();
+    let groups = await Group.findAll({
+        attributes: {
+            include: ['createdAt', 'updatedAt']
+        }
+    });
     const groupList = [];
     groups.forEach((group) => {
         groupList.push(group.toJSON())
     });
     //find attendees, WRONG FIND MEMBERS NOT ATTENDEES
-    const attendees = await Attendance.findAll();
-    let attendeeNumber = {};
-    attendees.forEach((attendee) => {
-        attendee = attendee.toJSON();
-        if (!attendeeNumber[attendee.eventId]) {
-            attendeeNumber[attendee.eventId] = 1;
+    const members = await Membership.findAll();
+    let memberNumber = {};
+    members.forEach((member) => {
+        member = member.toJSON();
+        if (!memberNumber[member.groupId]) {
+            memberNumber[member.groupId] = 1;
         }
         else {
-            attendeeNumber[attendee.eventId] += 1;
+            memberNumber[member.groupId] += 1;
         }
     });
 
     //find preview images
     const images = await GroupImage.findAll();
     let previewImages = {}
+
     images.forEach((image) => {
         image = image.toJSON();
         if (image.preview === true) {
@@ -40,9 +46,19 @@ router.get('/', async (req, res, next) => {
 
     //add preview images and urls to group output
     for (let i = 0; i < groupList.length; i++) {
-        groupList[i].url = previewImages[groupList[i].id];
-        groupList[i].numMembers = attendeeNumber[groupList[i].id];
+        groupList[i].numMembers = memberNumber[groupList[i].id];
+        groupList[i].previewImage = previewImages[groupList[i].id];
+    };
+    //add zero and null to preview images if nothing is found
+    for (let i = 0; i < groupList.length; i++) {
+        if (!groupList[i].numMembers) {
+            groupList[i].numMembers = 0;
+        }
+        if (!groupList[i].previewImage) {
+            groupList[i].previewImage = null;
+        }
     }
+
 
     let output = { "Groups": groupList }
     return res.json(output);
@@ -57,6 +73,9 @@ router.get('/current', requireAuth, async (req, res, next) => {
     let organized = await Group.findAll({
         where: {
             organizerId: user.id
+        },
+        attributes: {
+            include: ['createdAt', 'updatedAt']
         }
     });
     let joined = await User.findByPk(user.id, {
@@ -71,12 +90,45 @@ router.get('/current', requireAuth, async (req, res, next) => {
         groupList.push(group.toJSON());
     });
 
-    joined.Groups.forEach((group) => {
-        group = group.toJSON();
-        delete group.Membership;
-        let obj = groupList.find(groupList => groupList.id === group.id)
-        if (!obj) groupList.push(group);
+    //find members
+    const members = await Membership.findAll();
+    let memberNumber = {};
+    members.forEach((member) => {
+        member = member.toJSON();
+        if (!memberNumber[member.groupId]) {
+            memberNumber[member.groupId] = 1;
+        }
+        else {
+            memberNumber[member.groupId] += 1;
+        }
     });
+
+    //find preview images
+    const images = await GroupImage.findAll();
+    let previewImages = {}
+
+    images.forEach((image) => {
+        image = image.toJSON();
+        if (image.preview === true) {
+            previewImages[image.groupId] = image.url;
+        }
+    });
+
+    //add preview images and urls to group output
+    for (let i = 0; i < groupList.length; i++) {
+        groupList[i].numMembers = memberNumber[groupList[i].id];
+        groupList[i].previewImage = previewImages[groupList[i].id];
+    };
+
+    //add zero and null to preview images if nothing is found
+    for (let i = 0; i < groupList.length; i++) {
+        if (!groupList[i].numMembers) {
+            groupList[i].numMembers = 0;
+        }
+        if (!groupList[i].previewImage) {
+            groupList[i].previewImage = null;
+        }
+    }
 
     let result = {
         "Groups": groupList
@@ -88,13 +140,13 @@ router.get('/current', requireAuth, async (req, res, next) => {
 // /api/groups/:groupId GET 
 //Get details of a Group from an id
 router.get('/:groupId', async (req, res, next) => {
-    console.log(req.params.groupId)
+
 
     let group = await Group.findByPk(+req.params.groupId, {
         include: [{
             model: GroupImage,
             attributes: {
-                exclude: ['createdAt', 'updatedAt']
+                exclude: ['createdAt', 'updatedAt', 'groupId']
             }
         },
         {
@@ -109,9 +161,10 @@ router.get('/:groupId', async (req, res, next) => {
         return next(err);
     }
 
-    let organizer = await group.getOrganizer();
+    let organizer = await User.findByPk(group.organizerId);
+    organizer = organizer.toJSON()
     group = group.toJSON();
-    delete group.username;
+    delete organizer.username;
     group.Organizer = organizer;
 
     return res.json(group);
@@ -221,7 +274,11 @@ router.put('/:groupId', requireAuth, async (req, res, next) => {
     const { user } = req;
     const id = +req.params.groupId;
 
-    let group = await Group.findByPk(id);
+    let group = await Group.findByPk(id, {
+        attributes: {
+            include: ['createdAt', 'updatedAt']
+        }
+    });
 
     //error handling
     if (!group) {
@@ -243,37 +300,37 @@ router.put('/:groupId', requireAuth, async (req, res, next) => {
     err.status = 400;
     err.message = "Validation Error";
     if (name && name.length > 60) {
-        err.error = {
+        err.errors = {
             "name": "Name must be 60 characters or less"
         }
         return next(err);
     }
     else if (about && about.length < 50) {
-        err.error = {
+        err.errors = {
             "about": "About must be 50 characters or more"
         };
         return next(err);
     }
     else if (type !== 'Online' && type !== 'In person') {
-        err.error = {
+        err.errors = {
             "type": "Type must be 'Online' or 'In person'"
         };
         return next(err);
     }
     else if (private !== true && private !== false) {
-        err.error = {
+        err.errors = {
             "private": "Private must be a boolean"
         };
         return next(err);
     }
     else if (!city) {
-        err.error = {
+        err.errors = {
             "city": "City is required"
         };
         return next(err);
     }
     else if (!state) {
-        err.error = {
+        err.errors = {
             "state": "State is required"
         };
         return next(err);
@@ -302,10 +359,9 @@ router.delete('/:groupId', requireAuth, async (req, res, next) => {
     let groups = await Group.findByPk(groupId);
 
     if (!groups) {
-        let err = new Error("Forbidden");
-        err.status = 403;
-        err.statusCode = 403;
-        err.message = "Forbidden";
+        let err = new Error("Group couldn't be found");
+        err.status = 404;
+        err.message = "Group couldn't be found"
         return next(err);
 
     };
@@ -342,6 +398,12 @@ router.get('/:groupId/venues', requireAuth, async (req, res, next) => {
     });
     //error handling for group
     //check if the user was a member with status of co-host
+    if (!group) {
+        let err = new Error("Group couldn't be found");
+        err.status = 404;
+        err.message = "Group couldn't be found"
+        return next(err);
+    }
     const userStatus = await Membership.findAll({
         where: {
             groupId,
@@ -349,13 +411,7 @@ router.get('/:groupId/venues', requireAuth, async (req, res, next) => {
             status: "co-host"
         }
     })
-    if (!group) {
-        let err = new Error("Group couldn't be found");
-        err.status = 404;
-        err.message = "Group couldn't be found"
-        return next(err);
-    }
-    else if ((group.organizerId !== user.id && userStatus.length === 0)) {
+    if ((group.organizerId !== user.id && userStatus.length === 0)) {
         let err = new Error("Forbidden");
         err.status = 403;
         err.statusCode = 403;
@@ -413,40 +469,35 @@ router.post('/:groupId/venues', requireAuth, async (req, res, next) => {
     };
 
     //handles body errors 
+    let check = false;
     let bodyErr = new Error("Validation error")
+    bodyErr.errors = {};
     if (!address) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "address": "Street address is required"
-        }
-        return next(bodyErr);
+        bodyErr.errors.address =  "Street address is required";
+        check = true;
     }
-    else if (!city) {
+    if (!city) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "city": "City is required"
-        }
-        return next(bodyErr);
+        bodyErr.errors.city =  "City is required";
+        check = true;
     }
-    else if (!state) {
+    if (!state) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "state": "State is required"
-        }
-        return next(bodyErr);
+        bodyErr.errors.state =  "State is required";
+        check = true;
     }
-    else if (!lat || lng === true || lng === false || !+lat || lat > 90 || lat < -90) {
+    if (!lat || typeof lat === 'string' || lng === true || lng === false || !+lat || lat > 90 || lat < -90) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "lat": "Latitude is not valid"
-        }
-        return next(bodyErr);
+        bodyErr.errors.lat =  "Latitude is not valid";
+        check = true;
     }
-    else if (!lng || lng === true || lng === false || !+lng || lng > 180 || lng < -180) {
+    if (!lng || typeof lng === 'string' || lng === true || lng === false || !+lng || lng > 180 || lng < -180) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "lng": "Longitude is not valid"
-        }
+        bodyErr.errors.lng =  "Longitude is not valid"
+        check = true;
+    }
+    if (check) {
         return next(bodyErr);
     }
 
@@ -579,47 +630,37 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
     }
     //handles body errors and validation error 
     let bodyErr = new Error("Validation error")
+    bodyErr.errors = {};
+    let check = false; 
     if (!venue) {
-        bodyErr.status = 400;
-        bodyErr.errors = {
-            "address": "Venue does not exist"
-        }
-        return next(bodyErr);
+        bodyErr.statusCode = 400;
+        bodyErr.errors.address = "Venue does not exist";
+        check = true; 
     }
-    else if (name.length < 5) {
-        bodyErr.status = 400;
-        bodyErr.errors = {
-            "name": "Name must be at least 5 characters"
-        }
-        return next(bodyErr);
+    if (name.length < 5) {
+        bodyErr.statusCode = 400;
+        bodyErr.errors.name = "Name must be at least 5 characters";
+        check = true;
     }
-    else if (type !== "Online" && type !== "In person") {
-        bodyErr.status = 400;
-        bodyErr.errors = {
-            "type": "Type must be Online or In person"
-        }
-        return next(bodyErr);
+    if (type !== "Online" && type !== "In person") {
+        bodyErr.statusCode = 400;
+        bodyErr.errors.type ="Type must be Online or In person";
+        check = true;
     }
-    else if (!+capacity || (+capacity && !Number.isInteger(+capacity))) {
-        bodyErr.status = 400;
-        bodyErr.errors = {
-            "capacity": "Capacity must be an integer"
-        }
-        return next(bodyErr);
+    if (!+capacity || (+capacity && !Number.isInteger(+capacity))) {
+        bodyErr.statusCode = 400;
+        bodyErr.errors.capacity = "Capacity must be an integer";
+        check = true;
     }
-    else if (!+price) {
-        bodyErr.status = 400;
-        bodyErr.errors = {
-            "price": "Price is invalid"
-        }
-        return next(bodyErr);
+    if (!+price || typeof price !== 'number') {
+        bodyErr.statusCode = 400;
+        bodyErr.errors.price ="Price is invalid";
+        check = true;
     }
-    else if (!description) {
-        bodyErr.status = 400;
-        bodyErr.errors = {
-            "description": "Description is required"
-        }
-        return next(bodyErr);
+    if (!description) {
+        bodyErr.statusCode = 400;
+        bodyErr.errors.description = "Description is required";
+        check = true;
     }
     //add startDate and endDate comparisons
     let currentDate = new Date();
@@ -631,17 +672,16 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
     endDates = endDates.getTime();
 
     if (currentDate > startDates) {
-        bodyErr.status = 400;
-        bodyErr.errors = {
-            "startDate": "Start date must be in the future"
-        }
-        return next(bodyErr);
+        bodyErr.statusCode = 400;
+        bodyErr.errors.startDate = "Start date must be in the future";
+        check = true;
     }
-    else if (endDates < startDates) {
-        bodyErr.status = 400;
-        bodyErr.errors = {
-            "endDate": "End date is less than start date"
-        }
+    if (endDates < startDates) {
+        bodyErr.statusCode = 400;
+        bodyErr.errors.endDate = "End date is less than start date";
+        check = true;
+    }
+    if(check){
         return next(bodyErr);
     }
 
@@ -658,7 +698,10 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
         endDate
     });
 
-    return res.json(newEvent);
+    let result = newEvent.toJSON();
+    delete result.createdAt;
+    delete result.updatedAt;
+    return res.json(result);
 });
 
 //GET, /api/groups/:groupId/members
@@ -780,6 +823,7 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next) => {
     const groupId = +req.params.groupId;
     const { user } = req;
     const { memberId, status } = req.body;
+
     //check if membership status to change to is pending
     if (status === 'pending') {
         let err = new Error("Validations Error");

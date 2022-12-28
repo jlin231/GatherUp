@@ -44,6 +44,15 @@ module.exports = {
         private: false,
         city: "New York City",
         state: "New York"
+      },
+      {
+        organizerId: getId(users, 1),
+        name: "Baskbetball Fans",
+        about: "A group for Baskbetball fans to enjoy baskbetball and play together.",
+        type: "In Person",
+        private: false,
+        city: "Buffalo",
+        state: "New York"
       }
     ]
 

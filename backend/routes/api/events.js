@@ -191,6 +191,9 @@ router.get('/', async (req, res, next) => {
         if (!attendeeNumber[eventList[i].id]) {
             eventList[i].numAttending = 0;
         }
+        if (!previewImages[eventList[i].id]) {
+            eventList[i].previewImage = null;
+        }
     }
 
     let result = {
@@ -282,7 +285,7 @@ router.post('/:eventId/images', requireAuth, async (req, res, next) => {
         where: {
             eventId,
             userId: user.id,
-            status: 'member'
+            status: 'attending'
         }
     });
     //find membership, and co-host status of group
@@ -310,6 +313,7 @@ router.post('/:eventId/images', requireAuth, async (req, res, next) => {
 
     //process result 
     newImage = newImage.toJSON();
+    delete newImage.eventId;
     delete newImage.createdAt;
     delete newImage.updatedAt;
     return res.json(newImage);
@@ -361,48 +365,39 @@ router.put('/:eventId', requireAuth, async (req, res, next) => {
 
     //handles body errors and validation error 
     let bodyErr = new Error("Validation error")
+    bodyErr.errors = {};
+    let check = false;
     if (!venue) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "address": "Venue does not exist"
-        }
-        return next(bodyErr);
+        bodyErr.errors.address = "Venue does not exist"
+        check = true;
     }
-    else if (name.length < 5) {
+    if (name.length < 5) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "name": "Name must be at least 5 characters"
-        }
-        return next(bodyErr);
+        bodyErr.errors.name = "Name must be at least 5 characters";
+        check = true
     }
-    else if (type !== "Online" && type !== "In person") {
+    if (type !== "Online" && type !== "In person") {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "type": "Type must be Online or In person"
-        }
-        return next(bodyErr);
+        bodyErr.errors.type = "Type must be Online or In person"
+        check = true
     }
-    else if (!+capacity || (+capacity && !Number.isInteger(+capacity))) {
+    if (!+capacity || (+capacity && !Number.isInteger(+capacity))) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "capacity": "Capacity must be an integer"
-        }
-        return next(bodyErr);
+        bodyErr.errors.capacity = "Capacity must be an integer"
+        check = true
     }
-    else if (!+price) {
+    if (!+price) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "price": "Price is invalid"
-        }
-        return next(bodyErr);
+        bodyErr.errors.price = "Price is invalid"
+        check = true
     }
-    else if (!description) {
+    if (!description) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "description": "Description is required"
-        }
-        return next(bodyErr);
+        bodyErr.errors.description = "Description is required"
+        check = true
     }
+
     //add startDate and endDate comparisons
     let currentDate = new Date();
     currentDate = currentDate.getTime();
@@ -414,16 +409,15 @@ router.put('/:eventId', requireAuth, async (req, res, next) => {
 
     if (currentDate > startDates) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "startDate": "Start date must be in the future"
-        }
-        return next(bodyErr);
+        bodyErr.errors.startDate = "Start date must be in the future"
+        check = true;
     }
     else if (endDates < startDates) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "endDate": "End date is less than start date"
-        }
+        bodyErr.errors.endDate = "End date is less than start date"
+        check = true;
+    }
+    if (check) {
         return next(bodyErr);
     }
 
@@ -514,12 +508,16 @@ router.get('/:eventId/attendees', async (req, res, next) => {
     //find group associated with event to find organizer
     let group = await Group.findByPk(event.groupId);
 
+    let where = {
+        groupId: event.groupId,
+        status: 'co-host'
+    }
+    if (user) {
+        where.userId = user.id
+    }
+
     let userMembership = await Membership.findOne({
-        where: {
-            userId: user.id,
-            groupId: event.groupId,
-            status: 'co-host'
-        }
+        where
     });
     let attendees = []
     event.Users.forEach((user) => {
@@ -532,7 +530,7 @@ router.get('/:eventId/attendees', async (req, res, next) => {
         attendees.push(user);
     })
     // return all attendees if user is a co-host member or an organizer of group
-    if (userMembership || user.id === group.organizerId) {
+    if ((user && userMembership) || (user && user.id === group.organizerId)) {
         let result = {
             Attendees: attendees
         }
@@ -571,9 +569,7 @@ router.post('/:eventId/attendance', requireAuth, async (req, res, next) => {
             userId: user.id
         }
     });
-    console.log("groupId: ", event.groupId);
-    console.log("currentUser: ", user.id)
-    console.log(memberShip)
+    
     //user is not member of the event group
     if (memberShip.length === 0) {
         let err = new Error("Forbidden");

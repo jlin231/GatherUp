@@ -42,41 +42,35 @@ router.put('/:venueId', requireAuth, async (req, res, next) => {
         return next(err);
     }
 
-    //handles body errors 
+    let check = false;
     let bodyErr = new Error("Validation error")
+    bodyErr.errors = {};
     if (!address) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "address": "Street address is required"
-        }
-        return next(bodyErr);
+        bodyErr.errors.address =  "Street address is required";
+        check = true;
     }
-    else if (!city) {
+    if (!city) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "city": "City is required"
-        }
-        return next(bodyErr);
+        bodyErr.errors.city =  "City is required";
+        check = true;
     }
-    else if (!state) {
+    if (!state) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "state": "State is required"
-        }
-        return next(bodyErr);
+        bodyErr.errors.state =  "State is required";
+        check = true;
     }
-    else if (!lat || lng === true || lng === false || !+lat || lat > 90 || lat < -90) {
+    if (!lat || typeof lat === 'string' || lng === true || lng === false || !+lat || lat > 90 || lat < -90) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "lat": "Latitude is not valid"
-        }
-        return next(bodyErr);
+        bodyErr.errors.lat =  "Latitude is not valid";
+        check = true;
     }
-    else if (!lng || lng === true || lng === false || !+lng || lng > 180 || lng < -180) {
+    if (!lng || typeof lng === 'string' || lng === true || lng === false || !+lng || lng > 180 || lng < -180) {
         bodyErr.status = 400;
-        bodyErr.errors = {
-            "lng": "Longitude is not valid"
-        }
+        bodyErr.errors.lng =  "Longitude is not valid"
+        check = true;
+    }
+    if (check) {
         return next(bodyErr);
     }
 
