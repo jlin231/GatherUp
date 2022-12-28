@@ -387,7 +387,7 @@ router.put('/:eventId', requireAuth, async (req, res, next) => {
         bodyErr.errors.capacity = "Capacity must be an integer"
         check = true
     }
-    if (!+price) {
+    if (!+price || typeof price !== "number") {
         bodyErr.status = 400;
         bodyErr.errors.price = "Price is invalid"
         check = true
@@ -569,7 +569,7 @@ router.post('/:eventId/attendance', requireAuth, async (req, res, next) => {
             userId: user.id
         }
     });
-    
+
     //user is not member of the event group
     if (memberShip.length === 0) {
         let err = new Error("Forbidden");

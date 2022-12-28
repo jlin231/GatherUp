@@ -140,8 +140,6 @@ router.get('/current', requireAuth, async (req, res, next) => {
 // /api/groups/:groupId GET 
 //Get details of a Group from an id
 router.get('/:groupId', async (req, res, next) => {
-
-
     let group = await Group.findByPk(+req.params.groupId, {
         include: [{
             model: GroupImage,
@@ -263,6 +261,7 @@ router.post('/:groupId/images', requireAuth, async (req, res, next) => {
     image = image.toJSON();
     delete image.createdAt;
     delete image.updatedAt;
+    delete image.groupId;
 
     return res.json(image);
 });
@@ -460,7 +459,7 @@ router.post('/:groupId/venues', requireAuth, async (req, res, next) => {
         err.message = "Group couldn't be found"
         return next(err);
     }
-    if ((group.organizerId !== user.id && userStatus.length === 0)) {
+    if (group.organizerId !== user.id && userStatus.length === 0) {
         let err = new Error("Forbidden");
         err.status = 403;
         err.statusCode = 403;
@@ -474,27 +473,27 @@ router.post('/:groupId/venues', requireAuth, async (req, res, next) => {
     bodyErr.errors = {};
     if (!address) {
         bodyErr.status = 400;
-        bodyErr.errors.address =  "Street address is required";
+        bodyErr.errors.address = "Street address is required";
         check = true;
     }
     if (!city) {
         bodyErr.status = 400;
-        bodyErr.errors.city =  "City is required";
+        bodyErr.errors.city = "City is required";
         check = true;
     }
     if (!state) {
         bodyErr.status = 400;
-        bodyErr.errors.state =  "State is required";
+        bodyErr.errors.state = "State is required";
         check = true;
     }
     if (!lat || typeof lat === 'string' || lng === true || lng === false || !+lat || lat > 90 || lat < -90) {
         bodyErr.status = 400;
-        bodyErr.errors.lat =  "Latitude is not valid";
+        bodyErr.errors.lat = "Latitude is not valid";
         check = true;
     }
     if (!lng || typeof lng === 'string' || lng === true || lng === false || !+lng || lng > 180 || lng < -180) {
         bodyErr.status = 400;
-        bodyErr.errors.lng =  "Longitude is not valid"
+        bodyErr.errors.lng = "Longitude is not valid"
         check = true;
     }
     if (check) {
@@ -631,11 +630,11 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
     //handles body errors and validation error 
     let bodyErr = new Error("Validation error")
     bodyErr.errors = {};
-    let check = false; 
+    let check = false;
     if (!venue) {
         bodyErr.statusCode = 400;
         bodyErr.errors.address = "Venue does not exist";
-        check = true; 
+        check = true;
     }
     if (name.length < 5) {
         bodyErr.statusCode = 400;
@@ -644,7 +643,7 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
     }
     if (type !== "Online" && type !== "In person") {
         bodyErr.statusCode = 400;
-        bodyErr.errors.type ="Type must be Online or In person";
+        bodyErr.errors.type = "Type must be Online or In person";
         check = true;
     }
     if (!+capacity || (+capacity && !Number.isInteger(+capacity))) {
@@ -654,7 +653,7 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
     }
     if (!+price || typeof price !== 'number') {
         bodyErr.statusCode = 400;
-        bodyErr.errors.price ="Price is invalid";
+        bodyErr.errors.price = "Price is invalid";
         check = true;
     }
     if (!description) {
@@ -681,7 +680,7 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
         bodyErr.errors.endDate = "End date is less than start date";
         check = true;
     }
-    if(check){
+    if (check) {
         return next(bodyErr);
     }
 
@@ -759,10 +758,10 @@ router.get('/:groupId/members', async (req, res, next) => {
                 users.splice(i, 1);
             }
         }
-        return res.json(users);
+        return res.json({"Members": users});
     }
 
-    return res.json(users);
+    return res.json({"Members": users});
 });
 
 //POST URL: /api/groups/:groupId/membership

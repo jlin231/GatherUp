@@ -34,9 +34,7 @@ module.exports = (sequelize, DataTypes) => {
           }
         }
       });
-      console.log(user, "IN LOGIN");
-      console.log(user.validatePassword(password))
-      console.log(user.hashedPassword);
+
       if (user && user.validatePassword(password)) {
         return await User.scope('currentUser').findByPk(user.id);
       }
