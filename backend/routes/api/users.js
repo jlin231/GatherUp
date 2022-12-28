@@ -13,7 +13,7 @@ const validateSignup = [
   check('email')
     .exists({ checkFalsy: true })
     .isEmail()
-    .withMessage('Please provide a valid email.'),
+    .withMessage('Invalid email.'),
   check('username')
     .exists({ checkFalsy: true })
     .isLength({ min: 4 })
@@ -71,17 +71,21 @@ router.post('/', validateSignup, async (req, res, next) => {
     const err = new Error("User already exists");
     err.message = "User already exists";
     err.status = 403;
-    err.errors = [
-      "User with that email already exists"
-    ];
+    err.errors = {
+      email: "User with that email already exists"
+    };
     return next(err);
   };
 
   const user = await User.signup({ firstName, lastName, email, username, password });
   await setTokenCookie(res, user);
-
+  let userResult = user.toJSON();
+  userResult.token = "";
+  delete userResult.createdAt;
+  delete userResult.updatedAt;
+  delete userResult.username; 
   return res.json({
-    user
+    user: userResult
   });
 });
 

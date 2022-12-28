@@ -38,10 +38,11 @@ router.post('/', async (req, res, next) => {
   }
 
   await setTokenCookie(res, user);
-  console.log(user)
+  let userResult = user.toJSON();
+  delete userResult.createdAt;
+  delete userResult.updatedAt;
   return res.json({
-    user: user,
-    token: ''
+    user: userResult
   });
 });
 
