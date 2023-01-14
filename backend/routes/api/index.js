@@ -125,11 +125,10 @@ router.delete('/event-images/:imageId', requireAuth, async (req, res, next) => {
 });
 
 
-//test for requireAuth
-router.get('/test', requireAuth, (req, res) => {
-  res.json({ message: "success" });
-});
-
+// //test for requireAuth
+// router.post('/test',  (req, res) => {
+//   res.json({ message: "success" });
+// });
 
 
 // // GET /api/set-token-cookie
