@@ -1,7 +1,13 @@
 .navBar {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
+    list-style: none;
+    padding-inline-start: 5px;
+}
+
+.meetupIcon {
+    height: 30px;
 }
 
 .hidden {
