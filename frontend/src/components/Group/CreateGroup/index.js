@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import './CreateGroup.css';
 import { thunkCreateGroup } from '../../../store/group';
@@ -19,24 +18,25 @@ function CreateGroupComponent() {
     const [previewImage, setPreviewImage] = useState("");
     const [errors, setErrors] = useState([]);
 
-    
     function handleSubmit(e) {
         e.preventDefault();
+        setErrors([]);
         const info = {
             name,
             type,
             about,
             city,
-            private: privacy,
+            private: Boolean(privacy),
             state,
             previewImage
         }
-        console.log('info Before', info)
-        return dispatch(thunkCreateGroup(info)).catch(
-            async (res) => {
-                const data = await res.json();
-                if (data && data.errors) setErrors(data.errors);
+        return dispatch(thunkCreateGroup(info)).catch(async (res) => {
+            let data = await res.json();
+            if (data && data.errors) {
+                const values = Object.values(data.errors);
+                setErrors(values);
             }
+        }
         );
 
 
@@ -72,22 +72,23 @@ function CreateGroupComponent() {
             <label>
                 Type
                 <select
-                    type="text"
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                     required
                 >
+                    <option value="" ></option>
                     <option value="In person">In person</option>
                     <option value="Online">Online</option>
                 </select>
             </label>
             <label>
-                Type
+                Private
                 <select
                     value={privacy}
                     onChange={(e) => setPrivacy(e.target.value)}
                     required
                 >
+                    <option value=""></option>
                     <option value={true}>True</option>
                     <option value={false}>False</option>
                 </select>
@@ -111,9 +112,9 @@ function CreateGroupComponent() {
                 />
             </label>
             <label>
-                State
+                Image
                 <input
-                    type="file"
+                    type="text"
                     value={previewImage}
                     onChange={(e) => setPreviewImage(e.target.value)}
                     required
