@@ -5,7 +5,7 @@ import * as sessionActions from "./store/session";
 import Navigation from "./components/Navigation";
 import { thunkLoadGroups } from "./store/group";
 import { thunkLoadEvents } from "./store/event";
-
+import CreateGroupComponent from './components/Group/CreateGroup'
 
 function App() {
   const dispatch = useDispatch();
@@ -26,7 +26,7 @@ function App() {
       {isLoaded && (
         <Switch>
           <Route path='/group/create'>
-            
+            <CreateGroupComponent/>
           </Route>
         </Switch>
       )}

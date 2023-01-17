@@ -1,4 +1,5 @@
 const LOAD_GROUP = 'group/load';
+const CREATE_GROUP = 'group/create';
 
 const actionLoadGroup = (groups) => {
     return {
@@ -7,6 +8,12 @@ const actionLoadGroup = (groups) => {
     };
 };
 
+const actionCreateGroup = (info) => {
+    return {
+        type: CREATE_GROUP,
+        info
+    };
+};
 
 export const thunkLoadGroups = () => async dispatch => {
     const response = await fetch('/api/groups', {
@@ -23,6 +30,20 @@ export const thunkLoadGroups = () => async dispatch => {
     return normalizeData;
 };
 
+export const thunkCreateGroup = (info) => async dispatch => {
+    console.log('info', info)
+    const response = await fetch('/api/groups', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(info)
+    });
+    let data = await response.json();
+    console.log(data);
+    //normalize data
+    dispatch(actionCreateGroup(data));
+    return data; 
+};
+
 const initialState = {};
 
 const groupReducer = (state = initialState, action) => {
@@ -32,6 +53,12 @@ const groupReducer = (state = initialState, action) => {
             newState = Object.assign({}, state);
             newState.allGroups = action.groups;
             return newState;
+        case CREATE_GROUP: {
+            newState = Object.assign({}, state);
+            newState.allGroups[action.info.id] = action.info
+            console.log(newState); 
+            return newState;
+        }
         default:
             return state;
     }
