@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Switch } from "react-router-dom";
+import { Switch, Route } from "react-router-dom";
 import * as sessionActions from "./store/session";
 import Navigation from "./components/Navigation";
+import { thunkLoadGroups } from "./store/group";
+import { thunkLoadEvents } from "./store/event";
+import CreateGroupComponent from './components/Group/CreateGroup'
 
 function App() {
   const dispatch = useDispatch();
@@ -11,11 +14,20 @@ function App() {
     dispatch(sessionActions.restoreUser()).then(() => setIsLoaded(true));
   }, [dispatch]);
 
+  //load groups, events
+  useEffect(()=>{
+    dispatch(thunkLoadGroups()); 
+    dispatch(thunkLoadEvents());
+  }, [dispatch])
+
   return (
     <>
       <Navigation isLoaded={isLoaded} />
       {isLoaded && (
         <Switch>
+          <Route path='/group/create'>
+            <CreateGroupComponent/>
+          </Route>
         </Switch>
       )}
     </>
