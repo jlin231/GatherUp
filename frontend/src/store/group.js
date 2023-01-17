@@ -17,6 +17,7 @@ const actionCreateGroup = (info) => {
     };
 };
 
+
 export const thunkLoadGroups = () => async dispatch => {
     const response = await fetch('/api/groups', {
         method: "GET",
@@ -27,7 +28,7 @@ export const thunkLoadGroups = () => async dispatch => {
     let normalizeData = {};
     data.Groups.forEach((group) => {
         normalizeData[group.id] = group;
-    })
+    });
     dispatch(actionLoadGroup(normalizeData));
     return normalizeData;
 };
@@ -38,7 +39,6 @@ export const thunkCreateGroup = (info) => async dispatch => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(info)
     });
-    console.log('info', info);
     let data;
     data = await response.json();
     if (data.id) {

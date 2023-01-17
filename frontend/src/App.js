@@ -6,19 +6,16 @@ import Navigation from "./components/Navigation";
 import { thunkLoadGroups } from "./store/group";
 import { thunkLoadEvents } from "./store/event";
 import CreateGroupComponent from './components/Group/CreateGroup'
+import ShowAllGroupsComponent from "./components/Group/ShowAllGroups";
 
 function App() {
   const dispatch = useDispatch();
   const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
     dispatch(sessionActions.restoreUser()).then(() => setIsLoaded(true));
-  }, [dispatch]);
-
-  //load groups, events
-  useEffect(()=>{
-    dispatch(thunkLoadGroups()); 
+    dispatch(thunkLoadGroups());
     dispatch(thunkLoadEvents());
-  }, [dispatch])
+  }, [dispatch]);
 
   return (
     <>
@@ -26,7 +23,10 @@ function App() {
       {isLoaded && (
         <Switch>
           <Route path='/group/create'>
-            <CreateGroupComponent/>
+            <CreateGroupComponent />
+          </Route>
+          <Route exact path='/group/showAll'>
+            <ShowAllGroupsComponent />
           </Route>
         </Switch>
       )}
