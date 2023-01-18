@@ -2,11 +2,27 @@ import { csrfFetch } from "./csrf";
 
 const LOAD_GROUP = 'group/load';
 const CREATE_GROUP = 'group/create';
+const LOAD_GROUP_DETAILS = 'group/details';
+const EDIT_GROUP = "group/edit";
 
 const actionLoadGroup = (groups) => {
     return {
         type: LOAD_GROUP,
         groups
+    };
+};
+
+const actionEditGroup = (info) => {
+    return {
+        type: EDIT_GROUP,
+        info
+    };
+};
+
+const actionLoadGroupDetails = (group) => {
+    return {
+        type: LOAD_GROUP_DETAILS,
+        group: group
     };
 };
 
@@ -17,6 +33,19 @@ const actionCreateGroup = (info) => {
     };
 };
 
+export const thunkEditGroup = (info, groupId) => async dispatch => {
+    console.log('edit')
+    const response = await csrfFetch(`/api/groups/${groupId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(info)
+    });
+    let data = await response.json();
+    console.log('response obtained', data)
+    //normalize data
+    dispatch(actionEditGroup(data));
+    return response;
+};
 
 export const thunkLoadGroups = () => async dispatch => {
     const response = await fetch('/api/groups', {
@@ -55,6 +84,18 @@ export const thunkCreateGroup = (info) => async dispatch => {
     return data;
 };
 
+export const thunkLoadGroupDetails = (id) => async (dispatch, getState) => {
+    const response = await fetch(`/api/groups/${id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+    if (response.ok) {
+        const data = await response.json();
+        dispatch(actionLoadGroupDetails(data));
+        return data;
+    }
+}
+
 const initialState = {};
 
 const groupReducer = (state = initialState, action) => {
@@ -67,6 +108,27 @@ const groupReducer = (state = initialState, action) => {
         case CREATE_GROUP: {
             newState = Object.assign({}, state);
             newState.allGroups[action.info.id] = action.info;
+            return newState;
+        }
+        case LOAD_GROUP_DETAILS: {
+            newState = Object.assign({}, state);
+            newState.singleGroup = action.group;
+            return newState;
+        }
+        case EDIT_GROUP: {
+            //load new group with thunk, update allGroups
+            newState = Object.assign({}, state);
+            newState.allGroups[action.info.id] = {
+                ...newState.allGroups[action.info.id],
+                name: action.info.name,
+                about: action.info.about,
+                type: action.info.type,
+                private: action.info.private,
+                city: action.info.city,
+                state: action.info.state,
+                createdAt: action.info.createdAt,
+                updatedAt: action.info.updatedAt
+            }
             return newState;
         }
         default:

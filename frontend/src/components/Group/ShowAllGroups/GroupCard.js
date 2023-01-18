@@ -27,7 +27,6 @@ function GroupCardComponent({ group }) {
             </div>
         </div>
     );
-
 }
 
 export default GroupCardComponent;

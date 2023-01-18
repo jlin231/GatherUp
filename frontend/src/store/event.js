@@ -1,9 +1,17 @@
 const LOAD_EVENTS = 'event/load';
+const LOAD_EVENT_DETAILS = 'event/load/details'; 
 
 const actionLoadEvents = (events) => {
     return {
         type: LOAD_EVENTS,
         events
+    };
+};
+
+const actionLoadEventDetails = (event) => {
+    return {
+        type: LOAD_EVENT_DETAILS,
+        event
     };
 };
 
@@ -22,6 +30,18 @@ export const thunkLoadEvents = () => async dispatch => {
     return normalizeData;
 };
 
+export const thunkLoadEventDetails = (id) => async (dispatch, getState) => {
+    const response = await fetch(`/api/groups/${id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    })
+    if (response.ok) {
+        const data = await response.json();
+        dispatch(actionLoadEventDetails(data));
+        return data;
+    }
+}
+
 const initialState = {};
 
 const eventReducer = (state = initialState, action) => {
@@ -30,6 +50,10 @@ const eventReducer = (state = initialState, action) => {
         case LOAD_EVENTS:
             newState = Object.assign({}, state);
             newState.allEvents = action.events;
+            return newState;
+        case LOAD_EVENT_DETAILS:
+            newState = Object.assign({}, state);
+            newState.singleEvent = action.event;
             return newState;
         default:
             return state;

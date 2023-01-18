@@ -6,7 +6,9 @@ import Navigation from "./components/Navigation";
 import { thunkLoadGroups } from "./store/group";
 import { thunkLoadEvents } from "./store/event";
 import CreateGroupComponent from './components/Group/CreateGroup'
-import ShowAllGroupsComponent from "./components/Group/ShowAllGroups";
+import GroupDetailsComponent from "./components/Group/GroupDetails";
+import HomePageComponent from "./components/Home";
+import EditGroupComponent from "./components/Group/EditGroup"
 
 function App() {
   const dispatch = useDispatch();
@@ -22,12 +24,22 @@ function App() {
       <Navigation isLoaded={isLoaded} />
       {isLoaded && (
         <Switch>
-          <Route path='/group/create'>
+          <Route exact path='/group/create'>
             <CreateGroupComponent />
           </Route>
-          <Route exact path='/group/showAll'>
-            <ShowAllGroupsComponent />
+          <Route exact path='/home/:homeCategory'>
+            <HomePageComponent />
           </Route>
+          <Route exact path='/group/:groupId/edit'>
+            <EditGroupComponent />
+          </Route>
+          <Route exact path='/group/:groupId/:groupInfo'>
+            <GroupDetailsComponent />
+          </Route>
+          <Route exact path='/event/:eventId'>
+            <CreateGroupComponent />
+          </Route>
+
         </Switch>
       )}
     </>

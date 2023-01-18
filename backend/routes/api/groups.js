@@ -158,13 +158,24 @@ router.get('/:groupId', async (req, res, next) => {
         err.message = "Group couldn't be found";
         return next(err);
     }
+    //find members
+    const members = await Membership.findAll();
+    let memberNumber = 0;
+    members.forEach((member) => {
+        member = member.toJSON();
+        if (member.groupId === group.id) {
+            memberNumber++;
+        }
+    });
+
 
     let organizer = await User.findByPk(group.organizerId);
     organizer = organizer.toJSON()
+
     group = group.toJSON();
     delete organizer.username;
     group.Organizer = organizer;
-
+    group.numMembers = memberNumber;
     return res.json(group);
 });
 

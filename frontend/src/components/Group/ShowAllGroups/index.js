@@ -6,7 +6,6 @@ import GroupCardComponent from './GroupCard';
 import './ShowAllGroups.css';
 
 function ShowAllGroupsComponent() {
-    const dispatch = useDispatch();
 
     //get info from all group states
 
