@@ -39,8 +39,7 @@ function CreateGroupComponent() {
         }
         );
 
-
-        //add a redirect to home, or to place to read new group
+        //add a redirect or to place to read new group
     };
 
     return (
