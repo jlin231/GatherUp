@@ -42,7 +42,6 @@ function GroupDetailsComponent() {
         component = <GroupAboutComponent group={singleGroup} />;
     }
     else if (groupInfo === 'events') {
-        console.log('events');
         component = <GroupEventComponent group={singleGroup} />;
     }
     else if (groupInfo === 'members') {
@@ -55,6 +54,10 @@ function GroupDetailsComponent() {
     function edit(singleGroup) {
         history.push(`/group/${singleGroup.id}/edit`);
     };
+
+    function createEventRedirect(singleGroup) {
+        history.push(`/group/${singleGroup.id}/event/create`);
+    }
 
     //check if current user is organizer of group
     let organizer;
@@ -91,13 +94,16 @@ function GroupDetailsComponent() {
                         Share: <i className="fa-brands fa-square-facebook icon"></i>  <i className="fa-brands fa-twitter icon"></i>  <i className="fa-brands fa-linkedin icon"></i>  <i className="fa-solid fa-envelope icon"></i>
                     </div>
                 </div>
-                {organizer ? <button onClick={() => edit(singleGroup)}>Edit</button> : null}
+
+
             </div>
             <div className="navigation">
                 <NavLink exact to={`/group/${groupId}/about`}>About</NavLink>
                 <NavLink exact to={`/group/${groupId}/events`}>Events</NavLink>
                 <NavLink exact to={`/group/${groupId}/members`}>Members</NavLink>
                 <NavLink exact to={`/group/${groupId}/photos`}>Photos</NavLink>
+                {organizer ? <button onClick={() => edit(singleGroup)}>Edit</button> : null}
+                {organizer ? <button onClick={() => createEventRedirect(singleGroup)}>Create Event</button> : null}
             </div>
             <div>
                 {component}

@@ -3,14 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import './EventDetails.css';
-import { thunkLoadEvents, thunkLoadEventDetails } from '../../../store/event';
+import { thunkLoadEventDetails } from '../../../store/event';
 import { thunkLoadGroupDetails } from '../../../store/group';
 
-function getDateString(startDate){
-    const weekday = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+function getDateString(startDate) {
+    const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     const months = ["January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+        "July", "August", "September", "October", "November", "December"
+    ];
     const date = new Date(startDate);
     const month = date.getMonth();
     const day = date.getDay();

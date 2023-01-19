@@ -3,10 +3,18 @@ import { csrfFetch } from "./csrf";
 const LOAD_EVENTS = 'event/load';
 const LOAD_EVENT_DETAILS = 'event/load/details';
 const CREATE_EVENT = 'event/create'
+const LOAD_GROUP_EVENTS = 'event/group/load'
 
 const actionLoadEvents = (events) => {
     return {
         type: LOAD_EVENTS,
+        events
+    };
+};
+
+const actionLoadGroupEvents = (events) => {
+    return {
+        type: LOAD_GROUP_EVENTS,
         events
     };
 };
@@ -51,6 +59,17 @@ export const thunkCreateEvent = (info, groupId) => async dispatch => {
     dispatch(actionCreateEvent(data));
     return data;
 };
+//get all events associated with groupId
+export const thunkLoadGroupEvents = (groupId) => async dispatch => {
+    const response = await fetch(`/api/groups/${groupId}/events`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    });
+    let data = await response.json();
+    //normalize data
+    dispatch(actionLoadGroupEvents(data));
+    return data;
+};
 
 export const thunkLoadEventDetails = (id) => async (dispatch, getState) => {
     const response = await fetch(`/api/events/${id}`, {
@@ -81,6 +100,8 @@ const eventReducer = (state = initialState, action) => {
             newState = Object.assign({}, state);
             newState.allEvents[action.event.id] = action.event;
             return newState;
+        case LOAD_GROUP_EVENTS:
+            return state;
         default:
             return state;
     }

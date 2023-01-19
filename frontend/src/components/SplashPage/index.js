@@ -23,7 +23,7 @@ function SplashPage() {
                     <div className="MeetNewPeople font">Meet new people who share your interests through online and in-person events. It’s free to create an account.</div>
                 </div>
                 <div className="div6Buttons">
-
+                    
                 </div>
             </div>
         </>
