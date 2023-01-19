@@ -7,17 +7,21 @@ import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
 import './Navigation.css';
 import meetupIcon from '../../images/meetup_icon.png'
+import { thunkDeleteGroup } from '../../store/group';
+
 
 function Navigation({ isLoaded, type }) {
     const sessionUser = useSelector(state => state.session.user);
     const groups = useSelector((state) => state.groups.allGroups);
-    const { groupId } = useParams();
+    const events = useSelector((state) => state.events.allEvents);
+    const { groupId, eventId } = useParams();
     const history = useHistory();
+    const dispatch = useDispatch();
 
     //check once groups as loaded and type is passed as groupDetails
     //if sessionUser is organizer of current group
 
-    function edit(groupId) {
+    function editGroupRedirect(groupId) {
         history.push(`/group/${groupId}/edit`);
     };
 
@@ -25,16 +29,50 @@ function Navigation({ isLoaded, type }) {
         history.push(`/group/${groupId}/event/create`);
     }
 
-    let createButton;
+    function createGroupRedirect() {
+        history.push(`/group/create`)
+    }
+
+    function deleteGroup(groupId){
+        dispatch(thunkDeleteGroup(groupId)); 
+        history.push('/home/groups')
+    }
+
+    let createEventButton;
     let editButton;
-    if (type === 'groupDetails' && groups) {
+    let createGroupButton;
+    let deleteButton; 
+    if (type === 'groupDetails' && groups && sessionUser) {
         if (sessionUser.id === groups[+groupId].organizerId) {
             editButton = (
                 <li>
-                    <button onClick={() => edit(+groupId)}>Edit Group</button>
+                    <button className="EditGroupButton" onClick={() => editGroupRedirect(+groupId)}>Edit Group</button>
                 </li>);
-            createButton = (<li>
-                <button onClick={() => createEventRedirect(+groupId)}>Create Event</button>
+            createEventButton = (<li>
+                <button className="CreateEventButton" onClick={() => createEventRedirect(+groupId)}>Create Event</button>
+            </li>)
+            createGroupButton = (<li>
+                <button className="CreateGroupButton" onClick={() => createGroupRedirect()}>Start a new Group</button>
+            </li>)
+            deleteButton = (<li>
+                <button className="DeleteGroupButton" onClick={() => deleteGroup(+groupId)}>Delete Group</button>
+            </li>)
+        }
+    }
+
+    function deleteEvent(eventId){
+        // dispatch(thunkDeleteEvent(groupId)); 
+        // history.push('/home/groups')
+        console.log('test')
+    }
+
+    if (type === 'eventDetails' && events && sessionUser){
+        //find organizer from eventId
+        const tempGroupId = events[+eventId].groupId; 
+        console.log(tempGroupId)
+        if (sessionUser.id === groups[tempGroupId].organizerId){
+            deleteButton = (<li>
+                <button className="DeleteEventButton" onClick={() => deleteEvent(+eventId)}>Delete Event</button>
             </li>)
         }
     }
@@ -69,11 +107,12 @@ function Navigation({ isLoaded, type }) {
                 </NavLink>
             </li>
             <div className="rightButtons">
+                {createGroupButton}
                 {editButton}
-                {createButton}
+                {createEventButton}
+                {deleteButton}
                 {isLoaded && sessionLinks}
             </div>
-
         </ul>
     );
 }

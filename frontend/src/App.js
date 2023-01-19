@@ -50,7 +50,7 @@ function App() {
             <GroupDetailsComponent />
           </Route>
           <Route exact path='/event/:eventId'>
-            <Navigation isLoaded={isLoaded} />
+            <Navigation isLoaded={isLoaded} type={"eventDetails"}/>
             <EventDetailsComponent />
           </Route>
           <Route exact path='/'>

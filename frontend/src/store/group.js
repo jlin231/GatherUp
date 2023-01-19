@@ -4,11 +4,19 @@ const LOAD_GROUP = 'group/load';
 const CREATE_GROUP = 'group/create';
 const LOAD_GROUP_DETAILS = 'group/details';
 const EDIT_GROUP = "group/edit";
+const DELETE_GROUP = "group/delete"
 
 const actionLoadGroup = (groups) => {
     return {
         type: LOAD_GROUP,
         groups
+    };
+};
+
+const actionDeleteGroup = (groupId) => {
+    return {
+        type: DELETE_GROUP,
+        groupId
     };
 };
 
@@ -31,6 +39,17 @@ const actionCreateGroup = (info) => {
         type: CREATE_GROUP,
         info
     };
+};
+
+export const thunkDeleteGroup = (groupId) => async dispatch => {
+    const response = await csrfFetch(`/api/groups/${groupId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" }
+    });
+    if (response.ok) {
+        dispatch(actionDeleteGroup(groupId));
+        return response;
+    }
 };
 
 export const thunkEditGroup = (info, groupId) => async dispatch => {
@@ -130,6 +149,15 @@ const groupReducer = (state = initialState, action) => {
                 updatedAt: action.info.updatedAt
             }
             return newState;
+        }
+        case DELETE_GROUP: {
+            newState = Object.assign({}, state);
+            if (newState.singleGroup.id === action.groupId) {
+                delete newState.singleGroup;
+            }
+            delete newState.allGroups[action.groupId];
+            console.log('newState', newState);
+            return newState
         }
         default:
             return state;

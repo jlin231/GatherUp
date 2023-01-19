@@ -1,6 +1,8 @@
+import { useHistory } from 'react-router-dom';
 import './EventCard.css';
 
 function EventCardComponent({ event }) {
+    const history = useHistory();
 
     const weekday = ["SUN", "MON", "TUES", "WED", "THU", "FRI", "SAT"];
     const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEPT', 'OCT', 'NOV', 'DEC'];
@@ -14,7 +16,7 @@ function EventCardComponent({ event }) {
     const dateString2 = `${minutes} PST`;
 
     return (
-        <div className="eventCard">
+        <div className="eventCard" onClick={() => history.push(`/event/${event.id}`)}>
             <div className="left-div">
                 <img className='previewImg' src={event.previewImage} alt="Not Found" />
             </div>

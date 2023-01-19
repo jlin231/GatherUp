@@ -9,9 +9,7 @@ import GroupEventComponent from './GroupInfo/GroupEvent';
 
 function GroupDetailsComponent() {
     const { groupId, groupInfo } = useParams();
-    console.log(groupId, groupInfo);
     const dispatch = useDispatch();
-    const history = useHistory()
 
     const sessionUser = useSelector(state => state.session.user);
     const groups = useSelector((state) => state.groups);
@@ -22,13 +20,12 @@ function GroupDetailsComponent() {
     }, [groupId, dispatch])
 
     const singleGroup = groups.singleGroup;
-    if (!singleGroup || Object.values(groups).length === 0) {
+    if (!groups.allGroups[groupId] || !singleGroup || Object.values(groups).length === 0) {
         return null;
     }
 
     //find previewImage
     let previewImage;
-    console.log('singleGroup', singleGroup)
     singleGroup.GroupImages.forEach((image) => {
         if (image.preview) {
             previewImage = image.url;
@@ -38,7 +35,6 @@ function GroupDetailsComponent() {
     //change based on groupInfo
     let component = null;
     if (groupInfo === 'about') {
-        console.log('about');
         component = <GroupAboutComponent group={singleGroup} />;
     }
     else if (groupInfo === 'events') {
@@ -49,14 +45,6 @@ function GroupDetailsComponent() {
     }
     else if (groupInfo === 'photos') {
         component = null;
-    }
-
-    function edit(singleGroup) {
-        history.push(`/group/${singleGroup.id}/edit`);
-    };
-
-    function createEventRedirect(singleGroup) {
-        history.push(`/group/${singleGroup.id}/event/create`);
     }
 
     //check if current user is organizer of group
@@ -102,8 +90,6 @@ function GroupDetailsComponent() {
                 <NavLink exact to={`/group/${groupId}/events`}>Events</NavLink>
                 <NavLink exact to={`/group/${groupId}/members`}>Members</NavLink>
                 <NavLink exact to={`/group/${groupId}/photos`}>Photos</NavLink>
-                {organizer ? <button onClick={() => edit(singleGroup)}>Edit</button> : null}
-                {organizer ? <button onClick={() => createEventRedirect(singleGroup)}>Create Event</button> : null}
             </div>
             <div>
                 {component}
