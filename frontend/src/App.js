@@ -9,6 +9,9 @@ import CreateGroupComponent from './components/Group/CreateGroup'
 import GroupDetailsComponent from "./components/Group/GroupDetails";
 import HomePageComponent from "./components/Home";
 import EditGroupComponent from "./components/Group/EditGroup"
+import EventDetailsComponent from "./components/Events/EventDetails";
+import CreateEventComponent from "./components/Events/CreateEvent";
+import SplashPage from "./components/SplashPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -27,6 +30,9 @@ function App() {
           <Route exact path='/group/create'>
             <CreateGroupComponent />
           </Route>
+          <Route exact path='/group/:groupId/event/create'>
+            <CreateEventComponent />
+          </Route>
           <Route exact path='/home/:homeCategory'>
             <HomePageComponent />
           </Route>
@@ -37,7 +43,10 @@ function App() {
             <GroupDetailsComponent />
           </Route>
           <Route exact path='/event/:eventId'>
-            <CreateGroupComponent />
+            <EventDetailsComponent />
+          </Route>
+          <Route exact path='/'>
+            <SplashPage />
           </Route>
 
         </Switch>
