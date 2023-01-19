@@ -4,11 +4,19 @@ const LOAD_EVENTS = 'event/load';
 const LOAD_EVENT_DETAILS = 'event/load/details';
 const CREATE_EVENT = 'event/create'
 const LOAD_GROUP_EVENTS = 'event/group/load'
+const DELETE_EVENT = 'event/delete';
 
 const actionLoadEvents = (events) => {
     return {
         type: LOAD_EVENTS,
         events
+    };
+};
+
+const actionDeleteEvent = (eventId) => {
+    return {
+        type: DELETE_EVENT,
+        eventId
     };
 };
 
@@ -46,6 +54,18 @@ export const thunkLoadEvents = () => async dispatch => {
     });
     dispatch(actionLoadEvents(normalizeData));
     return normalizeData;
+};
+
+export const thunkDeleteEvent = (eventId) => async dispatch => {
+    const response = await csrfFetch(`/api/events/${eventId}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+    });
+    if (response.ok) {
+        let data = await response.json();
+        dispatch(actionDeleteEvent(eventId));
+        return data;
+    }
 };
 
 export const thunkCreateEvent = (info, groupId) => async dispatch => {
@@ -101,7 +121,15 @@ const eventReducer = (state = initialState, action) => {
             newState.allEvents[action.event.id] = action.event;
             return newState;
         case LOAD_GROUP_EVENTS:
+            //loads events associated with a group, no state change
             return state;
+        case DELETE_EVENT:
+            newState = Object.assign({}, state);
+            if(newState.singleEvent.id === action.eventId){
+                delete newState.singleGroup;
+            }; 
+            delete newState.allEvents[action.eventId]; 
+            return newState;
         default:
             return state;
     }

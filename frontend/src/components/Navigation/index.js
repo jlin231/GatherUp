@@ -8,7 +8,7 @@ import SignupFormModal from '../SignupFormModal';
 import './Navigation.css';
 import meetupIcon from '../../images/meetup_icon.png'
 import { thunkDeleteGroup } from '../../store/group';
-
+import { thunkDeleteEvent } from '../../store/event';
 
 function Navigation({ isLoaded, type }) {
     const sessionUser = useSelector(state => state.session.user);
@@ -61,9 +61,8 @@ function Navigation({ isLoaded, type }) {
     }
 
     function deleteEvent(eventId){
-        // dispatch(thunkDeleteEvent(groupId)); 
-        // history.push('/home/groups')
-        console.log('test')
+        dispatch(thunkDeleteEvent(eventId)); 
+        history.push('/home/events')
     }
 
     if (type === 'eventDetails' && events && sessionUser){

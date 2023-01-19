@@ -47,8 +47,9 @@ export const thunkDeleteGroup = (groupId) => async dispatch => {
         headers: { "Content-Type": "application/json" }
     });
     if (response.ok) {
+        let data = await response.json();
         dispatch(actionDeleteGroup(groupId));
-        return response;
+        return data;
     }
 };
 
