@@ -1,5 +1,8 @@
+import { csrfFetch } from "./csrf";
+
 const LOAD_EVENTS = 'event/load';
-const LOAD_EVENT_DETAILS = 'event/load/details'; 
+const LOAD_EVENT_DETAILS = 'event/load/details';
+const CREATE_EVENT = 'event/create'
 
 const actionLoadEvents = (events) => {
     return {
@@ -11,6 +14,13 @@ const actionLoadEvents = (events) => {
 const actionLoadEventDetails = (event) => {
     return {
         type: LOAD_EVENT_DETAILS,
+        event
+    };
+};
+
+const actionCreateEvent = (event) => {
+    return {
+        type: CREATE_EVENT,
         event
     };
 };
@@ -30,8 +40,20 @@ export const thunkLoadEvents = () => async dispatch => {
     return normalizeData;
 };
 
+export const thunkCreateEvent = (info, groupId) => async dispatch => {
+    const response = await csrfFetch(`/api/groups/${groupId}/events`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(info)
+    });
+    let data = await response.json();
+    //normalize data
+    dispatch(actionCreateEvent(data));
+    return data;
+};
+
 export const thunkLoadEventDetails = (id) => async (dispatch, getState) => {
-    const response = await fetch(`/api/groups/${id}`, {
+    const response = await fetch(`/api/events/${id}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" }
     })
@@ -54,6 +76,10 @@ const eventReducer = (state = initialState, action) => {
         case LOAD_EVENT_DETAILS:
             newState = Object.assign({}, state);
             newState.singleEvent = action.event;
+            return newState;
+        case CREATE_EVENT:
+            newState = Object.assign({}, state);
+            newState.allEvents[action.event.id] = action.event;
             return newState;
         default:
             return state;

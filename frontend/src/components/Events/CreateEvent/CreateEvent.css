@@ -1,0 +1,12 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    ;
+    align-items: left;
+    width: 40%
+}
+
+.formDiv {
+    display: flex;
+    justify-content: center;
+}

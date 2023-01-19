@@ -1,0 +1,36 @@
+#organizerOuterDiv {
+    display: flex;
+}
+
+#organizerName {
+    font-weight: bold;
+}
+
+#detailsDiv {
+    display: flex;
+    flex-direction: row;
+}
+
+#EventDetails{
+    width: 50%
+}
+
+#TimeAndGroupDetails{
+    width: 50%
+}
+
+#GroupCard {
+    display: flex;
+}
+
+#groupImage {
+    width: 60px;
+}
+
+#TimeInfo{
+    display: flex;
+}
+
+#TypeOfEvent{
+    display: flex;
+}
