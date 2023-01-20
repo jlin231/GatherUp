@@ -3,3 +3,30 @@
 }
 
 
+
+
+/* Css for eventCard */
+/* .eventCardDiv{
+
+} */
+.eventCardOuterDiv{
+    background-color: lightgrey;
+    border: black 1px solid; 
+}
+
+.eventCardDiv{
+    margin: 5px; 
+    background-color: white;
+}
+
+.eventCardLocation{
+    display: flex;
+}
+
+.locationInfo{
+    padding-left: 5px;
+}
+
+.eventCardAttendee{
+    display: flex;
+}

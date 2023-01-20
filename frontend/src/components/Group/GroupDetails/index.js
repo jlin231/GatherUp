@@ -9,9 +9,7 @@ import GroupEventComponent from './GroupInfo/GroupEvent';
 
 function GroupDetailsComponent() {
     const { groupId, groupInfo } = useParams();
-    console.log(groupId, groupInfo);
     const dispatch = useDispatch();
-    const history = useHistory()
 
     const sessionUser = useSelector(state => state.session.user);
     const groups = useSelector((state) => state.groups);
@@ -22,13 +20,12 @@ function GroupDetailsComponent() {
     }, [groupId, dispatch])
 
     const singleGroup = groups.singleGroup;
-    if (!singleGroup || Object.values(groups).length === 0) {
+    if (!groups.allGroups[groupId] || !singleGroup || Object.values(groups).length === 0) {
         return null;
     }
 
     //find previewImage
     let previewImage;
-    console.log('singleGroup', singleGroup)
     singleGroup.GroupImages.forEach((image) => {
         if (image.preview) {
             previewImage = image.url;
@@ -38,11 +35,9 @@ function GroupDetailsComponent() {
     //change based on groupInfo
     let component = null;
     if (groupInfo === 'about') {
-        console.log('about');
         component = <GroupAboutComponent group={singleGroup} />;
     }
     else if (groupInfo === 'events') {
-        console.log('events');
         component = <GroupEventComponent group={singleGroup} />;
     }
     else if (groupInfo === 'members') {
@@ -51,10 +46,6 @@ function GroupDetailsComponent() {
     else if (groupInfo === 'photos') {
         component = null;
     }
-
-    function edit(singleGroup) {
-        history.push(`/group/${singleGroup.id}/edit`);
-    };
 
     //check if current user is organizer of group
     let organizer;
@@ -91,7 +82,8 @@ function GroupDetailsComponent() {
                         Share: <i className="fa-brands fa-square-facebook icon"></i>  <i className="fa-brands fa-twitter icon"></i>  <i className="fa-brands fa-linkedin icon"></i>  <i className="fa-solid fa-envelope icon"></i>
                     </div>
                 </div>
-                {organizer ? <button onClick={() => edit(singleGroup)}>Edit</button> : null}
+
+
             </div>
             <div className="navigation">
                 <NavLink exact to={`/group/${groupId}/about`}>About</NavLink>
