@@ -125,10 +125,10 @@ const eventReducer = (state = initialState, action) => {
             return state;
         case DELETE_EVENT:
             newState = Object.assign({}, state);
-            if(newState.singleEvent.id === action.eventId){
+            if (newState.singleEvent.id === action.eventId) {
                 delete newState.singleGroup;
-            }; 
-            delete newState.allEvents[action.eventId]; 
+            };
+            delete newState.allEvents[action.eventId];
             return newState;
         default:
             return state;

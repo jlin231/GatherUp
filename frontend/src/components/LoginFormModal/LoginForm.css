@@ -1,0 +1,81 @@
+.logIn {
+    display: flex;
+    flex-direction: column;
+    border: 1px red solid;
+}
+
+.logInForm {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.logInDivOuter {
+
+    height: 60vh;
+    width: 50vw;
+    min-width: 480px;
+    max-width: px;
+    padding: 36px 40px;
+}
+
+.logInTopDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+#logInText {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
+.logInDiv {
+    display: flex;
+    flex-direction: column;
+}
+
+#meetupIcon {
+    height: 48px;
+    width: 48px;
+}
+
+#logInTopDivLow{
+    margin-bottom: 10px;
+}
+
+.logInButton {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: rgb(246, 88, 88);
+    border-color: transparent;
+    font-size: 20px;
+    font-weight: 650;
+    color: white;
+    padding: 12px 8px;
+    border-radius: 8px;
+    margin-top: 24px;
+    margin-bottom: 24px; 
+}
+
+.label {
+    font-weight: bold;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.inputEmailClass {
+    border: lightgray solid 1px;
+    border-radius: 4px;
+    margin-top: 4px;
+    margin-bottom: 16px;
+    padding: 8px 8px;
+}
+
+.inputPasswordClass{
+    border: lightgray solid 1px;
+    border-radius: 4px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    padding: 8px 8px;
+}
