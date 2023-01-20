@@ -3,11 +3,13 @@ import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import './CreateGroup.css';
 import { thunkCreateGroup } from '../../../store/group';
+import { useHistory } from 'react-router-dom';
 
 function CreateGroupComponent() {
     const sessionUser = useSelector(state => state.session.user);
 
     const dispatch = useDispatch();
+    const history = useHistory();
 
     const [name, setName] = useState("");
     const [type, setType] = useState("");
@@ -30,7 +32,9 @@ function CreateGroupComponent() {
             state,
             previewImage
         }
-        return dispatch(thunkCreateGroup(info)).catch(async (res) => {
+        return dispatch(thunkCreateGroup(info)).then((res)=>{
+            history.push(`/group/${res.id}/about`);
+        }).catch(async (res) => {
             let data = await res.json();
             if (data && data.errors) {
                 const values = Object.values(data.errors);
@@ -113,7 +117,7 @@ function CreateGroupComponent() {
             <label>
                 Image
                 <input
-                    type="text"
+                    type="url"
                     value={previewImage}
                     onChange={(e) => setPreviewImage(e.target.value)}
                     required
