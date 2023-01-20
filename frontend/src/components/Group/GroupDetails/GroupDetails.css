@@ -1,0 +1,30 @@
+.topDiv{
+    display: flex;
+}
+
+.icon{
+    color: grey;
+    
+}
+
+.organizerId {
+    font-weight: bold;
+}
+
+.navigation{
+    display: flex;
+    flex-direction: row;
+}
+
+#organizerIcon{
+    border: solid black 1px 
+}
+
+#organizerDiv{
+    margin: 10px;  
+}
+
+#organizerInfo{
+    display: flex;
+    align-items: center;
+}

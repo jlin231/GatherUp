@@ -1,15 +1,88 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { NavLink, useHistory, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import ProfileButton from './ProfileButton';
 import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
 import './Navigation.css';
 import meetupIcon from '../../images/meetup_icon.png'
+import { thunkDeleteGroup } from '../../store/group';
+import { thunkDeleteEvent } from '../../store/event';
 
-function Navigation({ isLoaded }) {
+function Navigation({ isLoaded, type }) {
     const sessionUser = useSelector(state => state.session.user);
+    const groups = useSelector((state) => state.groups.allGroups);
+    const events = useSelector((state) => state.events.allEvents);
+    const { groupId, eventId } = useParams();
+    const history = useHistory();
+    const dispatch = useDispatch();
+
+    //check once groups as loaded and type is passed as groupDetails
+    //if sessionUser is organizer of current group
+
+    function editGroupRedirect(groupId) {
+        history.push(`/group/${groupId}/edit`);
+    };
+
+    function createEventRedirect(groupId) {
+        history.push(`/group/${groupId}/event/create`);
+    }
+
+    function createGroupRedirect() {
+        history.push(`/group/create`)
+    }
+
+    function deleteGroup(groupId) {
+        dispatch(thunkDeleteGroup(groupId));
+        history.push('/home/groups')
+    }
+
+    let createEventButton;
+    let editButton;
+    let createGroupButton;
+    let deleteButton;
+
+    if ((type === "splash" && sessionUser) ||(type==="home" && sessionUser)) {
+        createGroupButton = (<li>
+            <button className="CreateGroupButton sessionButtons" onClick={() => createGroupRedirect()}>Start a new Group</button>
+        </li>)
+    }
+
+
+    if (type === 'groupDetails' && groups && sessionUser) {
+        if (sessionUser.id === groups[+groupId].organizerId) {
+            editButton = (
+                <li>
+                    <button className="EditGroupButton sessionButtons" onClick={() => editGroupRedirect(+groupId)}>Edit Group</button>
+                </li>);
+            createEventButton = (<li>
+                <button className="CreateEventButton sessionButtons" onClick={() => createEventRedirect(+groupId)}>Create Event</button>
+            </li>)
+            createGroupButton = (<li>
+                <button className="CreateGroupButton sessionButtons" onClick={() => createGroupRedirect()}>Start a new Group</button>
+            </li>)
+            deleteButton = (<li>
+                <button className="DeleteGroupButton sessionButtons" onClick={() => deleteGroup(+groupId)}>Delete Group</button>
+            </li>)
+        }
+    }
+
+    function deleteEvent(eventId) {
+        dispatch(thunkDeleteEvent(eventId));
+        history.push('/home/events')
+    }
+
+    if (type === 'eventDetails' && events && sessionUser) {
+        //find organizer from eventId
+        const tempGroupId = events[+eventId].groupId;
+        console.log(tempGroupId)
+        if (sessionUser.id === groups[tempGroupId].organizerId) {
+            deleteButton = (<li>
+                <button className="DeleteEventButton sessionButtons" onClick={() => deleteEvent(+eventId)}>Delete Event</button>
+            </li>)
+        }
+    }
 
     let sessionLinks;
     if (sessionUser) {
@@ -23,9 +96,11 @@ function Navigation({ isLoaded }) {
             <li >
                 <OpenModalButton
                     buttonText="Log In"
+                    className="sessionButtons"
                     modalComponent={<LoginFormModal />}
                 />
                 <OpenModalButton
+                    className="sessionButtons"
                     buttonText="Sign Up"
                     modalComponent={<SignupFormModal />}
                 />
@@ -40,7 +115,13 @@ function Navigation({ isLoaded }) {
                     <img className='meetupIcon' src={meetupIcon} alt="" />
                 </NavLink>
             </li>
-            {isLoaded && sessionLinks}
+            <div className="rightButtons">
+                {createGroupButton}
+                {editButton}
+                {createEventButton}
+                {deleteButton}
+                {isLoaded && sessionLinks}
+            </div>
         </ul>
     );
 }
