@@ -533,6 +533,17 @@ router.post('/:groupId/venues', requireAuth, async (req, res, next) => {
 //GET, /api/groups/:groupId/events
 router.get('/:groupId/events', async (req, res, next) => {
     const groupId = +req.params.groupId;
+
+    let groups = await Group.findByPk(groupId);
+
+    if(!groups){
+        let err = new Error("Group couldn't be found");
+        err.status = 404;
+        err.message = "Group couldn't be found"
+        return next(err);
+    }
+
+
     let events = await Event.findAll({
         where: {
             groupId: groupId
@@ -552,12 +563,12 @@ router.get('/:groupId/events', async (req, res, next) => {
     });
 
     //error handling
-    //handles if group is not found
+    //handles if no event is found
     if (events.length === 0) {
-        let err = new Error("Group couldn't be found");
-        err.status = 404;
-        err.message = "Group couldn't be found"
-        return next(err);
+        const result = {
+            "Events": []
+        }
+        return res.json(result);
     };
 
     //find numAttending
