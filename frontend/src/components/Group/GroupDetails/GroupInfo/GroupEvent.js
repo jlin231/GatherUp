@@ -20,7 +20,7 @@ function GroupEventComponent(singleGroup) {
     }, [dispatch, singleGroup])
 
     console.log('events', eventInfo);
-    if (eventInfo.length === 0) {
+    if (!singleGroup || eventInfo.length === 0) {
         return null;
     }
 

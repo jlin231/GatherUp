@@ -33,6 +33,7 @@ function CreateGroupComponent() {
             previewImage
         }
         return dispatch(thunkCreateGroup(info)).then((res) => {
+            console.log('gets to push');
             history.push(`/group/${res.id}/about`);
         }).catch(async (res) => {
             let data = await res.json();
