@@ -44,44 +44,57 @@ function EventDetailsComponent() {
         return null;
     }
 
+    //find preview Image from event details
+    let previewImage = null;
+    event.EventImages.forEach((image)=>{
+        if(image.preview === true){
+            previewImage = image.url; 
+        }
+    })
+
     //process start and end time into DayName, MonthName, Day, Year at
     //Hour:Minute AM/PM
     const startTime = getDateString(event.startDate);
     const endTime = (getDateString(event.endDate));
     return (
         <>
-            <div id='upperMostDiv'>
-                <div>{event.name}</div>
-                <div id='organizerOuterDiv'>
-                    <div id='leftPictureOrganizerDiv'>
-                        <i className="fa-regular fa-user fa-2x"></i>
-                    </div>
-                    <div id='rightOrganizerDiv'>
-                        <div>Hosted By</div>
-                        <div id="organizerName">{group.Organizer.firstName} {group.Organizer.lastName[0]}.</div>
+            <div id='upperMostDivEventDetails'>
+                <div className='eventDetailUpperDiv'>
+                    <div id="eventDetailsEventName">{event.name}</div>
+                    <div id='organizerOuterDiv'>
+                        <div id='leftPictureOrganizerDiv'>
+                            <i className="fa-regular fa-user fa-3x "></i>
+                        </div>
+                        <div id='rightOrganizerDiv'>
+                            <div>Hosted By</div>
+                            <div id="organizerName">{group.Organizer.firstName} {group.Organizer.lastName[0]}.</div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div id='detailsDiv'>
-                <div id="EventDetails">
-                    <div id="details">Details</div>
+            <div id='eventDetailsdetailsDiv'>
+                <div id="eventDetailsLeftDiv">
+                    <div className='eventDetailsImageDiv'>
+                        <img className="eventDetailsPreviewImage" src={previewImage} alt="Not Found"/>
+                    </div>
+                    <div id="detailsText">Details</div>
                     <div id="eventDescription">{event.description}</div>
                     <div id="Attendees">Attendees ({event.numAttending})</div>
                 </div>
-                <div id="TimeAndGroupDetails">
+                <div id="eventDetailsRightDiv">
                     <div id="GroupCard">
                         <div id="leftGroupCardDiv">
                             <img id='groupImage' src={groups[group.id].previewImage} alt="Not Found" />
                         </div>
                         <div id="rightGroupCardDiv">
-                            <div>{group.name}</div>
+                            <div id="rightGroupCardDivName">{group.name}</div>
                             <div>Public Group</div>
                         </div>
                     </div>
                     <div id="TimeCard">
                         <div id='TimeInfo'>
                             <div id="TimeIcon">
-                                <i className="fa-solid fa-clock"></i>
+                                <i className="fa-solid fa-clock icon"></i>
                             </div>
                             <div id="TimeText">
                                 <div>{startTime} to {endTime}</div>
@@ -89,7 +102,7 @@ function EventDetailsComponent() {
                         </div>
                         <div id='TypeOfEvent'>
                             <div id="CameraIcon">
-                                <i className="fa-solid fa-video"></i>
+                                <i className="fa-solid fa-video icon"></i>
                             </div>
                             <div id="EventText">
                                 <div>{event.type} event</div>
@@ -100,7 +113,6 @@ function EventDetailsComponent() {
                     <div></div>
                 </div>
             </div>
-
         </>
     );
 }

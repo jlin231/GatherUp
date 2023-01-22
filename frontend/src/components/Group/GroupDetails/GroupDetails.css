@@ -1,105 +1,106 @@
-.groupDetailsOuterDiv{
+.groupDetailsOuterDiv {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-.groupDetailsDiv{
+.groupDetailsDiv {
     display: flex;
     flex-direction: row;
     justify-content: center;
     width: 100%;
-    padding-top: 16px; 
-    padding-bottom: 16px; 
-    border-top: 1px rgb(217,217,217) solid;
-    border-bottom: 1px rgb(217,217,217) solid;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-top: 1px rgb(217, 217, 217) solid;
+    border-bottom: 1px rgb(217, 217, 217) solid;
 }
 
-.groupDetailspreviewImage{
+.groupDetailspreviewImage {
     border-radius: 8px;
     object-fit: cover;
 }
 
-.groupDetailsLeftDiv{
+.groupDetailsLeftDiv {
     width: 40%;
     max-width: 600px;
-    height: 335px;  
-    padding-right: 15px; 
+    height: 335px;
+    padding-right: 15px;
 }
 
-.groupDetailspreviewImage{
+.groupDetailspreviewImage {
     height: 100%;
-    width: 100%; 
+    width: 100%;
+    object-fit: cover;
 }
 
-.groupDetailsRightDiv{
+.groupDetailsRightDiv {
     width: 40%;
-    height: 335px; 
+    height: 335px;
     max-width: 420px;
     padding-left: 24px;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-.groupName{
+.groupName {
     font-weight: 700;
     font-size: 32px;
 }
 
-.groupLocation{
-    margin-top: 16px; 
+.groupLocation {
+    margin-top: 16px;
 }
 
-.icon{
+.icon {
     color: grey;
-    margin-right: 4px; 
+    margin-right: 4px;
 }
 
 .organizerId {
     font-weight: bold;
 }
 
-.navigation{
+.navigation {
     display: flex;
     flex-direction: row;
 }
 
-#organizerIcon{
-    border: solid black 1px 
+#organizerIcon {
+    border: solid black 1px
 }
 
-#organizerDiv{
-    margin: 10px;  
+#organizerDiv {
+    margin: 10px;
 }
 
-#organizerInfo{
+#organizerInfo {
     display: flex;
     align-items: center;
 }
 
 /* styles about and events tabs */
-.navigationDiv{
+.navigationDiv {
     display: flex;
     flex-direction: row;
     justify-content: center;
     width: 100%;
-    border-bottom: 1px rgb(217,217,217) solid;
-    height: 70px; 
+    border-bottom: 1px rgb(217, 217, 217) solid;
+    height: 70px;
 }
 
-.navigationLeftDiv{
+.navigationLeftDiv {
     width: 40%;
     max-width: 600px;
-    padding-right: 15px; 
+    padding-right: 15px;
     display: flex;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     align-items: center;
 }
 
-.aboutTab{
+.aboutTab {
     padding-right: 10%;
 }
 
-.navigationRightDiv{
+.navigationRightDiv {
     width: 40%;
     max-width: 420px;
     padding-left: 24px;
@@ -108,7 +109,7 @@
     align-items: center;
 }
 
-.editGroupButton{
+.editGroupButton {
     padding-right: 16px;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: rgb(246, 88, 88);
@@ -119,7 +120,7 @@
     border-radius: 8px;
 }
 
-.deleteGroupButton{
+.deleteGroupButton {
     padding-right: 16px;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     background-color: rgb(246, 88, 88);
@@ -131,12 +132,12 @@
     margin-left: 16px;
 }
 
-.groupDetailsTab{
+.groupDetailsTab {
     text-decoration: none;
     cursor: pointer;
-    font-size: 16px; 
+    font-size: 16px;
 }
 
-.groupDetailsTab:hover{
+.groupDetailsTab:hover {
     text-decoration: underline;
 }
