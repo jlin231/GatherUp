@@ -28,7 +28,7 @@ function CreateGroupComponent() {
             type,
             about,
             city,
-            private: Boolean(privacy),
+            private: !!Number(privacy),
             state,
             previewImage
         }
@@ -48,34 +48,40 @@ function CreateGroupComponent() {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <ul>
-                {errors.map((error, idx) => (
-                    <li key={idx}>{error}</li>
-                ))}
-            </ul>
-            <label>
-                Name
+        <div className='create-group-outer-most-div'>
+            <div className='create-group-text-div'>Create Group</div>
+            <form onSubmit={handleSubmit} className="outerCreateEventFormDiv">
+                <ul>
+                    {errors.map((error, idx) => (
+                        <li key={idx} className="createGroupErrors">{error}</li>
+                    ))}
+                </ul>
+                <label className="label">
+                    Name
+                </label>
                 <input
+                    className='inputClass'
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
                 />
-            </label>
-            <label>
-                About
+                <label className="label">
+                    About
+                </label>
                 <textarea
+                    className='inputClass createGroupTextArea'
                     type="text"
                     value={about}
                     onChange={(e) => setAbout(e.target.value)}
                     required>
 
                 </textarea>
-            </label>
-            <label>
-                Type
+                <label className="label">
+                    Type
+                </label>
                 <select
+                    className='inputClass'
                     value={type}
                     onChange={(e) => setType(e.target.value)}
                     required
@@ -84,48 +90,52 @@ function CreateGroupComponent() {
                     <option value="In person">In person</option>
                     <option value="Online">Online</option>
                 </select>
-            </label>
-            <label>
-                Private
+                <label className="label">
+                    Private
+                </label>
                 <select
+                    className='inputClass'
                     value={privacy}
                     onChange={(e) => setPrivacy(e.target.value)}
                     required
                 >
                     <option value=""></option>
-                    <option value={true}>True</option>
-                    <option value={false}>False</option>
+                    <option value={1}>True</option>
+                    <option value={0}>False</option>
                 </select>
-            </label>
-            <label>
-                City
+                <label className="label">
+                    City
+                </label>
                 <input
+                    className='inputClass'
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     required
                 />
-            </label>
-            <label>
-                State
+                <label className="label">
+                    State
+                </label>
                 <input
+                    className='inputClass'
                     type="text"
                     value={state}
                     onChange={(e) => setState(e.target.value)}
                     required
                 />
-            </label>
-            <label>
-                Image
+                <label className="label">
+                    Image
+                </label>
                 <input
+                    className='inputClass'
                     type="url"
                     value={previewImage}
                     onChange={(e) => setPreviewImage(e.target.value)}
                     required
                 />
-            </label>
-            <button type="submit">Submit</button>
-        </form>
+                <button type="submit" className='submitCreateGroupButton'>Submit</button>
+            </form>
+        </div>
     );
 }
 

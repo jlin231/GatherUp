@@ -1,0 +1,40 @@
+.edit-group-outer-most-div{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.outerFormDiv{
+    display: flex;
+    flex-direction: column;
+    width: 60%; 
+}
+
+.edit-group-text-div{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 650;
+    font-size: 25px;
+}
+
+.textAreaClass{
+    resize: none;
+    height: 75px; 
+}
+
+.editGroupErrors{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: red; 
+}
+
+.submitEditGroupButton{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: rgb(246, 88, 88);
+    border-color: transparent;
+    font-size: 20px;
+    font-weight: 650;
+    color: white;
+    padding: 12px 8px;
+    border-radius: 8px;
+    margin-top: 24px;
+    margin-bottom: 24px; 
+}

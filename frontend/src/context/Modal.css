@@ -23,5 +23,6 @@
   #modal-content {
     position: absolute;
     background-color:white;
-    overflow-y:auto
+    overflow-y:auto;
+    border-radius: 8px;
   }

@@ -1,0 +1,45 @@
+.create-group-outer-most-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.create-group-text-div{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 650;
+    font-size: 25px;
+}
+
+.outerCreateGroupFormDiv {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+}
+
+.createGroupErrors {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: red;
+}
+
+.createGroupErrors{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: red;
+}
+
+.createGroupTextArea {
+    resize: none;
+    height: 60px;
+}
+
+.submitCreateGroupButton {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: rgb(246, 88, 88);
+    border-color: transparent;
+    font-size: 20px;
+    font-weight: 650;
+    color: white;
+    padding: 12px 8px;
+    border-radius: 8px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+}

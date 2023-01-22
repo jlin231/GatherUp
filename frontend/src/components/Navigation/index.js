@@ -9,6 +9,7 @@ import './Navigation.css';
 import meetupIcon from '../../images/meetup_icon.png'
 import { thunkDeleteGroup } from '../../store/group';
 import { thunkDeleteEvent } from '../../store/event';
+import * as sessionActions from "../../store/session";
 
 function Navigation({ isLoaded, type }) {
     const sessionUser = useSelector(state => state.session.user);
@@ -21,10 +22,6 @@ function Navigation({ isLoaded, type }) {
     //check once groups as loaded and type is passed as groupDetails
     //if sessionUser is organizer of current group
 
-    function editGroupRedirect(groupId) {
-        history.push(`/group/${groupId}/edit`);
-    };
-
     function createEventRedirect(groupId) {
         history.push(`/group/${groupId}/event/create`);
     }
@@ -33,17 +30,13 @@ function Navigation({ isLoaded, type }) {
         history.push(`/group/create`)
     }
 
-    function deleteGroup(groupId) {
-        dispatch(thunkDeleteGroup(groupId));
-        history.push('/home/groups')
-    }
 
     let createEventButton;
     let editButton;
     let createGroupButton;
     let deleteButton;
 
-    if ((type === "splash" && sessionUser) ||(type==="home" && sessionUser)) {
+    if ((type === "splash" && sessionUser) || (type === "home" && sessionUser) || (type === "eventDetails" && sessionUser) || ((type === "groupDetails" && sessionUser))) {
         createGroupButton = (<li>
             <button className="CreateGroupButton sessionButtons" onClick={() => createGroupRedirect()}>Start a new Group</button>
         </li>)
@@ -52,18 +45,11 @@ function Navigation({ isLoaded, type }) {
 
     if (type === 'groupDetails' && groups && sessionUser) {
         if (sessionUser.id === groups[+groupId].organizerId) {
-            editButton = (
-                <li>
-                    <button className="EditGroupButton sessionButtons" onClick={() => editGroupRedirect(+groupId)}>Edit Group</button>
-                </li>);
             createEventButton = (<li>
                 <button className="CreateEventButton sessionButtons" onClick={() => createEventRedirect(+groupId)}>Create Event</button>
             </li>)
             createGroupButton = (<li>
                 <button className="CreateGroupButton sessionButtons" onClick={() => createGroupRedirect()}>Start a new Group</button>
-            </li>)
-            deleteButton = (<li>
-                <button className="DeleteGroupButton sessionButtons" onClick={() => deleteGroup(+groupId)}>Delete Group</button>
             </li>)
         }
     }
@@ -116,6 +102,11 @@ function Navigation({ isLoaded, type }) {
                 </NavLink>
             </li>
             <div className="rightButtons">
+                {sessionUser ? null : <li >
+                    <button onClick={() => {
+                        dispatch(sessionActions.login({ credential: 'Demo-lition', password: 'password' }))
+                    }} className="sessionButtons">DemoUser</button>
+                </li>}
                 {createGroupButton}
                 {editButton}
                 {createEventButton}

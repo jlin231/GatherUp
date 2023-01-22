@@ -16,11 +16,11 @@ function EventCardComponent({ event }) {
     const dateString2 = `${minutes} PST`;
 
     return (
-        <div className="eventCard" onClick={() => history.push(`/event/${event.id}`)}>
-            <div className="left-div">
-                <img className='previewImg' src={event.previewImage} alt="Not Found" />
+        <div className="eventCardDivOuter" onClick={() => history.push(`/event/${event.id}`)}>
+            <div className="eventCard-left-div">
+                <img className='eventCard-previewImg' src={event.previewImage} alt="Not Found" />
             </div>
-            <div className="right-div">
+            <div className="eventCard-right-div">
                 <div className='eventDate'>{dateString1} &#183; {dateString2}</div>
                 <div className='eventName'>{event.name}</div>
                 <div className='eventGroupInfo'>{`${event.Group.name}`} &#183; {`${event.Group.city},${event.Group.state}`}</div>

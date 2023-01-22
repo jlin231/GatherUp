@@ -26,10 +26,16 @@ function EditGroupComponent() {
     useEffect(() => {
         if (groups) {
             const singleGroup = groups[groupId];
+            if (singleGroup.private) {
+                setPrivacy(1);
+            }
+            else {
+                setPrivacy(0);
+            }
+
             setName(singleGroup.name);
             setAbout(singleGroup.about);
             setType(singleGroup.type);
-            setPrivacy(singleGroup.private);
             setCity(singleGroup.city);
             setState(singleGroup.state);
         }
@@ -50,15 +56,18 @@ function EditGroupComponent() {
         //keeps track on if form has been submitted
         setErrors([]);
         setHasSubmitted(false);
-        console.log('errors before', errors);
+        console.log('privacy', privacy);
+        console.log('privacy', !!Number(privacy));
         const info = {
             name,
             about,
             type,
-            private: Boolean(privacy),
+            private: !!Number(privacy),
             city,
             state
         }
+        console.log(JSON.stringify(info));
+        console.log('info', info)
         dispatch(thunkEditGroup(info, groupId)).then(() => {
             //if dispatch does not return an error, then set hasSubmitted to be true
             setHasSubmitted(true);
@@ -79,79 +88,86 @@ function EditGroupComponent() {
                 });
     };
 
+    //inputClass and labl css from signup modal css
     return (
-        <>
-            <div>Edit Group</div>
-            <form onSubmit={handleSubmit}>
+        <div className='edit-group-outer-most-div'>
+            <div className='edit-group-text-div'>Edit Group</div>
+            <form onSubmit={handleSubmit} className="outerFormDiv">
                 <ul>
                     {errors.map((error, idx) => (
-                        <li key={idx}>{error}</li>
+                        <li key={idx} className="editGroupErrors">{error} </li>
                     ))}
                 </ul>
-                <label>
+                <label className="label">
                     Name
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                    />
                 </label>
-                <label>
+                <input
+                    className='inputClass'
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                />
+                <label className="label">
                     About
-                    <textarea
-                        type="text"
-                        value={about}
-                        onChange={(e) => setAbout(e.target.value)}
-                        required>
+                </label>
+                <textarea
+                    className='inputClass textAreaClass'
+                    type="text"
+                    value={about}
+                    onChange={(e) => setAbout(e.target.value)}
+                    required>
 
-                    </textarea>
-                </label>
-                <label>
+                </textarea>
+                <label className="label">
                     Type
-                    <select
-                        value={type}
-                        onChange={(e) => setType(e.target.value)}
-                        required
-                    >
-                        <option value="" ></option>
-                        <option value="In person">In person</option>
-                        <option value="Online">Online</option>
-                    </select>
                 </label>
-                <label>
+                <select
+                    className='inputClass'
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    required
+                >
+                    <option value="" ></option>
+                    <option value="In person">In person</option>
+                    <option value="Online">Online</option>
+                </select>
+                <label className="label">
                     Private
-                    <select
-                        value={privacy}
-                        onChange={(e) => setPrivacy(e.target.value)}
-                        required
-                    >
-                        <option value=""></option>
-                        <option value={true}>True</option>
-                        <option value={false}>False</option>
-                    </select>
                 </label>
-                <label>
+                <select
+                    className='inputClass'
+                    value={privacy}
+                    onChange={(e) => setPrivacy(e.target.value)}
+                    required
+                >
+                    <option value=""></option>
+                    <option value={1}>True</option>
+                    <option value={0}>False</option>
+                </select>
+                <label className="label">
                     City
-                    <input
-                        type="text"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        required
-                    />
                 </label>
-                <label>
+                <input
+                    className='inputClass'
+                    type="text"
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                    required
+                />
+                <label className="label">
                     State
-                    <input
-                        type="text"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                        required
-                    />
                 </label>
-                <button type="submit">Submit</button>
+                <input
+                    className='inputClass'
+                    type="text"
+                    value={state}
+                    onChange={(e) => setState(e.target.value)}
+                    required
+                />
+                <button type="submit" className="submitEditGroupButton">Submit</button>
             </form>
-        </>
+        </div>
     );
 }
 
