@@ -17,7 +17,7 @@ function ShowAllEventsComponent() {
         console.log('eventValues', eventValues)
         //use map, to parse through events, show all the events
         return (
-            <div className='outerDiv'>
+            <div className="outerDivShowAllEvents">
                 {eventValues.map((event) => {
                     return <EventCardComponent key={event.id} event={event} />
                 })}

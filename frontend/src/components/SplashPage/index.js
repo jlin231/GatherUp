@@ -53,13 +53,24 @@ function SplashPage() {
                     </div>
                     <div className='div6Card3'>
                         <img className="div6Card_img" src='https://secure.meetupstatic.com/next/images/shared/joinGroup.svg?w=256' alt="Not Found"></img>
-                        <div className="div6CardText" onClick={() => history.push('/group/create')}>Start a group</div>
+                        {sessionUser ? <div className="div6CardText" onClick={() => history.push('/group/create')}>Start a group</div>
+                            : <div>
+                                <OpenModalButton
+                                    buttonText="Start a group"
+                                    className="div6CardText"
+                                    modalComponent={<SignupFormModal className="signUpModal" />}
+                                />
+                            </div>
+                        }
                         <div>You don’t have to be an expert to gather people together and explore shared interests.</div>
                     </div>
                 </div>
                 <div className="div7JoinButton">
-
-                        <button className="joinMeetUpButton">Join Meetup</button>
+                    <OpenModalButton
+                        buttonText="Join Meetup"
+                        className="joinMeetupButton"
+                        modalComponent={<SignupFormModal className="signUpModal" />}
+                    />
                 </div>
             </div>
 

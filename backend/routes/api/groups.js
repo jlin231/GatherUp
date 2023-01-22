@@ -347,12 +347,13 @@ router.put('/:groupId', requireAuth, async (req, res, next) => {
     }
 
     //add objects to updateObj
+    console.log('ASDJFKALSD;KASD', private);
 
     const updateObj = {}
     if (name) updateObj.name = name;
     if (about) updateObj.about = about;
     if (type) updateObj.type = type;
-    if (private) updateObj.private = private;
+    updateObj.private = private;
     if (city) updateObj.city = city;
     if (state) updateObj.state = state;
 
@@ -536,7 +537,7 @@ router.get('/:groupId/events', async (req, res, next) => {
 
     let groups = await Group.findByPk(groupId);
 
-    if(!groups){
+    if (!groups) {
         let err = new Error("Group couldn't be found");
         err.status = 404;
         err.message = "Group couldn't be found"

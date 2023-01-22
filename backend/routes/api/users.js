@@ -36,23 +36,29 @@ router.post('/', validateSignup, async (req, res, next) => {
     username = null
   }
 
+  //look through users see if something is found by email
+  let oldUser = await User.scope('currentUser').findOne({
+    where: {
+      email
+    }
+  });
   //body validation
   let err = new Error("Validation Error");
-  if(!email){
+  if (!email) {
     err.status = 400;
     err.errors = {
       "email": "Invalid email"
     }
     return next(err);
   }
-  else if(!firstName){
+  else if (!firstName) {
     err.status = 400;
     err.errors = {
       "firstName": "First Name is required"
     }
     return next(err);
   }
-  else if(!lastName){
+  else if (!lastName) {
     err.status = 400;
     err.errors = {
       "lastName": "Last Name is required"
@@ -60,20 +66,13 @@ router.post('/', validateSignup, async (req, res, next) => {
     return next(err);
   }
 
-  //look through users see if something is found by email
-  let oldUser = await User.scope('currentUser').findOne({
-    where: {
-      email
-    }
-  });
 
-  if(oldUser){
+
+  if (oldUser) {
     const err = new Error("User already exists");
     err.message = "User already exists";
     err.status = 403;
-    err.errors = {
-      email: "User with that email already exists"
-    };
+    err.errors = ["User with that email already exists"];
     return next(err);
   };
 
@@ -83,7 +82,7 @@ router.post('/', validateSignup, async (req, res, next) => {
   userResult.token = "";
   delete userResult.createdAt;
   delete userResult.updatedAt;
-  delete userResult.username; 
+  delete userResult.username;
   return res.json({
     user: userResult
   });

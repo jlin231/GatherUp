@@ -38,7 +38,7 @@ function App() {
             <CreateEventComponent />
           </Route>
           <Route exact path='/home/:homeCategory'>
-            <Navigation isLoaded={isLoaded} type={"home"}/>
+            <Navigation isLoaded={isLoaded} type={"home"} />
             <HomePageComponent />
           </Route>
           <Route exact path='/group/:groupId/edit'>
@@ -50,11 +50,11 @@ function App() {
             <GroupDetailsComponent />
           </Route>
           <Route exact path='/event/:eventId'>
-            <Navigation isLoaded={isLoaded} type={"eventDetails"}/>
+            <Navigation isLoaded={isLoaded} type={"eventDetails"} />
             <EventDetailsComponent />
           </Route>
           <Route exact path='/'>
-            <Navigation isLoaded={isLoaded} type={"splash"}/>
+            <Navigation isLoaded={isLoaded} type={"splash"} />
             <SplashPage />
           </Route>
           <Route path='*'>
