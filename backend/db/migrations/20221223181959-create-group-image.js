@@ -22,7 +22,7 @@ module.exports = {
         onDelete: "CASCADE"
       },
       url: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(5000),
         allowNull: false
       },
       preview: {
@@ -39,9 +39,9 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP")
       }
-    },options);
+    }, options);
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('GroupImages',options);
+    await queryInterface.dropTable('GroupImages', options);
   }
 };

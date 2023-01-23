@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       //one to many, group to images
-      GroupImage.belongsTo(models.Group,{
+      GroupImage.belongsTo(models.Group, {
         foreignKey: "groupId"
       })
     }
@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     url: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(5000),
       allowNull: false,
     },
     preview: {

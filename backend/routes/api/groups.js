@@ -684,6 +684,11 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
         bodyErr.errors.description = "Description is required";
         check = true;
     }
+    if (description && description.length < 50) {
+        bodyErr.statusCode = 400;
+        bodyErr.errors.description = "Description must be at least 50 characters";
+        check = true;
+    }
     //add startDate and endDate comparisons
     let currentDate = new Date();
     currentDate = currentDate.getTime();
