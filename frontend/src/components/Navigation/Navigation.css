@@ -16,6 +16,7 @@
 
 .rightButtons {
     display: flex;
+    align-items: center;
 }
 
 .login-signup-buttons {
@@ -37,20 +38,36 @@
 }
 
 .profile-dropdown{
-    border: 1px red solid; 
+    border: 1px rgb(235,235,235) solid; 
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     padding: 0;
     list-style-type: none;
     position: absolute;
     right: 10px; 
+    background-color: white;
+    padding: 12px; 
+    width: 155px;
 }
 
 .profile-button{
     position: relative;
     cursor: pointer;
+    height: 40px;
+    width: 40px;
+    background-color: rgb(241,160,128);
+    border-radius: 20px;
+}
+
+.dropDownText{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 14px; 
 }
 
 #profile-log-out-button{
     background-color: transparent;
     border-color: transparent;
+    cursor: pointer;
+    padding: 0px;
+    border: none; 
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
