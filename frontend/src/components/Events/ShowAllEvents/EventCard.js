@@ -17,8 +17,8 @@ function EventCardComponent({ event }) {
 
     console.log('eventCardComponet', event)
 
-    if(!event){
-        return null; 
+    if (!event) {
+        return null;
     }
 
     return (
@@ -27,10 +27,13 @@ function EventCardComponent({ event }) {
                 <img className='eventCard-previewImg' src={event.previewImage} alt="Not Found" />
             </div>
             <div className="eventCard-right-div">
-                <div className='eventDate'>{dateString1} &#183; {dateString2}</div>
-                <div className='eventName'>{event.name}</div>
-                <div className='eventGroupInfo'>{`${event.Group.name}`} &#183; {`${event.Group.city},${event.Group.state}`}</div>
-                <div className='eventAttendees'>{event.numAttending} attendees </div>
+                <div id="eventCard-right-div-upper-div">
+
+                    <div className='eventDateCard'>{dateString1} &#183; {dateString2}</div>
+                    <div className='eventNameCard'>{event.name}</div>
+                    <div className='eventGroupInfoCard'>{`${event.Group.name}`} &#183; {`${event.Group.city},${event.Group.state}`}</div>
+                </div>
+                <div className='eventAttendeesCard'>{event.numAttending} attendees </div>
             </div>
         </div>
     );
