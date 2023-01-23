@@ -157,7 +157,9 @@ const groupReducer = (state = initialState, action) => {
                 delete newState.singleGroup;
             }
             delete newState.allGroups[action.groupId];
-            console.log('newState', newState);
+            
+            //add functionality to delete events
+
             return newState
         }
         default:
