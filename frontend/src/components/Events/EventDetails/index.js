@@ -60,11 +60,11 @@ function EventDetailsComponent() {
     return (
         <>
             <div id='upperMostDivEventDetails'>
-                <div className='eventDetailUpperDiv'>
+                <div className='eventDetailUpperDivLeft'>
                     <div id="eventDetailsEventName">{event.name}</div>
                     <div id='organizerOuterDiv'>
                         <div id='leftPictureOrganizerDiv'>
-                            <i className="fa-regular fa-user fa-3x "></i>
+                            <i className="fa-regular fa-user fa-3x"></i>
                         </div>
                         <div id='rightOrganizerDiv'>
                             <div>Hosted By</div>
@@ -72,6 +72,7 @@ function EventDetailsComponent() {
                         </div>
                     </div>
                 </div>
+                <div className='eventDetailUpperDivRight'></div>
             </div>
             <div id='eventDetailsdetailsDiv'>
                 <div id="eventDetailsLeftDiv">
