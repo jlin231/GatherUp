@@ -679,6 +679,17 @@ router.post('/:groupId/events', requireAuth, async (req, res, next) => {
         bodyErr.errors.price = "Price is invalid";
         check = true;
     }
+    if(price){
+        const stringPrice = price.toString();
+        let parts = stringPrice.split('.');
+        console.log('parts', parts)
+        if(parts[1].length !==2){
+            bodyErr.statusCode = 400;
+            bodyErr.errors.price = "Price is invalid";
+            check = true;
+        }
+    }
+
     if (!description) {
         bodyErr.statusCode = 400;
         bodyErr.errors.description = "Description is required";
