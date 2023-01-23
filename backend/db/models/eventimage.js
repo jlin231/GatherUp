@@ -20,15 +20,15 @@ module.exports = (sequelize, DataTypes) => {
   }
   EventImage.init({
     eventId: {
-      type:DataTypes.INTEGER,
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     url: {
-      type:DataTypes.STRING,
+      type: DataTypes.STRING(5000),
       allowNull: false
     },
     preview: {
-      type:DataTypes.BOOLEAN,
+      type: DataTypes.BOOLEAN,
       allowNull: false
     }
   }, {

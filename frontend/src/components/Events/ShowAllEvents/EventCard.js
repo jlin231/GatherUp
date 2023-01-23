@@ -15,6 +15,12 @@ function EventCardComponent({ event }) {
     const dateString1 = `${weekday[day]}, ${months[month]} ${day_number}`
     const dateString2 = `${minutes} PST`;
 
+    console.log('eventCardComponet', event)
+
+    if(!event){
+        return null; 
+    }
+
     return (
         <div className="eventCardDivOuter" onClick={() => history.push(`/event/${event.id}`)}>
             <div className="eventCard-left-div">

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import './EventDetails.css';
-import { thunkLoadEventDetails } from '../../../store/event';
+import { thunkLoadEventDetails, thunkLoadEvents } from '../../../store/event';
 import { thunkLoadGroupDetails } from '../../../store/group';
 
 function getDateString(startDate) {
@@ -32,6 +32,7 @@ function EventDetailsComponent() {
     //load info into single event 
     useEffect(() => {
         dispatch(thunkLoadEventDetails(eventId));
+        dispatch(thunkLoadEvents());
     }, [eventId, dispatch]);
 
     useEffect(() => {
@@ -46,9 +47,9 @@ function EventDetailsComponent() {
 
     //find preview Image from event details
     let previewImage = null;
-    event.EventImages.forEach((image)=>{
-        if(image.preview === true){
-            previewImage = image.url; 
+    event.EventImages.forEach((image) => {
+        if (image.preview === true) {
+            previewImage = image.url;
         }
     })
 
@@ -75,7 +76,7 @@ function EventDetailsComponent() {
             <div id='eventDetailsdetailsDiv'>
                 <div id="eventDetailsLeftDiv">
                     <div className='eventDetailsImageDiv'>
-                        <img className="eventDetailsPreviewImage" src={previewImage} alt="Not Found"/>
+                        <img className="eventDetailsPreviewImage" src={previewImage} alt="Not Found" />
                     </div>
                     <div id="detailsText">Details</div>
                     <div id="eventDescription">{event.description}</div>
@@ -104,7 +105,7 @@ function EventDetailsComponent() {
                             <div id="CameraIcon">
                                 <i className="fa-solid fa-video icon"></i>
                             </div>
-                            <div id="EventText">
+                            <div id="EventDetailsText">
                                 <div>{event.type} event</div>
                                 <div>Link visible for attendees</div>
                             </div>

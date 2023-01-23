@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import EventCardComponent from './EventCard';
 import './ShowAllEvents.css';
+import { thunkLoadEvents } from '../../../store/event';
 
 function ShowAllEventsComponent() {
     //get info from all group states
 
     const events = useSelector((state) => state.events);
+
     if (Object.values(events).length === 0) {
         return null;
     }
