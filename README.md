@@ -8,7 +8,7 @@ Live site: <a href="https://meetupclone.onrender.com">GatherUp</a>
 
 Frameworks, Platforms and Libraries
 
-- JavaScripot
+- JavaScript
 - HTML5
 - Node.js
 - CSS3
