@@ -22,8 +22,10 @@ function SignupFormModal() {
         if (password === confirmPassword) {
             setErrors([]);
             return dispatch(sessionActions.signup({ email, username, firstName, lastName, password }))
-                .then(closeModal)
-                .then(history.push('/home/groups'))
+                .then((res) => {
+                    closeModal();
+                    history.push('/home/groups')
+                })
                 .catch(async (res) => {
                     const data = await res.json();
                     console.log('resData', data)

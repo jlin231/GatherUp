@@ -37,7 +37,7 @@ function SplashPage() {
                     </div>
                 </div>
                 <div className="div5">
-                    <div className="howMeetUpWorks font">How GatherLater works</div>
+                    <div className="howMeetUpWorks font">How GatherUp works</div>
                     <div className="MeetNewPeople font">Meet new people who share your interests through online and in-person events. It’s free to create an account.</div>
                 </div>
                 <div className="div6Buttons">

@@ -104,7 +104,9 @@ function Navigation({ isLoaded, type }) {
             <div className="rightButtons">
                 {sessionUser ? null : <li >
                     <button onClick={() => {
-                        dispatch(sessionActions.login({ credential: 'Demo-lition', password: 'password' }))
+                        dispatch(sessionActions.login({ credential: 'Demo-lition', password: 'password' })).then(() => {
+                            history.push('/')
+                        })
                     }} className="sessionButtons">DemoUser</button>
                 </li>}
                 {createGroupButton}

@@ -17,8 +17,10 @@ function LoginFormModal() {
     e.preventDefault();
     setErrors([]);
     return dispatch(sessionActions.login({ credential, password }))
-      .then(closeModal)
-      .then(history.push('/home/groups'))
+      .then((res) => {
+        closeModal();
+        history.push('/home/groups')
+    })
       .catch(
         async (res) => {
           const data = await res.json();
