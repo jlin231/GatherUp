@@ -1,5 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { NavLink, useHistory, useParams } from 'react-router-dom';
+import { NavLink, useHistory, useLocation, useParams } from 'react-router-dom';
 import './GroupDetails.css';
 import { thunkLoadGroupDetails } from '../../../store/group';
 import { useEffect } from 'react';
@@ -7,6 +7,7 @@ import { thunkLoadGroups, thunkDeleteGroup } from '../../../store/group';
 import GroupAboutComponent from './GroupInfo/GroupAbout'
 import GroupEventComponent from './GroupInfo/GroupEvent';
 import GroupMembersComponent from './GroupInfo/GroupMembers';
+import GroupSingleMemberComponent from './GroupInfo/GroupSingleMember';
 
 function GroupDetailsComponent() {
     const { groupId, groupInfo } = useParams();
@@ -15,6 +16,7 @@ function GroupDetailsComponent() {
 
     const sessionUser = useSelector(state => state.session.user);
     const groups = useSelector((state) => state.groups);
+    let location = useLocation()
 
     useEffect(() => {
         dispatch(thunkLoadGroups());
@@ -39,7 +41,8 @@ function GroupDetailsComponent() {
             previewImage = image.url;
         };
     });
-
+    location = String(location.pathname).split('/');
+    console.log('location', location)
     //change based on groupInfo
     let component = null;
     if (groupInfo === 'about') {
@@ -49,7 +52,14 @@ function GroupDetailsComponent() {
         component = <GroupEventComponent group={singleGroup} />;
     }
     else if (groupInfo === 'members') {
-        component = <GroupMembersComponent group={singleGroup} />;
+        // location = location.pathname.split('/');
+        if (location.length === 5) {
+            console.log(location)
+            component = <GroupSingleMemberComponent group={{ singleGroup, memberId: location[4] }} />;
+        }
+        else {
+            component = <GroupMembersComponent group={singleGroup} />;
+        }
     }
     else if (groupInfo === 'photos') {
         component = null;
@@ -67,7 +77,7 @@ function GroupDetailsComponent() {
     function editGroupRedirect(groupId) {
         history.push(`/group/${groupId}/edit`);
     };
-    
+
     function deleteGroup(groupId) {
         dispatch(thunkDeleteGroup(groupId));
         history.push('/home/groups')
@@ -96,9 +106,6 @@ function GroupDetailsComponent() {
                         Organized by
                         <span className='organizerId'> {singleGroup.Organizer.firstName} {singleGroup.Organizer.lastName[0]}.</span>
                     </div>
-                    {/* <div id='iconHolder'>
-                        Share: <i className="fa-brands fa-square-facebook icon"></i>  <i className="fa-brands fa-twitter icon"></i>  <i className="fa-brands fa-linkedin icon"></i>  <i className="fa-solid fa-envelope icon"></i>
-                    </div> */}
                 </div>
             </div>
             <div className="navigationDiv">

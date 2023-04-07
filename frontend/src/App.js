@@ -45,7 +45,7 @@ function App() {
             <Navigation isLoaded={isLoaded} />
             <EditGroupComponent />
           </Route>
-          <Route exact path='/group/:groupId/:groupInfo'>
+          <Route path='/group/:groupId/:groupInfo'>
             <Navigation isLoaded={isLoaded} type={"groupDetails"} />
             <GroupDetailsComponent />
           </Route>
