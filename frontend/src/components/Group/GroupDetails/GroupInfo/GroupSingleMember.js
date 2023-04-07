@@ -35,11 +35,17 @@ function GroupSingleMemberComponent(props) {
         }
     }
 
-    console.log(singleMember, 'singleMember')
+    console.log(props.singleGroup, '==================>')
+
+    const joinedMeetupDate = new Date(singleMember.Membership.createdAt)
+    const joinedGroupDate = new Date(singleMember.Membership.updatedAt)
+    const status = singleMember.Membership.status.charAt(0).toUpperCase() + singleMember.Membership.status.slice(1);
 
     return (
         <div className='groupDetailsEventCardOuterDiv'>
-            <div className='groupDetailsEventCardLeftDiv'></div>
+            <div className='groupDetailsEventCardLeftDiv' >
+                <div className='backButtonToAllMembers' onClick={() => history.push(`/group/${groupId}/members`)}>Back to All Members</div>
+            </div>
             <div className='groupDetailsMemberCardRightDiv'>
                 <div className='groupDetailsMemberDiv'>
                     <div className='groupDetailsSingleMemberContainer'>
@@ -52,15 +58,17 @@ function GroupSingleMemberComponent(props) {
                                     {singleMember.firstName} {singleMember.lastName}
                                 </div>
                                 <div className='singleMemberProfileStatus'>
-                                    {singleMember.Membership.status}
+                                    {status}
                                 </div>
                             </div>
                             <div className='bottomDiv'>
                                 <div className='singleMemberProfileLocation'>
-                                    {singleMember.firstName} {singleMember.lastName}
+                                    <div className='joinedHeading'>Joined Meetup</div>
+                                    <div className='joinedInfo'>{monthNames[joinedMeetupDate.getMonth()]} {joinedMeetupDate.getDate()}, {joinedMeetupDate.getFullYear()}</div>
                                 </div>
-                                <div className='singleMemberProfileJoinedTime'>
-                                    {singleMember.Membership.status}
+                                <div className='singleMemberProfileLocation'>
+                                    <div className='joinedHeading'>Joined Group</div>
+                                    {singleMember.Membership.status === 'pending' ? <div className='joinedInfo'> N/A</div> : <div className='joinedInfo'>{monthNames[joinedGroupDate.getMonth()]} {joinedGroupDate.getDate()}, {joinedGroupDate.getFullYear()}</div>}
                                 </div>
                             </div>
                         </div>

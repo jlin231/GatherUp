@@ -223,16 +223,14 @@
 }
 
 .groupDetailsSingleMemberLeft{
-    border: 1px solid blue;
     display: flex;
-    width: 30%; 
+    width: 25%; 
     height: 100%; 
 }
 
 .groupDetailsSingleMemberRight{
-    border: 1px solid red;
     display: flex;
-    width: 70%; 
+    width: 75%; 
     height: 100%; 
     flex-direction: column;
 }
@@ -256,6 +254,7 @@
 .singleMemberProfileName{
     font-size: 28px;
     font-weight: 500;
+    margin-bottom: 15px;
 }
 
 .singleMemberProfileStatus{
@@ -264,7 +263,37 @@
     color: rgb(117, 117, 117)
 }
 
+.topDiv{
+    border-bottom: 1px solid grey;
+    padding-bottom: 20px;
+}
+
 .bottomDiv{
     display: flex;
-    
+    margin-top: 20px; 
+    flex-direction: row;
+}
+
+.joinedHeading{
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.joinedInfo{
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.singleMemberProfileLocation{
+    width: 50%;
+}
+
+.backButtonToAllMembers{
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.backButtonToAllMembers:hover{
+    text-decoration: underline;
 }

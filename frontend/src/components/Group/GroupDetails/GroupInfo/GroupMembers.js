@@ -23,8 +23,6 @@ function GroupMembersComponent(singleGroup) {
         "July", "August", "September", "October", "November", "December"
     ];
     const date = new Date(memberInfo[0].Membership.updatedAt)
-    console.log(date, 'date')
-    console.log(monthNames[date.getMonth()])
 
     return (
         <div className='groupDetailsEventCardOuterDiv'>
