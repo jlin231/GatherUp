@@ -3,11 +3,13 @@ import thunk from 'redux-thunk';
 import sessionReducer from './session';
 import groupReducer from './group';
 import eventReducer from './event';
+import memberReducer from './member';
 
 const rootReducer = combineReducers({
   session: sessionReducer,
   groups: groupReducer,
-  events: eventReducer
+  events: eventReducer,
+  members: memberReducer
 });
 
 let enhancer;
@@ -22,7 +24,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const configureStore = (preloadedState) => {
-    return createStore(rootReducer, preloadedState, enhancer);
-  };
-  
-  export default configureStore;
+  return createStore(rootReducer, preloadedState, enhancer);
+};
+
+export default configureStore;

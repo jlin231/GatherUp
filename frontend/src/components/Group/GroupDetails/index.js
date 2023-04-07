@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { thunkLoadGroups, thunkDeleteGroup } from '../../../store/group';
 import GroupAboutComponent from './GroupInfo/GroupAbout'
 import GroupEventComponent from './GroupInfo/GroupEvent';
+import GroupMembersComponent from './GroupInfo/GroupMembers';
 
 function GroupDetailsComponent() {
     const { groupId, groupInfo } = useParams();
@@ -48,7 +49,7 @@ function GroupDetailsComponent() {
         component = <GroupEventComponent group={singleGroup} />;
     }
     else if (groupInfo === 'members') {
-        component = null;
+        component = <GroupMembersComponent group={singleGroup} />;
     }
     else if (groupInfo === 'photos') {
         component = null;
@@ -103,9 +104,9 @@ function GroupDetailsComponent() {
             <div className="navigationDiv">
                 <div className='navigationLeftDiv'>
                     <NavLink className="groupDetailsTab aboutTab" exact to={`/group/${groupId}/about`}>About</NavLink>
-                    <NavLink className="groupDetailsTab eventsTab" exact to={`/group/${groupId}/events`}>Events</NavLink>
-                    <NavLink className="groupDetailsTab" exact to={`/group/${groupId}/members`}></NavLink>
-                    <NavLink className="groupDetailsTab" exact to={`/group/${groupId}/photos`}></NavLink>
+                    <NavLink className="groupDetailsTab aboutTab" exact to={`/group/${groupId}/events`}>Events</NavLink>
+                    <NavLink className="groupDetailsTab aboutTab" exact to={`/group/${groupId}/members`}>Members</NavLink>
+                    <NavLink className="groupDetailsTab aboutTab" exact to={`/group/${groupId}/photos`}>Photos</NavLink>
                 </div>
 
                 <div className='navigationRightDiv'>
