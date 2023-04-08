@@ -8,6 +8,7 @@ import GroupAboutComponent from './GroupInfo/GroupAbout'
 import GroupEventComponent from './GroupInfo/GroupEvent';
 import GroupMembersComponent from './GroupInfo/GroupMembers';
 import GroupSingleMemberComponent from './GroupInfo/GroupSingleMember';
+import { thunkLoadSingleMembership } from '../../../store/member';
 
 function GroupDetailsComponent() {
     const { groupId, groupInfo } = useParams();
@@ -16,15 +17,17 @@ function GroupDetailsComponent() {
 
     const sessionUser = useSelector(state => state.session.user);
     const groups = useSelector((state) => state.groups);
+    const memberInfo = useSelector((state) => state.members.groupMembers)
     let location = useLocation()
 
     useEffect(() => {
         dispatch(thunkLoadGroups());
         dispatch(thunkLoadGroupDetails(groupId));
+        dispatch(thunkLoadSingleMembership(groupId))
     }, [groupId, dispatch])
 
     const singleGroup = groups.singleGroup;
-    if (!groups.allGroups[groupId] || !singleGroup || Object.values(groups).length === 0) {
+    if (!groups.allGroups[groupId] || !singleGroup || Object.values(groups).length === 0 || !memberInfo) {
         return null;
     }
 
@@ -74,6 +77,15 @@ function GroupDetailsComponent() {
         else organizer = false;
     }
 
+    //check if current user is a member of group
+    let memberStatus = false
+    if (sessionUser && memberInfo){
+        memberStatus = memberInfo.find((member)=>{
+            return member.id === sessionUser.id
+        })
+    }
+    console.log(memberStatus, '========================<')
+
     function editGroupRedirect(groupId) {
         history.push(`/group/${groupId}/edit`);
     };
@@ -90,22 +102,27 @@ function GroupDetailsComponent() {
                     <img className='groupDetailspreviewImage' src={`${previewImage}`} alt='Not Found' />
                 </div>
                 <div className='groupDetailsRightDiv'>
-
-                    <div className='groupName'>
-                        {singleGroup.name}
-                    </div>
-                    <div className='groupLocation'>
-                        <i className="fa-solid fa-location-dot icon"></i>
-                        {singleGroup.city}, {singleGroup.state}
-                    </div>
                     <div>
-                        <i className="fa-solid fa-user-group icon"></i> {singleGroup.numMembers} members . {singleGroup.private ? 'Private' : 'Public'} group <i class="fa-solid fa-circle-question icon"></i>
+
+                        <div className='groupName'>
+                            {singleGroup.name}
+                        </div>
+                        <div className='groupLocation'>
+                            <i className="fa-solid fa-location-dot icon"></i>
+                            {singleGroup.city}, {singleGroup.state}
+                        </div>
+                        <div>
+                            <i className="fa-solid fa-user-group icon"></i> {singleGroup.numMembers} members . {singleGroup.private ? 'Private' : 'Public'} group <i class="fa-solid fa-circle-question icon"></i>
+                        </div>
+                        <div className='groupOrganizer'>
+                            <i className="fa-regular fa-user icon"></i>
+                            Organized by
+                            <span className='organizerId'> {singleGroup.Organizer.firstName} {singleGroup.Organizer.lastName[0]}.</span>
+                        </div>
                     </div>
-                    <div className='groupOrganizer'>
-                        <i className="fa-regular fa-user icon"></i>
-                        Organized by
-                        <span className='organizerId'> {singleGroup.Organizer.firstName} {singleGroup.Organizer.lastName[0]}.</span>
-                    </div>
+                    {!memberStatus ? <div className='joinGroupButton'>
+                        Join this Group
+                    </div>: null}
                 </div>
             </div>
             <div className="navigationDiv">

@@ -22,7 +22,9 @@ function GroupMembersComponent(singleGroup) {
     const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
-    const date = new Date(memberInfo[0].Membership.updatedAt)
+    if (memberInfo.length > 0) {
+        const date = new Date(memberInfo[0].Membership.updatedAt)
+    }
 
     return (
         <div className='groupDetailsEventCardOuterDiv'>
@@ -31,12 +33,12 @@ function GroupMembersComponent(singleGroup) {
                 <div className='groupDetailsMemberDiv'>
                     <div className='heading'>All Members</div>
                     {
-                        memberInfo.map((member, index) => {
+                        (memberInfo.length > 0) ? memberInfo.map((member, index) => {
                             const date = new Date(member.Membership.updatedAt)
                             console.log(date, 'date')
                             console.log(monthNames[date.getMonth()])
                             return (
-                                <div className='memberShipCard' key={index} onClick={()=>{history.push(`/group/${singleGroup.group.id}/members/${member.id}`)}}>
+                                <div className='memberShipCard' key={index} onClick={() => { history.push(`/group/${singleGroup.group.id}/members/${member.id}`) }}>
                                     <div className='circleProfile'>{member.firstName[0]}{member.lastName[0]}</div>
                                     <div>
                                         <div className='memberShipCardInfo'>{member.firstName} {member.lastName}</div>
@@ -44,7 +46,7 @@ function GroupMembersComponent(singleGroup) {
                                     </div>
                                 </div>
                             )
-                        })
+                        }) : <div className='memberShipCard'>Join to be this Group's First Member!</div>
                     }
                 </div>
             </div>
