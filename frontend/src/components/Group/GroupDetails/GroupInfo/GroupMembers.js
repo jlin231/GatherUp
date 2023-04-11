@@ -1,8 +1,9 @@
 import './Group.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { thunkLoadSingleMembership } from '../../../../store/member';
+import { thunkLoadSingleMembership, thunkApproveSingleMembership, thunkDeleteSingleMembership } from '../../../../store/member';
 import { useHistory } from 'react-router-dom';
+
 
 function GroupMembersComponent(singleGroup) {
     //dispatch action to get all events from a group by its id 
@@ -11,6 +12,8 @@ function GroupMembersComponent(singleGroup) {
     const dispatch = useDispatch();
     const history = useHistory()
     const memberInfo = useSelector((state) => state.members.groupMembers)
+    const sessionUser = useSelector(state => state.session.user);
+    const members = useSelector((state) => state.members)
 
     useEffect(() => {
         dispatch(thunkLoadSingleMembership(singleGroup.group.id))
@@ -22,8 +25,38 @@ function GroupMembersComponent(singleGroup) {
     const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
-    if (memberInfo.length > 0) {
-        const date = new Date(memberInfo[0].Membership.updatedAt)
+
+    //find memberInfo, and see if user is a co-host or organizer
+    let owner = false
+    let cohost = false;
+
+    if (sessionUser) {
+        memberInfo.forEach((element) => {
+            if (element.Membership.status === 'co-host') {
+                cohost = true
+            }
+        })
+    }
+
+    if (sessionUser && (sessionUser.id === singleGroup.group.organizerId)) {
+        owner = true;
+    }
+    console.log('owner', owner)
+    console.log('cohost', cohost)
+
+    const pendingMembers = memberInfo.filter((member) => {
+
+        if (member.Membership.status === 'pending') {
+            return member;
+        }
+    })
+
+    const handleApprove = (memberId) => {
+        dispatch(thunkApproveSingleMembership(singleGroup.group.id, memberId))
+    }
+
+    const handleDeleteRejectMember = (memberId) => {
+        dispatch(thunkDeleteSingleMembership(singleGroup.group.id, memberId))
     }
 
     return (
@@ -35,20 +68,63 @@ function GroupMembersComponent(singleGroup) {
                     {
                         (memberInfo.length > 0) ? memberInfo.map((member, index) => {
                             const date = new Date(member.Membership.updatedAt)
-                            console.log(date, 'date')
-                            console.log(monthNames[date.getMonth()])
-                            return (
-                                <div className='memberShipCard' key={index} onClick={() => { history.push(`/group/${singleGroup.group.id}/members/${member.id}`) }}>
-                                    <div className='circleProfile'>{member.firstName[0]}{member.lastName[0]}</div>
-                                    <div>
-                                        <div className='memberShipCardInfo'>{member.firstName} {member.lastName}</div>
-                                        <div className='memberShipCardDate'>Joined {monthNames[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
-                                    </div>
-                                </div>
-                            )
+                            if (member.Membership.status !== 'pending') {
+                                return (
+                                    <>
+                                        <div className='pendingMemberShipCard' key={index} >
+                                            <div className='internalMemberDiv' onClick={() => { history.push(`/group/${singleGroup.group.id}/members/${member.id}`) }}>
+                                                <div className='circleProfile'>{member.firstName[0]}{member.lastName[0]}</div>
+                                                <div>
+                                                    <div className='memberShipCardInfo'>{member.firstName} {member.lastName}</div>
+                                                    <div className='memberShipCardDate'>Joined {monthNames[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
+                                                </div>
+                                            </div>
+                                            {
+                                                (owner || cohost) ?
+                                                    <div className='editGroupButton' onClick={() => handleDeleteRejectMember(member.id)}>
+                                                        Delete Member
+                                                    </div> : null
+                                            }
+                                        </div>
+                                    </>
+                                )
+                            }
                         }) : <div className='memberShipCard'>Join to be this Group's First Member!</div>
                     }
                 </div>
+                {
+                    ((owner || cohost) && pendingMembers.length > 0) ? <div className='groupDetailsPendingMembersDiv'>
+                        <div className='heading'>Pending Members</div>
+                        {
+                            (pendingMembers.length > 0) ? pendingMembers.map((member, index) => {
+                                const date = new Date(member.Membership.updatedAt)
+                                if (member.Membership.status === 'pending') {
+                                    return (
+                                        <>
+                                            <div className='pendingMemberShipCard' key={index} >
+                                                <div className='internalMemberDiv'>
+                                                    <div onClick={() => { history.push(`/group/${singleGroup.group.id}/members/${member.id}`) }} className='circleProfile'>{member.firstName[0]}{member.lastName[0]}</div>
+                                                    <div>
+                                                        <div className='memberShipCardInfo'>{member.firstName} {member.lastName}</div>
+                                                        <div className='memberShipCardDate'>Joined {monthNames[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
+                                                    </div>
+                                                </div>
+                                                <div className='buttonContainer'>
+                                                    <div className='editGroupButton' onClick={() => handleApprove(member.id)}>
+                                                        Approve Member
+                                                    </div>
+                                                    <div className='approveMemberButton' onClick={() => handleDeleteRejectMember(member.id)}>
+                                                        Reject Member
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )
+                                }
+                            }) : null
+                        }
+                    </div> : null
+                }
             </div>
         </div>
     );

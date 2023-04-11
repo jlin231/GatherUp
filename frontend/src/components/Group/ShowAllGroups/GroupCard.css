@@ -4,6 +4,7 @@
     flex-direction: row;
     align-items: center;
     width: 100%;
+    cursor: pointer;
 }
 
 .group-cardpreviewImg {
@@ -51,12 +52,12 @@
     height: 90%
 }
 
-.group-card-groupAbout{
-    color: rgb(117,117,117);
-    font-size: 14px; 
+.group-card-groupAbout {
+    color: rgb(117, 117, 117);
+    font-size: 14px;
 }
 
-.group-card-groupMembers{
-    color: rgb(117,117,117);
-    font-size: 14px; 
+.group-card-groupMembers {
+    color: rgb(117, 117, 117);
+    font-size: 14px;
 }

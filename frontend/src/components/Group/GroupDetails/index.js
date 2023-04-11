@@ -27,7 +27,7 @@ function GroupDetailsComponent() {
     }, [groupId, dispatch])
 
     const singleGroup = groups.singleGroup;
-    if (!groups.allGroups[groupId] || !singleGroup || Object.values(groups).length === 0 || !memberInfo) {
+    if (!groups.allGroups[groupId] || !singleGroup || Object.values(groups).length === 0) {
         return null;
     }
 
@@ -45,7 +45,7 @@ function GroupDetailsComponent() {
         };
     });
     location = String(location.pathname).split('/');
-    console.log('location', location)
+
     //change based on groupInfo
     let component = null;
     if (groupInfo === 'about') {
@@ -57,7 +57,6 @@ function GroupDetailsComponent() {
     else if (groupInfo === 'members') {
         // location = location.pathname.split('/');
         if (location.length === 5) {
-            console.log(location)
             component = <GroupSingleMemberComponent group={{ singleGroup, memberId: location[4] }} />;
         }
         else {
@@ -79,12 +78,11 @@ function GroupDetailsComponent() {
 
     //check if current user is a member of group
     let memberStatus = false
-    if (sessionUser && memberInfo){
-        memberStatus = memberInfo.find((member)=>{
+    if (sessionUser && memberInfo) {
+        memberStatus = memberInfo.find((member) => {
             return member.id === sessionUser.id
         })
     }
-    console.log(memberStatus, '========================<')
 
     function editGroupRedirect(groupId) {
         history.push(`/group/${groupId}/edit`);
@@ -93,6 +91,10 @@ function GroupDetailsComponent() {
     function deleteGroup(groupId) {
         dispatch(thunkDeleteGroup(groupId));
         history.push('/home/groups')
+    }
+
+    function joinGroup(groupId) {
+        console.log(groupId)
     }
 
     return (
@@ -120,9 +122,9 @@ function GroupDetailsComponent() {
                             <span className='organizerId'> {singleGroup.Organizer.firstName} {singleGroup.Organizer.lastName[0]}.</span>
                         </div>
                     </div>
-                    {!memberStatus ? <div className='joinGroupButton'>
+                    {(sessionUser && !memberStatus) ? <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>
                         Join this Group
-                    </div>: null}
+                    </div> : null}
                 </div>
             </div>
             <div className="navigationDiv">
