@@ -1,11 +1,14 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { NavLink, useHistory, useParams } from 'react-router-dom';
+import { NavLink, useHistory, useLocation, useParams } from 'react-router-dom';
 import './GroupDetails.css';
 import { thunkLoadGroupDetails } from '../../../store/group';
 import { useEffect } from 'react';
 import { thunkLoadGroups, thunkDeleteGroup } from '../../../store/group';
 import GroupAboutComponent from './GroupInfo/GroupAbout'
 import GroupEventComponent from './GroupInfo/GroupEvent';
+import GroupMembersComponent from './GroupInfo/GroupMembers';
+import GroupSingleMemberComponent from './GroupInfo/GroupSingleMember';
+import { thunkLoadSingleMembership } from '../../../store/member';
 
 function GroupDetailsComponent() {
     const { groupId, groupInfo } = useParams();
@@ -14,10 +17,13 @@ function GroupDetailsComponent() {
 
     const sessionUser = useSelector(state => state.session.user);
     const groups = useSelector((state) => state.groups);
+    const memberInfo = useSelector((state) => state.members.groupMembers)
+    let location = useLocation()
 
     useEffect(() => {
         dispatch(thunkLoadGroups());
         dispatch(thunkLoadGroupDetails(groupId));
+        dispatch(thunkLoadSingleMembership(groupId))
     }, [groupId, dispatch])
 
     const singleGroup = groups.singleGroup;
@@ -38,6 +44,7 @@ function GroupDetailsComponent() {
             previewImage = image.url;
         };
     });
+    location = String(location.pathname).split('/');
 
     //change based on groupInfo
     let component = null;
@@ -48,7 +55,13 @@ function GroupDetailsComponent() {
         component = <GroupEventComponent group={singleGroup} />;
     }
     else if (groupInfo === 'members') {
-        component = null;
+        // location = location.pathname.split('/');
+        if (location.length === 5) {
+            component = <GroupSingleMemberComponent group={{ singleGroup, memberId: location[4] }} />;
+        }
+        else {
+            component = <GroupMembersComponent group={singleGroup} />;
+        }
     }
     else if (groupInfo === 'photos') {
         component = null;
@@ -63,13 +76,25 @@ function GroupDetailsComponent() {
         else organizer = false;
     }
 
+    //check if current user is a member of group
+    let memberStatus = false
+    if (sessionUser && memberInfo) {
+        memberStatus = memberInfo.find((member) => {
+            return member.id === sessionUser.id
+        })
+    }
+
     function editGroupRedirect(groupId) {
         history.push(`/group/${groupId}/edit`);
     };
-    
+
     function deleteGroup(groupId) {
         dispatch(thunkDeleteGroup(groupId));
         history.push('/home/groups')
+    }
+
+    function joinGroup(groupId) {
+        console.log(groupId)
     }
 
     return (
@@ -79,33 +104,35 @@ function GroupDetailsComponent() {
                     <img className='groupDetailspreviewImage' src={`${previewImage}`} alt='Not Found' />
                 </div>
                 <div className='groupDetailsRightDiv'>
-
-                    <div className='groupName'>
-                        {singleGroup.name}
-                    </div>
-                    <div className='groupLocation'>
-                        <i className="fa-solid fa-location-dot icon"></i>
-                        {singleGroup.city}, {singleGroup.state}
-                    </div>
                     <div>
-                        <i className="fa-solid fa-user-group icon"></i> {singleGroup.numMembers} members . {singleGroup.private ? 'Private' : 'Public'} group <i class="fa-solid fa-circle-question icon"></i>
+
+                        <div className='groupName'>
+                            {singleGroup.name}
+                        </div>
+                        <div className='groupLocation'>
+                            <i className="fa-solid fa-location-dot icon"></i>
+                            {singleGroup.city}, {singleGroup.state}
+                        </div>
+                        <div>
+                            <i className="fa-solid fa-user-group icon"></i> {singleGroup.numMembers} members . {singleGroup.private ? 'Private' : 'Public'} group <i class="fa-solid fa-circle-question icon"></i>
+                        </div>
+                        <div className='groupOrganizer'>
+                            <i className="fa-regular fa-user icon"></i>
+                            Organized by
+                            <span className='organizerId'> {singleGroup.Organizer.firstName} {singleGroup.Organizer.lastName[0]}.</span>
+                        </div>
                     </div>
-                    <div className='groupOrganizer'>
-                        <i className="fa-regular fa-user icon"></i>
-                        Organized by
-                        <span className='organizerId'> {singleGroup.Organizer.firstName} {singleGroup.Organizer.lastName[0]}.</span>
-                    </div>
-                    {/* <div id='iconHolder'>
-                        Share: <i className="fa-brands fa-square-facebook icon"></i>  <i className="fa-brands fa-twitter icon"></i>  <i className="fa-brands fa-linkedin icon"></i>  <i className="fa-solid fa-envelope icon"></i>
-                    </div> */}
+                    {(sessionUser && !memberStatus) ? <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>
+                        Join this Group
+                    </div> : null}
                 </div>
             </div>
             <div className="navigationDiv">
                 <div className='navigationLeftDiv'>
                     <NavLink className="groupDetailsTab aboutTab" exact to={`/group/${groupId}/about`}>About</NavLink>
-                    <NavLink className="groupDetailsTab eventsTab" exact to={`/group/${groupId}/events`}>Events</NavLink>
-                    <NavLink className="groupDetailsTab" exact to={`/group/${groupId}/members`}></NavLink>
-                    <NavLink className="groupDetailsTab" exact to={`/group/${groupId}/photos`}></NavLink>
+                    <NavLink className="groupDetailsTab aboutTab" exact to={`/group/${groupId}/events`}>Events</NavLink>
+                    <NavLink className="groupDetailsTab aboutTab" exact to={`/group/${groupId}/members`}>Members</NavLink>
+                    <NavLink className="groupDetailsTab aboutTab" exact to={`/group/${groupId}/photos`}>Photos</NavLink>
                 </div>
 
                 <div className='navigationRightDiv'>

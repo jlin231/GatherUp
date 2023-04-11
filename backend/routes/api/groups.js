@@ -779,8 +779,8 @@ router.get('/:groupId/members', async (req, res, next) => {
         delete user.username;
         delete user.Membership.userId;
         delete user.Membership.groupId;
-        delete user.Membership.createdAt;
-        delete user.Membership.updatedAt;
+        // delete user.Membership.createdAt;
+        // delete user.Membership.updatedAt;
     })
     let where = {
         groupId,
@@ -930,11 +930,6 @@ router.put('/:groupId/membership', requireAuth, async (req, res, next) => {
             status: "co-host"
         }
     });
-
-    // console.log(user.id)
-    // console.log(groupInfo.organizerId)
-    // console.log(userStatus)
-    // console.log(membershipStatus)
 
     if (membershipStatus === 'pending' && status === "member") {
         if ((user.id === groupInfo.organizerId || userStatus)) {

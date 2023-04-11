@@ -6,8 +6,7 @@ import OpenModalButton from '../OpenModalButton';
 import LoginFormModal from '../LoginFormModal';
 import SignupFormModal from '../SignupFormModal';
 import './Navigation.css';
-import meetupIcon from '../../images/meetup_icon.png'
-import { thunkDeleteGroup } from '../../store/group';
+import meetupIcon from '../../images/gatherUpIcon.png'
 import { thunkDeleteEvent } from '../../store/event';
 import * as sessionActions from "../../store/session";
 
@@ -30,7 +29,6 @@ function Navigation({ isLoaded, type }) {
         history.push(`/group/create`)
     }
 
-
     let createEventButton;
     let editButton;
     let createGroupButton;
@@ -41,7 +39,6 @@ function Navigation({ isLoaded, type }) {
             <button className="CreateGroupButton sessionButtons" onClick={() => createGroupRedirect()}>Start a new Group</button>
         </li>)
     }
-
 
     if (type === 'groupDetails' && groups && sessionUser) {
         if (sessionUser.id === groups[+groupId].organizerId) {
