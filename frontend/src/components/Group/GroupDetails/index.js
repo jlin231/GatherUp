@@ -82,10 +82,15 @@ function GroupDetailsComponent() {
     //check if current user is a member of group
     let memberStatus = false
     if (sessionUser && memberInfo) {
-        memberStatus = memberInfo.find((member) => {
-            return member.id === sessionUser.id
+        memberInfo.find((member) => {
+            if(member.id === sessionUser.id){
+                memberStatus = true
+            }
         })
     }
+
+    console.log('organizerIndex', organizer)
+    console.log('memberStatusIndex', memberStatus)
 
     function editGroupRedirect(groupId) {
         history.push(`/group/${groupId}/edit`);
