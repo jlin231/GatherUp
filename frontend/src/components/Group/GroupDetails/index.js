@@ -8,7 +8,8 @@ import GroupAboutComponent from './GroupInfo/GroupAbout'
 import GroupEventComponent from './GroupInfo/GroupEvent';
 import GroupMembersComponent from './GroupInfo/GroupMembers';
 import GroupSingleMemberComponent from './GroupInfo/GroupSingleMember';
-import { thunkLoadSingleMembership } from '../../../store/member';
+import { thunkLoadSingleMembership, thunkRequestJoinSingleMembership } from '../../../store/member';
+
 
 function GroupDetailsComponent() {
     const { groupId, groupInfo } = useParams();
@@ -25,6 +26,8 @@ function GroupDetailsComponent() {
         dispatch(thunkLoadGroupDetails(groupId));
         dispatch(thunkLoadSingleMembership(groupId))
     }, [groupId, dispatch])
+
+
 
     const singleGroup = groups.singleGroup;
     if (!groups.allGroups[groupId] || !singleGroup || Object.values(groups).length === 0) {
@@ -94,7 +97,8 @@ function GroupDetailsComponent() {
     }
 
     function joinGroup(groupId) {
-        console.log(groupId)
+        dispatch(thunkRequestJoinSingleMembership(groupId))
+        history.push(`/group/${groupId}/members`);
     }
 
     return (
@@ -122,9 +126,12 @@ function GroupDetailsComponent() {
                             <span className='organizerId'> {singleGroup.Organizer.firstName} {singleGroup.Organizer.lastName[0]}.</span>
                         </div>
                     </div>
-                    {(sessionUser && !memberStatus) ? <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>
+                    {(sessionUser && !memberStatus) ? (singleGroup.private ? <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>
+                        Request to Join
+                    </div> : <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>
                         Join this Group
-                    </div> : null}
+                    </div>)
+                        : null}
                 </div>
             </div>
             <div className="navigationDiv">

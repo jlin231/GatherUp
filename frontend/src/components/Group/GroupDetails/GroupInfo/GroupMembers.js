@@ -80,7 +80,7 @@ function GroupMembersComponent(singleGroup) {
                                                 </div>
                                             </div>
                                             {
-                                                (owner || cohost) ?
+                                                (owner || cohost) && singleGroup.group.organizerId !== member.id ? 
                                                     <div className='editGroupButton' onClick={() => handleDeleteRejectMember(member.id)}>
                                                         Delete Member
                                                     </div> : null

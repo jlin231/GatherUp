@@ -18,6 +18,7 @@ module.exports = {
       return array[num - 1].id;
     }
     const data = [
+      //group 1
       {
         groupId: getId(groups, 1),
         userId: getId(users, 1),
@@ -34,6 +35,12 @@ module.exports = {
         status: "pending"
       },
       {
+        groupId: getId(groups, 1),
+        userId: getId(users, 4),
+        status: "pending"
+      },
+      //group 2
+      {
         groupId: getId(groups, 2),
         userId: getId(users, 3),
         status: "member"
@@ -48,6 +55,7 @@ module.exports = {
         userId: getId(users, 2),
         status: "member"
       },
+      //group 3
       {
         groupId: getId(groups, 3),
         userId: getId(users, 1),
@@ -55,9 +63,24 @@ module.exports = {
       },
       {
         groupId: getId(groups, 3),
-        userId: getId(users, 3),
+        userId: getId(users, 2),
         status: "pending"
-      }
+      },
+      {
+        groupId: getId(groups, 3),
+        userId: getId(users, 3),
+        status: "member"
+      },
+      {
+        groupId: getId(groups, 3),
+        userId: getId(users, 5),
+        status: "pending"
+      },
+      {
+        groupId: getId(groups, 3),
+        userId: getId(users, 6),
+        status: "member"
+      },
     ]
     await queryInterface.bulkInsert(options, data);
   },

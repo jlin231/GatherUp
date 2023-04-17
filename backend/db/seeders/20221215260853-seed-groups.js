@@ -47,10 +47,10 @@ module.exports = {
       },
       {
         organizerId: getId(users, 1),
-        name: "Baskbetball Fans",
+        name: "Basketball Fans",
         about: "A group for Baskbetball fans to enjoy baskbetball and play together.",
         type: "In Person",
-        private: false,
+        private: true,
         city: "Buffalo",
         state: "New York"
       }

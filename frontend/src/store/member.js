@@ -3,10 +3,19 @@ import { csrfFetch } from "./csrf";
 const LOAD_SINGLE_MEMBERSHIP = 'membership/single/load';
 const APPROVE_SINGLE_MEMBERSHIP = 'membership/single/approve'
 const DELETE_SINGLE_MEMBERSHIP = 'membership/single/delete'
+const REQUEST_JOIN_SINGLE_MEMBERSHIP = 'membership/single/requestjoin'
+
 
 const actionLoadSingleMembership = (data) => {
     return {
         type: LOAD_SINGLE_MEMBERSHIP,
+        data
+    };
+};
+
+const actionRequestJoinSingleMembership = (data) => {
+    return {
+        type: REQUEST_JOIN_SINGLE_MEMBERSHIP,
         data
     };
 };
@@ -35,6 +44,17 @@ export const thunkLoadSingleMembership = (groupId) => async dispatch => {
     let data;
     data = await response.json();
     dispatch(actionLoadSingleMembership(data));
+    return data;
+};
+
+export const thunkRequestJoinSingleMembership = (groupId) => async dispatch => {
+    const response = await csrfFetch(`/api/groups/${groupId}/membership`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+    });
+    let data;
+    data = await response.json();
+    dispatch(actionRequestJoinSingleMembership(data));
     return data;
 };
 
@@ -86,6 +106,9 @@ const memberReducer = (state = initialState, action) => {
                 }
             }
             console.log('newstate', newState)
+            return newState;
+        case REQUEST_JOIN_SINGLE_MEMBERSHIP:
+            newState = Object.assign({}, state);
             return newState;
         case DELETE_SINGLE_MEMBERSHIP:
             newState = Object.assign({}, state);
