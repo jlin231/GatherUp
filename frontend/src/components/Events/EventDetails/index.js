@@ -1,10 +1,12 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import './EventDetails.css';
 import { thunkLoadEventDetails, thunkLoadEvents } from '../../../store/event';
 import { thunkLoadGroupDetails } from '../../../store/group';
+import { thunkLoadSingleEventAttendence } from '../../../store/attendence';
+import { thunkLoadSingleMembership } from '../../../store/member';
 
 function getDateString(startDate) {
     const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -25,23 +27,29 @@ function EventDetailsComponent() {
     //get eventId
     const { eventId } = useParams();
     const dispatch = useDispatch();
+    const history = useHistory()
 
     const event = useSelector((state) => state.events.singleEvent);
     const group = useSelector((state) => state.groups.singleGroup);
     const groups = useSelector((state) => state.groups.allGroups);
-    //load info into single event 
+    const attendees = useSelector((state)=> state.attendence.singleAttendees)    //load info into single event 
+    const sessionUser = useSelector(state => state.session.user);
+
     useEffect(() => {
         dispatch(thunkLoadEventDetails(eventId));
         dispatch(thunkLoadEvents());
+        
     }, [eventId, dispatch]);
 
     useEffect(() => {
         if (event) {
             dispatch(thunkLoadGroupDetails(event.groupId));
         }
+        dispatch(thunkLoadSingleEventAttendence(eventId))
+        
     }, [event, dispatch])
 
-    if (!event || !group || !groups) {
+    if (!event || !group || !groups || !attendees) {
         return null;
     }
 
@@ -52,6 +60,17 @@ function EventDetailsComponent() {
             previewImage = image.url;
         }
     })
+    console.log(attendees, 'attendees')
+    //split attendees into arrays with 4 in each array
+    let attendeesArray = []
+    for(let i = 0; i<=attendees.length; i=i+4){
+        attendeesArray.push(attendees.slice(i, i+4))
+    }
+
+    const joinEvent = () =>{
+        console.log(eventId, sessionUser.id)
+        
+    }
 
     //process start and end time into DayName, MonthName, Day, Year at
     //Hour:Minute AM/PM
@@ -70,6 +89,7 @@ function EventDetailsComponent() {
                             <div>Hosted By</div>
                             <div id="organizerName">{group.Organizer.firstName} {group.Organizer.lastName[0]}.</div>
                         </div>
+                        <div className='joinEventDiv' onClick={()=>joinEvent()}>Join Event</div>
                     </div>
                 </div>
                 <div className='eventDetailUpperDivRight'></div>
@@ -82,6 +102,22 @@ function EventDetailsComponent() {
                     <div id="detailsText">Details</div>
                     <div id="eventDescription">{event.description}</div>
                     <div id="Attendees">Attendees ({event.numAttending})</div>
+                    {
+                        attendeesArray.map((array)=>{
+                            return (
+                                <div className='rowDiv'>
+                                    {array.map((attendee, index)=>{
+                                        return (
+                                            <div className="attendeesProfileBlock">
+                                                <div className='attendeesProfileIcon'>{attendee.lastName[0]}</div>
+                                                <div className='attendeesName'>{attendee.firstName} {attendee.lastName[0]}.</div>
+                                            </div>
+                                        )
+                                })}
+                                </div>
+                            )
+                        })
+                    }
                 </div>
                 <div id="eventDetailsRightDiv">
                     <div id="GroupCard">
