@@ -27,12 +27,12 @@ function GroupMembersComponent(singleGroup) {
     ];
 
     //find memberInfo, and see if user is a co-host or organizer
-    let owner = false
+    let owner = false;
     let cohost = false;
 
     if (sessionUser) {
         memberInfo.forEach((element) => {
-            if (element.Membership.status === 'co-host') {
+            if (sessionUser.id === element.id &&  element.Membership.status === 'co-host') {
                 cohost = true
             }
         })

@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import './EventDetails.css';
 import { thunkLoadEventDetails, thunkLoadEvents } from '../../../store/event';
 import { thunkLoadGroupDetails } from '../../../store/group';
-import { thunkLoadSingleEventAttendence } from '../../../store/attendence';
+import { thunkJoinSingleEventAttendence, thunkLoadSingleEventAttendence } from '../../../store/attendence';
 import { thunkLoadSingleMembership } from '../../../store/member';
 
 function getDateString(startDate) {
@@ -69,8 +69,27 @@ function EventDetailsComponent() {
 
     const joinEvent = () =>{
         console.log(eventId, sessionUser.id)
-        
+        dispatch(thunkJoinSingleEventAttendence(eventId)).then(()=>dispatch(thunkLoadSingleEventAttendence(eventId)))
     }
+
+    let memberStatus = false
+    attendees.find((attendee)=>{
+        if(sessionUser && sessionUser.id === attendee.id){
+            memberStatus = true
+        }
+    })
+    console.log(memberStatus, 'memberStatus')
+
+    let userAttendanceStatus = false
+    attendees.find((attendee)=>{
+        if((sessionUser && sessionUser.id) === attendee.id){
+            userAttendanceStatus = attendee.Attendance.status
+            return true
+        }
+    })
+
+    console.log(userAttendanceStatus, 'statusasdfa sdf asdf')
+    
 
     //process start and end time into DayName, MonthName, Day, Year at
     //Hour:Minute AM/PM
@@ -89,7 +108,9 @@ function EventDetailsComponent() {
                             <div>Hosted By</div>
                             <div id="organizerName">{group.Organizer.firstName} {group.Organizer.lastName[0]}.</div>
                         </div>
-                        <div className='joinEventDiv' onClick={()=>joinEvent()}>Join Event</div>
+                        { memberStatus ? (userAttendanceStatus === "attending" ? <div className='joinEventDiv'>You are Attending</div> : 
+                            (userAttendanceStatus==='pending' ? <div className='joinEventDiv'>Request is Pending</div>:<div className='joinEventButton' onClick={()=>joinEvent()}>Join Event</div>)): null
+                        }
                     </div>
                 </div>
                 <div className='eventDetailUpperDivRight'></div>
@@ -106,7 +127,7 @@ function EventDetailsComponent() {
                         attendeesArray.map((array)=>{
                             return (
                                 <div className='rowDiv'>
-                                    {array.map((attendee, index)=>{
+                                    {array.map((attendee)=>{
                                         return (
                                             <div className="attendeesProfileBlock">
                                                 <div className='attendeesProfileIcon'>{attendee.lastName[0]}</div>

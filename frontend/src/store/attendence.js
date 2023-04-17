@@ -30,17 +30,16 @@ export const thunkLoadSingleEventAttendence = (eventId) => async dispatch => {
 };
 
 export const thunkJoinSingleEventAttendence = (eventId) => async dispatch => {
-    const response = await csrfFetch(`/api/events/${eventId}/attendence`, {
-        method: "GET",
+    const response = await csrfFetch(`/api/events/${eventId}/attendance`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" }
     });
     let data;
     data = await response.json();
-    console.log(data, 'data from getting all attendees')
+    console.log(data, 'data from requesting/joining an event')
     dispatch(actionJoinSingleEvent(data));
     return data;
 };
-
 
 const initialState = {};
 
@@ -53,7 +52,6 @@ const attendenceReducer = (state = initialState, action) => {
             return newState;
         case JOIN_SINGLE_EVENT_ATTENDENCE:
             newState = Object.assign({}, state);
-            newState.singleAttendees = action.data.Attendees
             return newState;
         default:
             return state;
