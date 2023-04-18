@@ -32,7 +32,7 @@ function GroupMembersComponent(singleGroup) {
 
     if (sessionUser) {
         memberInfo.forEach((element) => {
-            if (sessionUser.id === element.id &&  element.Membership.status === 'co-host') {
+            if (sessionUser.id === element.id && element.Membership.status === 'co-host') {
                 cohost = true
             }
         })
@@ -80,7 +80,7 @@ function GroupMembersComponent(singleGroup) {
                                                 </div>
                                             </div>
                                             {
-                                                (owner || cohost) && singleGroup.group.organizerId !== member.id ? 
+                                                (owner || cohost) && singleGroup.group.organizerId !== member.id ?
                                                     <div className='editGroupButton' onClick={() => handleDeleteRejectMember(member.id)}>
                                                         Delete Member
                                                     </div> : null
@@ -93,37 +93,39 @@ function GroupMembersComponent(singleGroup) {
                     }
                 </div>
                 {
-                    ((owner || cohost) && pendingMembers.length > 0) ? <div className='groupDetailsPendingMembersDiv'>
-                        <div className='heading'>Pending Members</div>
-                        {
-                            (pendingMembers.length > 0) ? pendingMembers.map((member, index) => {
-                                const date = new Date(member.Membership.updatedAt)
-                                if (member.Membership.status === 'pending') {
-                                    return (
-                                        <>
-                                            <div className='pendingMemberShipCard' key={index} >
-                                                <div className='internalMemberDiv'>
-                                                    <div onClick={() => { history.push(`/group/${singleGroup.group.id}/members/${member.id}`) }} className='circleProfile'>{member.firstName[0]}{member.lastName[0]}</div>
-                                                    <div>
-                                                        <div className='memberShipCardInfo'>{member.firstName} {member.lastName}</div>
-                                                        <div className='memberShipCardDate'>Joined {monthNames[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
+                    (pendingMembers.length > 0) ?
+                        <div className='groupDetailsPendingMembersDiv'>
+                            <div className='heading'>Pending Members</div>
+                            {
+                                (pendingMembers.length > 0) ? pendingMembers.map((member, index) => {
+                                    const date = new Date(member.Membership.updatedAt)
+                                    if (member.Membership.status === 'pending') {
+                                        return (
+                                            <>
+                                                <div className='pendingMemberShipCard' key={index} >
+                                                    <div className='internalMemberDiv'>
+                                                        <div onClick={() => { history.push(`/group/${singleGroup.group.id}/members/${member.id}`) }} className='circleProfile'>{member.firstName[0]}{member.lastName[0]}</div>
+                                                        <div>
+                                                            <div className='memberShipCardInfo'>{member.firstName} {member.lastName}</div>
+                                                            <div className='memberShipCardDate'>Joined {monthNames[date.getMonth()]} {date.getDate()}, {date.getFullYear()}</div>
+                                                        </div>
                                                     </div>
+                                                    {(owner || cohost) ?
+                                                    <div className='buttonContainer'>
+                                                        <div className='editGroupButton' onClick={() => handleApprove(member.id)}>
+                                                            Approve Member
+                                                        </div>
+                                                        <div className='approveMemberButton' onClick={() => handleDeleteRejectMember(member.id)}>
+                                                            Reject Member
+                                                        </div>
+                                                    </div>: null}
                                                 </div>
-                                                <div className='buttonContainer'>
-                                                    <div className='editGroupButton' onClick={() => handleApprove(member.id)}>
-                                                        Approve Member
-                                                    </div>
-                                                    <div className='approveMemberButton' onClick={() => handleDeleteRejectMember(member.id)}>
-                                                        Reject Member
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </>
-                                    )
-                                }
-                            }) : null
-                        }
-                    </div> : null
+                                            </>
+                                        )
+                                    }
+                                }) : null
+                            }
+                        </div> : null
                 }
             </div>
         </div>
