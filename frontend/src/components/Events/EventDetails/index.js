@@ -1,12 +1,11 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import './EventDetails.css';
 import { thunkLoadEventDetails, thunkLoadEvents } from '../../../store/event';
 import { thunkLoadGroupDetails } from '../../../store/group';
 import { thunkApproveSingleEventAttendence, thunkDeleteSingleEventAttendence, thunkJoinSingleEventAttendence, thunkLoadSingleEventAttendence } from '../../../store/attendence';
-import { thunkLoadSingleMembership } from '../../../store/member';
 
 function getDateString(startDate) {
     const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -27,7 +26,6 @@ function EventDetailsComponent() {
     //get eventId
     const { eventId } = useParams();
     const dispatch = useDispatch();
-    const history = useHistory()
 
     const event = useSelector((state) => state.events.singleEvent);
     const group = useSelector((state) => state.groups.singleGroup);
@@ -89,7 +87,9 @@ function EventDetailsComponent() {
             memberStatus = true
             if (sessionUser.id === group.Organizer.id) {
                 organizer = true
+                return true
             }
+            return true
         }
     })
     console.log(memberStatus, 'memberStatus')
