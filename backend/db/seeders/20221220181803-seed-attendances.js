@@ -31,12 +31,17 @@ module.exports = {
       },
       {
         eventId: getId(event, 2),
+        userId: getId(users, 1),
+        status: "attending"
+      },
+      {
+        eventId: getId(event, 2),
         userId: getId(users, 2),
         status: "attending"
       },
       {
         eventId: getId(event, 2),
-        userId: getId(users, 1),
+        userId: getId(users, 3),
         status: "pending"
       },
       {

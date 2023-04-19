@@ -107,7 +107,7 @@ function GroupDetailsComponent() {
     }
 
     function joinGroup(groupId) {
-        dispatch(thunkRequestJoinSingleMembership(groupId))
+        dispatch(thunkRequestJoinSingleMembership(groupId)).then(dispatch(thunkLoadSingleMembership(groupId)))
         history.push(`/group/${groupId}/members`);
     }
 
@@ -124,7 +124,6 @@ function GroupDetailsComponent() {
                 </div>
                 <div className='groupDetailsRightDiv'>
                     <div>
-
                         <div className='groupName'>
                             {singleGroup.name}
                         </div>

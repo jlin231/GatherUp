@@ -81,6 +81,11 @@ module.exports = {
         userId: getId(users, 6),
         status: "member"
       },
+      {
+        groupId: getId(groups, 4),
+        userId: getId(users, 1),
+        status: "member"
+      },
     ]
     await queryInterface.bulkInsert(options, data);
   },
