@@ -801,11 +801,6 @@ router.get('/:groupId/members', async (req, res, next) => {
         return res.json(result);
     }
 
-    for (let i = 0; i < users.length; i++) {
-        if (users[i].Membership.status === "pending") {
-            users.splice(i, 1);
-        }
-    }
     return res.json({ "Members": users });
 });
 

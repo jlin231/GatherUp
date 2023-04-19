@@ -28,10 +28,6 @@ function GroupEventComponent(singleGroup) {
     return (
         <div className='groupDetailsEventCardOuterDiv'>
             <div className='groupDetailsEventCardLeftDiv'>
-
-            </div>
-            <div>
-
             </div>
             <div className='groupDetailsEventCardRightDiv'>
                 {eventInfo.map((event) => {

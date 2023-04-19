@@ -8,7 +8,7 @@ import GroupAboutComponent from './GroupInfo/GroupAbout'
 import GroupEventComponent from './GroupInfo/GroupEvent';
 import GroupMembersComponent from './GroupInfo/GroupMembers';
 import GroupSingleMemberComponent from './GroupInfo/GroupSingleMember';
-import { thunkLoadSingleMembership, thunkRequestJoinSingleMembership } from '../../../store/member';
+import { thunkDeleteSingleMembership, thunkLoadSingleMembership, thunkRequestJoinSingleMembership } from '../../../store/member';
 
 
 function GroupDetailsComponent() {
@@ -26,7 +26,6 @@ function GroupDetailsComponent() {
         dispatch(thunkLoadGroupDetails(groupId));
         dispatch(thunkLoadSingleMembership(groupId))
     }, [groupId, dispatch])
-
 
 
     const singleGroup = groups.singleGroup;
@@ -80,12 +79,23 @@ function GroupDetailsComponent() {
     }
 
     //check if current user is a member of group
-    let memberStatus = false
+    let memberStatus = false;
+    let pending = false;
     if (sessionUser && memberInfo) {
-        memberStatus = memberInfo.find((member) => {
-            return member.id === sessionUser.id
+        memberInfo.find((member) => {
+            if (member.id === sessionUser.id) {
+                memberStatus = true
+                if (member.Membership.status === 'pending') {
+                    pending = true;
+                }
+            }
         })
     }
+
+
+    console.log('organizerIndex', organizer)
+    console.log('memberStatusIndex', memberStatus)
+    console.log('pendingStatus', pending)
 
     function editGroupRedirect(groupId) {
         history.push(`/group/${groupId}/edit`);
@@ -99,6 +109,11 @@ function GroupDetailsComponent() {
     function joinGroup(groupId) {
         dispatch(thunkRequestJoinSingleMembership(groupId))
         history.push(`/group/${groupId}/members`);
+    }
+
+    function leaveGroup() {
+        dispatch(thunkDeleteSingleMembership(groupId, sessionUser.id))
+        history.push(`/home/groups`);
     }
 
     return (
@@ -126,12 +141,19 @@ function GroupDetailsComponent() {
                             <span className='organizerId'> {singleGroup.Organizer.firstName} {singleGroup.Organizer.lastName[0]}.</span>
                         </div>
                     </div>
-                    {(sessionUser && !memberStatus) ? (singleGroup.private ? <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>
-                        Request to Join
-                    </div> : <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>
-                        Join this Group
-                    </div>)
-                        : null}
+                    {(sessionUser && !memberStatus) ? <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>Request to Join</div>
+                        : (pending ?
+                            <div>
+                                <div className='groupStatusDiv'>Request has been Sent</div>
+                                <div className='joinGroupButton' onClick={() => leaveGroup()}>Remove Request</div>
+                            </div>
+                            :
+                            <div>
+                                <div className='groupStatusDiv'>You are a Member</div>
+                                {!organizer ? <div className='joinGroupButton' onClick={() => leaveGroup()}>Leave Group</div> : null}
+                            </div>
+                        )
+                    }
                 </div>
             </div>
             <div className="navigationDiv">
