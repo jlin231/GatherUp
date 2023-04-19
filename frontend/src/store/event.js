@@ -6,6 +6,7 @@ const CREATE_EVENT = 'event/create'
 const LOAD_GROUP_EVENTS = 'event/group/load'
 const DELETE_EVENT = 'event/delete';
 
+
 const actionLoadEvents = (events) => {
     return {
         type: LOAD_EVENTS,

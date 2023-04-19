@@ -2,6 +2,8 @@ import { csrfFetch } from "./csrf";
 
 const LOAD_SINGLE_EVENT_ATTENDENCE = 'attendence/single/load';
 const JOIN_SINGLE_EVENT_ATTENDENCE = 'attendence/single/join';
+const APPROVE_EVENT_ATTENDENCE = 'attendence/single/join/approve';
+const DELETE_EVENT_ATTENDENCE = 'attendence/single/join/delete';
 
 const actionLoadSingleEventAttendence = (data) => {
     return {
@@ -17,6 +19,21 @@ const actionJoinSingleEvent = (data) => {
     };
 };
 
+const actionApproveSingleEvent = (data) => {
+    return {
+        type: APPROVE_EVENT_ATTENDENCE,
+        data
+    };
+};
+
+const actionDeleteSingleEvent = (data) => {
+    return {
+        type: DELETE_EVENT_ATTENDENCE,
+        data
+    };
+};
+
+
 export const thunkLoadSingleEventAttendence = (eventId) => async dispatch => {
     const response = await csrfFetch(`/api/events/${eventId}/attendees`, {
         method: "GET",
@@ -26,6 +43,39 @@ export const thunkLoadSingleEventAttendence = (eventId) => async dispatch => {
     data = await response.json();
     console.log(data, 'data from getting all attendees')
     dispatch(actionLoadSingleEventAttendence(data));
+    return data;
+};
+
+export const thunkDeleteSingleEventAttendence = (eventId, userId) => async dispatch => {
+    const response = await csrfFetch(`/api/events/${eventId}/attendance`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            "userId": userId
+        })
+    });
+    let data;
+    data = await response.json();
+    console.log(data, 'data from deleting attendees')
+    dispatch(actionDeleteSingleEvent(userId));
+    return data;
+};
+
+
+export const thunkApproveSingleEventAttendence = (eventId, userId) => async dispatch => {
+    const response = await csrfFetch(`/api/events/${eventId}/attendance`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+            {
+                "userId": userId,
+                "status": "attending"
+            }
+        )
+    });
+    let data;
+    data = await response.json();
+    dispatch(actionApproveSingleEvent(data));
     return data;
 };
 
@@ -52,6 +102,23 @@ const attendenceReducer = (state = initialState, action) => {
             return newState;
         case JOIN_SINGLE_EVENT_ATTENDENCE:
             newState = Object.assign({}, state);
+            return newState;
+        case APPROVE_EVENT_ATTENDENCE:
+            newState = Object.assign({}, state);
+            for (let i = 0; i < newState.singleAttendees.length; i++) {
+                if (newState.singleAttendees[i] === action.data.userId) {
+                    newState.singleAttendees[i].Attendence.status = "attending"
+                }
+            }
+            return newState;
+        case DELETE_EVENT_ATTENDENCE:
+            newState = Object.assign({}, state);
+            for (let i = 0; i < newState.singleAttendees.length; i++) {
+                if (newState.singleAttendees[i] === action.data) {
+                    newState.singleAttendees.splice(i, 1)
+                    return newState
+                }
+            }
             return newState;
         default:
             return state;
