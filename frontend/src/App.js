@@ -51,7 +51,7 @@ function App() {
             <GroupDetailsComponent />
           </Route>
           <Route exact path='/event/user'>
-            <Navigation isLoaded={isLoaded} />
+            <Navigation isLoaded={isLoaded}  type={"home"}/>
             <UserEvents />
           </Route>
           <Route exact path='/event/:eventId'>
