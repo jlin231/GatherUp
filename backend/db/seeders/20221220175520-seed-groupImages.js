@@ -41,6 +41,11 @@ module.exports = {
         groupId: getId(groups, 1),
         url: "https://img.hoodline.com/2021/11/levi_s_concert-1.webp?h=400&w=930&fit=crop&crop=faces,center",
         preview: false
+      },
+      {
+        groupId: getId(groups,4),
+        url: "https://static01.nyt.com/images/2023/04/11/multimedia/11nba-budget-kqjz/11nba-budget-kqjz-threeByTwoMediumAt2X.jpg",
+        preview: true
       }
     ]
     await queryInterface.bulkInsert(options, data);

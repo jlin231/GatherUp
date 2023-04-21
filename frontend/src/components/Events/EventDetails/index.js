@@ -38,7 +38,7 @@ function EventDetailsComponent() {
     useEffect(() => {
         dispatch(thunkLoadEventDetails(eventId));
         dispatch(thunkLoadEvents());
-        
+
     }, [eventId, dispatch]);
 
     useEffect(() => {
@@ -86,16 +86,18 @@ function EventDetailsComponent() {
     let memberStatus = false
     let organizer = false
 
-    memberInfo.find((member)=>{
-        if(sessionUser && sessionUser.id === member.id){
-            memberStatus = true
-            return true
-        }
-    })
+    if (memberInfo) {
+        memberInfo.find((member) => {
+            if (sessionUser && sessionUser.id === member.id) {
+                memberStatus = true
+                return true
+            }
+        })
+    }
 
     attendees.find((attendee) => {
         if (sessionUser && sessionUser.id === attendee.id) {
-            
+
             if (sessionUser.id === group.Organizer.id) {
                 organizer = true
                 return true
@@ -133,13 +135,13 @@ function EventDetailsComponent() {
                             <div>Hosted By</div>
                             <div id="organizerName">{group.Organizer.firstName} {group.Organizer.lastName[0]}.</div>
                         </div>
-                        {memberStatus ? (userAttendanceStatus === "attending" ? 
-                        <div className='joinEventOuterDiv'>
-                            <div className='joinEventDiv'>You are Attending</div>  
+                        {memberStatus ? (userAttendanceStatus === "attending" ?
+                            <div className='joinEventOuterDiv'>
+                                <div className='joinEventDiv'>You are Attending</div>
 
-                            {!organizer && <div className='joinEventButton' onClick={()=>removeAttendence(sessionUser.id)}>Leave Event</div>}
-                        </div>
-                        :
+                                {!organizer && <div className='joinEventButton' onClick={() => removeAttendence(sessionUser.id)}>Leave Event</div>}
+                            </div>
+                            :
                             (userAttendanceStatus === 'pending' ? <div className='joinEventDiv'>Request is Pending</div> : <div className='joinEventButton' onClick={() => joinEvent()}>Join Event</div>)) : null
                         }
                     </div>
@@ -168,7 +170,7 @@ function EventDetailsComponent() {
                                                         :
                                                         null
                                                     }
-                                                    
+
                                                     {organizer && attendee.Attendance.status === 'attending' && attendee.id !== group.Organizer.id ? <div className='approveAttendenceName' onClick={() => removeAttendence(attendee.id)}>Remove Attendee</div> : null}
                                                 </div>
                                             </div>

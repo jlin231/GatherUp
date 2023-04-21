@@ -35,18 +35,7 @@ module.exports = {
       },
       {
         groupId: getId(groups, 1),
-        venueId: getId(venues, 2),
-        name: "Taylor Swift event in the park",
-        type: "Online",
-        capacity: 50,
-        price: 30.00,
-        description: "A Taylor Swift fan group event.",
-        startDate: new Date('2021-12-19 20:00:00'),
-        endDate
-      },
-      {
-        groupId: getId(groups, 1),
-        venueId: null,
+        venueId: getId(venues, 3),
         name: "Amazing Taylor Swift Online concert",
         type: "Online",
         capacity: 50,
@@ -76,7 +65,29 @@ module.exports = {
         description: "College Tennis players",
         startDate,
         endDate
-      }
+      },
+      {
+        groupId: getId(groups, 1),
+        venueId: getId(venues, 2),
+        name: "Taylor Swift Silent Disco",
+        type: "Online",
+        capacity: 50,
+        price: 15.00,
+        description: "Taylor Swift get together where we participate in a silent disco.",
+        startDate: new Date('2023-12-19 20:00:00'),
+        endDate
+      },
+      {
+        groupId: getId(groups, 4),
+        venueId: getId(venues, 3),
+        name: "Basketball at the Liberty Park",
+        type: "Online",
+        capacity: 50,
+        price: 15.00,
+        description: "We will play basketball together in the park. Please feel free to join in some friendly competition.",
+        startDate: new Date('2023-11-23 20:00:00'),
+        endDate
+      },
     ]
     options.tableName = 'Events';
     await queryInterface.bulkInsert(options, data);

@@ -536,15 +536,8 @@ router.get('/:eventId/attendees', async (req, res, next) => {
         }
         return res.json(result);
     }
-    //remove pending, because user is not a co-host or an organizer of group
-    for (let i = 0; i < attendees.length; i++) {
-        if (attendees[i].Attendance.status === 'pending') {
-            attendees.splice(i, 1);
-        }
-    };
 
     return res.json({ Attendees: attendees });
-
 });
 
 // POST /api/events/:eventId/attendance
@@ -680,9 +673,9 @@ router.put('/:eventId/attendance', requireAuth, async (req, res, next) => {
     return res.json(result);
 });
 
-//DELETE delete membership to a group specified by id
-//  /api/groups/:groupId/membership
-//proper authorization: Current User must be the host of the group
+//DELETE delete membership to a event specified by id
+//  /api/events/:eventId/attendance
+//proper authorization: Current User must be the host of the group, or user whos attendance is being deleted
 router.delete('/:eventId/attendance', requireAuth, async (req, res, next) => {
     let eventId = +req.params.eventId;
     const { userId } = req.body;
@@ -702,13 +695,23 @@ router.delete('/:eventId/attendance', requireAuth, async (req, res, next) => {
         where: {
             groupId: event.groupId,
             userId: user.id,
-            status: "co-host"
+            [Op.or]: [
+                { status: "co-host" }
+            ]
         }
     });
+
+    let currentUser = await Attendance.findAll({
+        where: {
+            userId: user.id,
+            eventId: eventId
+        }
+    })
+
     //find group, based on event object
     let group = await Group.findByPk(event.groupId);
 
-    if (coHostStatus.length === 0 && group.organizerId !== user.id) {
+    if (coHostStatus.length === 0 && group.organizerId !== user.id && currentUser.length === 0) {
         let err = new Error("Forbidden");
         err.status = 403;
         err.statusCode = 403;
