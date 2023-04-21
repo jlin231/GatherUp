@@ -29,7 +29,7 @@ module.exports = {
       },
       {
         groupId: getId(groups, 3),
-        url: "https://paradepets.com/.image/c_limit%2Ccs_srgb%2Cq_auto:good%2Cw_700/MTkxMzY1Nzg4NjczMzIwNTQ2/cutest-dog-breeds-jpg.webp",
+        url: "https://i.ytimg.com/vi/giTEHeAZVpM/maxresdefault.jpg",
         preview: true
       },
       {
@@ -43,10 +43,11 @@ module.exports = {
         preview: false
       },
       {
-        groupId: getId(groups,4),
+        groupId: getId(groups, 4),
         url: "https://static01.nyt.com/images/2023/04/11/multimedia/11nba-budget-kqjz/11nba-budget-kqjz-threeByTwoMediumAt2X.jpg",
         preview: true
-      }
+      },
+
     ]
     await queryInterface.bulkInsert(options, data);
   },

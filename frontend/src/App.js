@@ -12,6 +12,7 @@ import EditGroupComponent from "./components/Group/EditGroup"
 import EventDetailsComponent from "./components/Events/EventDetails";
 import CreateEventComponent from "./components/Events/CreateEvent";
 import SplashPage from "./components/SplashPage";
+import UserEvents from "./components/Events/UserEvents";
 
 function App() {
   const dispatch = useDispatch();
@@ -48,6 +49,10 @@ function App() {
           <Route path='/group/:groupId/:groupInfo'>
             <Navigation isLoaded={isLoaded} type={"groupDetails"} />
             <GroupDetailsComponent />
+          </Route>
+          <Route exact path='/event/user'>
+            <Navigation isLoaded={isLoaded} />
+            <UserEvents />
           </Route>
           <Route exact path='/event/:eventId'>
             <Navigation isLoaded={isLoaded} type={"eventDetails"} />

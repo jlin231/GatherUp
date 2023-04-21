@@ -78,6 +78,16 @@ module.exports = {
         eventId: getId(event, 5),
         userId: getId(users, 5),
         status: "attending"
+      },
+      {
+        eventId: getId(event, 6),
+        userId: getId(users, 1),
+        status: "attending"
+      },
+      {
+        eventId: getId(event, 6),
+        userId: getId(users, 8),
+        status: "attending"
       }
     ]
     await queryInterface.bulkInsert(options, data);

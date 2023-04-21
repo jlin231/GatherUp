@@ -140,18 +140,21 @@ function GroupDetailsComponent() {
                             <span className='organizerId'> {singleGroup.Organizer.firstName} {singleGroup.Organizer.lastName[0]}.</span>
                         </div>
                     </div>
-                    {(sessionUser && !memberStatus) ? <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>Request to Join</div>
-                        : (pending ?
-                            <div>
-                                <div className='groupStatusDiv'>Request has been Sent</div>
-                                <div className='joinGroupButton' onClick={() => leaveGroup()}>Remove Request</div>
-                            </div>
-                            :
-                            <div>
-                                <div className='groupStatusDiv'>You are a Member</div>
-                                {!organizer ? <div className='joinGroupButton' onClick={() => leaveGroup()}>Leave Group</div> : null}
-                            </div>
-                        )
+                    {
+                        sessionUser ?
+                            (sessionUser && !memberStatus) ?
+                                <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>Request to Join</div>
+                                : (pending ?
+                                    <div>
+                                        <div className='groupStatusDiv'>Request has been Sent</div>
+                                        <div className='joinGroupButton' onClick={() => leaveGroup()}>Remove Request</div>
+                                    </div>
+                                    :
+                                    <div>
+                                        <div className='groupStatusDiv'>You are a Member</div>
+                                        {!organizer ? <div className='joinGroupButton' onClick={() => leaveGroup()}>Leave Group</div> : null}
+                                    </div>)
+                            : null
                     }
                 </div>
             </div>
@@ -170,7 +173,6 @@ function GroupDetailsComponent() {
                     </> : null
                     }
                 </div>
-
             </div>
             {component}
         </div>);

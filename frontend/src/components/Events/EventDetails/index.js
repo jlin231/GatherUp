@@ -75,12 +75,12 @@ function EventDetailsComponent() {
 
     const approveAttendence = (attendeeId) => {
         console.log(eventId)
-        dispatch(thunkApproveSingleEventAttendence(eventId, attendeeId)).then(() => dispatch(thunkLoadSingleEventAttendence(eventId)))
+        dispatch(thunkApproveSingleEventAttendence(eventId, attendeeId)).then(() => dispatch(thunkLoadSingleEventAttendence(eventId))).then(() => dispatch(thunkLoadEventDetails(eventId)))
     }
 
     const removeAttendence = (attendeeId) => {
         console.log(eventId, attendeeId)
-        dispatch(thunkDeleteSingleEventAttendence(eventId, attendeeId)).then(() => dispatch(thunkLoadSingleEventAttendence(eventId)))
+        dispatch(thunkDeleteSingleEventAttendence(eventId, attendeeId)).then(() => dispatch(thunkLoadSingleEventAttendence(eventId))).then(() => dispatch(thunkLoadEventDetails(eventId)))
     }
 
     let memberStatus = false

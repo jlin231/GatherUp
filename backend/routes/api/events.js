@@ -239,7 +239,15 @@ router.get('/:eventId', async (req, res, next) => {
 
     //find numAttending
     //find attendees
-    const attendees = await Attendance.findAll();
+    const attendees = await Attendance.findAll(
+        {
+            where:
+            {
+                eventId: eventId,
+                status: "attending"
+            }
+        }
+    );
     let attendeeNumber = {};
     attendees.forEach((attendee) => {
         attendee = attendee.toJSON();
@@ -253,7 +261,7 @@ router.get('/:eventId', async (req, res, next) => {
 
     events = events.toJSON();
     //add preview images and urls to group output
-    events.numAttending = attendeeNumber[events.id];
+    events.numAttending = attendees.length;
     if (!attendeeNumber[events.id]) {
         events.numAttending = 0;
     };

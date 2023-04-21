@@ -40,7 +40,7 @@ function Navigation({ isLoaded, type }) {
         createGroupButton = (<li>
             <button className="CreateGroupButton sessionButtons" onClick={() => createGroupRedirect()}>Start a new Group</button>
         </li>)
-        yourEventButton = <div className='CreateEventButton sessionButtons' onClick={()=>history.push('/')}>Your Events</div>
+        yourEventButton = <div className='CreateEventButton sessionButtons' onClick={()=>history.push('/event/user')}>Your Events</div>
     }
 
     if (type === 'groupDetails' && groups && sessionUser) {
