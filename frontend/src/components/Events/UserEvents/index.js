@@ -31,7 +31,7 @@ function UserEvents() {
 
     const eventValues = Object.values(events.allEvents);
 
-
+    //test
     //use map, to parse through events, show all the events
     return (
         <>
