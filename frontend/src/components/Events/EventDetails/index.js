@@ -5,7 +5,8 @@ import { useEffect } from 'react';
 import './EventDetails.css';
 import { thunkLoadEventDetails, thunkLoadEvents } from '../../../store/event';
 import { thunkLoadGroupDetails } from '../../../store/group';
-import { thunkApproveSingleEventAttendence, thunkDeleteSingleEventAttendence, thunkJoinSingleEventAttendence, thunkLoadSingleEventAttendence } from '../../../store/attendence';
+import attendenceReducer, { thunkApproveSingleEventAttendence, thunkDeleteSingleEventAttendence, thunkJoinSingleEventAttendence, thunkLoadSingleEventAttendence } from '../../../store/attendence';
+import { thunkLoadSingleMembership } from '../../../store/member';
 
 function getDateString(startDate) {
     const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -32,6 +33,7 @@ function EventDetailsComponent() {
     const groups = useSelector((state) => state.groups.allGroups);
     const attendees = useSelector((state) => state.attendence.singleAttendees)    //load info into single event 
     const sessionUser = useSelector(state => state.session.user);
+    const memberInfo = useSelector((state) => state.members.groupMembers)
 
     useEffect(() => {
         dispatch(thunkLoadEventDetails(eventId));
@@ -42,6 +44,7 @@ function EventDetailsComponent() {
     useEffect(() => {
         if (event) {
             dispatch(thunkLoadGroupDetails(event.groupId));
+            dispatch(thunkLoadSingleMembership(event.groupId))
         }
         dispatch(thunkLoadSingleEventAttendence(eventId))
 
@@ -72,19 +75,29 @@ function EventDetailsComponent() {
 
     const approveAttendence = (attendeeId) => {
         console.log(eventId)
-        dispatch(thunkApproveSingleEventAttendence(eventId, attendeeId)).then(() => dispatch(thunkLoadSingleEventAttendence(eventId)))
+        dispatch(thunkApproveSingleEventAttendence(eventId, attendeeId)).then(() => dispatch(thunkLoadSingleEventAttendence(eventId))).then(() => dispatch(thunkLoadEventDetails(eventId)))
     }
 
     const removeAttendence = (attendeeId) => {
         console.log(eventId, attendeeId)
-        dispatch(thunkDeleteSingleEventAttendence(eventId, attendeeId)).then(() => dispatch(thunkLoadSingleEventAttendence(eventId)))
+        dispatch(thunkDeleteSingleEventAttendence(eventId, attendeeId)).then(() => dispatch(thunkLoadSingleEventAttendence(eventId))).then(() => dispatch(thunkLoadEventDetails(eventId)))
     }
 
     let memberStatus = false
     let organizer = false
+
+    if (memberInfo) {
+        memberInfo.find((member) => {
+            if (sessionUser && sessionUser.id === member.id) {
+                memberStatus = true
+                return true
+            }
+        })
+    }
+
     attendees.find((attendee) => {
         if (sessionUser && sessionUser.id === attendee.id) {
-            memberStatus = true
+
             if (sessionUser.id === group.Organizer.id) {
                 organizer = true
                 return true
@@ -122,7 +135,13 @@ function EventDetailsComponent() {
                             <div>Hosted By</div>
                             <div id="organizerName">{group.Organizer.firstName} {group.Organizer.lastName[0]}.</div>
                         </div>
-                        {memberStatus ? (userAttendanceStatus === "attending" ? <div className='joinEventDiv'>You are Attending</div> :
+                        {memberStatus ? (userAttendanceStatus === "attending" ?
+                            <div className='joinEventOuterDiv'>
+                                <div className='joinEventDiv'>You are Attending</div>
+
+                                {!organizer && <div className='joinEventButton' onClick={() => removeAttendence(sessionUser.id)}>Leave Event</div>}
+                            </div>
+                            :
                             (userAttendanceStatus === 'pending' ? <div className='joinEventDiv'>Request is Pending</div> : <div className='joinEventButton' onClick={() => joinEvent()}>Join Event</div>)) : null
                         }
                     </div>
@@ -151,6 +170,7 @@ function EventDetailsComponent() {
                                                         :
                                                         null
                                                     }
+
                                                     {organizer && attendee.Attendance.status === 'attending' && attendee.id !== group.Organizer.id ? <div className='approveAttendenceName' onClick={() => removeAttendence(attendee.id)}>Remove Attendee</div> : null}
                                                 </div>
                                             </div>

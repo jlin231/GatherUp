@@ -31,7 +31,7 @@ function EventCardComponent({ event }) {
 
                     <div className='eventDateCard'>{dateString1} &#183; {dateString2}</div>
                     <div className='eventNameCard'>{event.name}</div>
-                    <div className='eventGroupInfoCard'>{`${event.Group.name}`} &#183; {`${event.Group.city},${event.Group.state}`}</div>
+                    <div className='eventGroupInfoCard'>{`${event.Group.name}`} &#183; {`${event.Group.city}, ${event.Group.state}`}</div>
                 </div>
                 <div className='eventAttendeesCard'>{event.numAttending} attendees </div>
             </div>

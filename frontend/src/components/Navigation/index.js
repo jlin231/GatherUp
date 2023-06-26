@@ -33,11 +33,14 @@ function Navigation({ isLoaded, type }) {
     let editButton;
     let createGroupButton;
     let deleteButton;
+    let yourEventButton;
+
 
     if ((type === "splash" && sessionUser) || (type === "home" && sessionUser) || (type === "eventDetails" && sessionUser) || ((type === "groupDetails" && sessionUser))) {
         createGroupButton = (<li>
-            <button className="CreateGroupButton sessionButtons" onClick={() => createGroupRedirect()}>Start a new Group</button>
+            <button className="CreateGroupButton sessionButtons" onClick={() => createGroupRedirect()}>Create Group</button>
         </li>)
+        yourEventButton = <div className='CreateEventButton sessionButtons' onClick={() => history.push('/event/user')}>Your Events</div>
     }
 
     if (type === 'groupDetails' && groups && sessionUser) {
@@ -46,7 +49,7 @@ function Navigation({ isLoaded, type }) {
                 <button className="CreateEventButton sessionButtons" onClick={() => createEventRedirect(+groupId)}>Create Event</button>
             </li>)
             createGroupButton = (<li>
-                <button className="CreateGroupButton sessionButtons" onClick={() => createGroupRedirect()}>Start a new Group</button>
+                <button className="CreateGroupButton sessionButtons" onClick={() => createGroupRedirect()}>Create Group</button>
             </li>)
         }
     }
@@ -106,6 +109,7 @@ function Navigation({ isLoaded, type }) {
                         })
                     }} className="sessionButtons">DemoUser</button>
                 </li>}
+                {yourEventButton}
                 {createGroupButton}
                 {editButton}
                 {createEventButton}

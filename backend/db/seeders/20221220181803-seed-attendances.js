@@ -31,12 +31,17 @@ module.exports = {
       },
       {
         eventId: getId(event, 2),
+        userId: getId(users, 1),
+        status: "attending"
+      },
+      {
+        eventId: getId(event, 2),
         userId: getId(users, 2),
         status: "attending"
       },
       {
         eventId: getId(event, 2),
-        userId: getId(users, 1),
+        userId: getId(users, 3),
         status: "pending"
       },
       {
@@ -74,7 +79,16 @@ module.exports = {
         userId: getId(users, 5),
         status: "attending"
       },
-
+      {
+        eventId: getId(event, 6),
+        userId: getId(users, 1),
+        status: "attending"
+      },
+      {
+        eventId: getId(event, 6),
+        userId: getId(users, 8),
+        status: "attending"
+      }
     ]
     await queryInterface.bulkInsert(options, data);
   },

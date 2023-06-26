@@ -107,7 +107,7 @@ function GroupDetailsComponent() {
     }
 
     function joinGroup(groupId) {
-        dispatch(thunkRequestJoinSingleMembership(groupId))
+        dispatch(thunkRequestJoinSingleMembership(groupId)).then(dispatch(thunkLoadSingleMembership(groupId)))
         history.push(`/group/${groupId}/members`);
     }
 
@@ -124,7 +124,6 @@ function GroupDetailsComponent() {
                 </div>
                 <div className='groupDetailsRightDiv'>
                     <div>
-
                         <div className='groupName'>
                             {singleGroup.name}
                         </div>
@@ -141,18 +140,21 @@ function GroupDetailsComponent() {
                             <span className='organizerId'> {singleGroup.Organizer.firstName} {singleGroup.Organizer.lastName[0]}.</span>
                         </div>
                     </div>
-                    {(sessionUser && !memberStatus) ? <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>Request to Join</div>
-                        : (pending ?
-                            <div>
-                                <div className='groupStatusDiv'>Request has been Sent</div>
-                                <div className='joinGroupButton' onClick={() => leaveGroup()}>Remove Request</div>
-                            </div>
-                            :
-                            <div>
-                                <div className='groupStatusDiv'>You are a Member</div>
-                                {!organizer ? <div className='joinGroupButton' onClick={() => leaveGroup()}>Leave Group</div> : null}
-                            </div>
-                        )
+                    {
+                        sessionUser ?
+                            (sessionUser && !memberStatus) ?
+                                <div className='joinGroupButton' onClick={() => joinGroup(groupId)}>Request to Join</div>
+                                : (pending ?
+                                    <div>
+                                        <div className='groupStatusDiv'>Request has been Sent</div>
+                                        <div className='joinGroupButton' onClick={() => leaveGroup()}>Remove Request</div>
+                                    </div>
+                                    :
+                                    <div>
+                                        <div className='groupStatusDiv'>You are a Member</div>
+                                        {!organizer ? <div className='joinGroupButton' onClick={() => leaveGroup()}>Leave Group</div> : null}
+                                    </div>)
+                            : null
                     }
                 </div>
             </div>
@@ -171,7 +173,6 @@ function GroupDetailsComponent() {
                     </> : null
                     }
                 </div>
-
             </div>
             {component}
         </div>);

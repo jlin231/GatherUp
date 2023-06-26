@@ -19,7 +19,6 @@ function GroupEventComponent(singleGroup) {
             });
     }, [dispatch, singleGroup])
 
-    console.log('events', eventInfo);
     if (!singleGroup || eventInfo.length === 0) {
         return null;
     }

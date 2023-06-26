@@ -32,12 +32,22 @@ module.exports = {
       {
         groupId: getId(groups, 1),
         userId: getId(users, 3),
-        status: "pending"
+        status: "member"
       },
       {
         groupId: getId(groups, 1),
         userId: getId(users, 4),
-        status: "pending"
+        status: "member"
+      },
+      {
+        groupId: getId(groups, 1),
+        userId: getId(users, 5),
+        status: "member"
+      },
+      {
+        groupId: getId(groups, 1),
+        userId: getId(users, 6),
+        status: "member"
       },
       //group 2
       {
@@ -79,6 +89,26 @@ module.exports = {
       {
         groupId: getId(groups, 3),
         userId: getId(users, 6),
+        status: "member"
+      },
+      {
+        groupId: getId(groups, 4),
+        userId: getId(users, 1),
+        status: "member"
+      },
+      {
+        groupId: getId(groups, 4),
+        userId: getId(users, 4),
+        status: "member"
+      },
+      {
+        groupId: getId(groups, 4),
+        userId: getId(users, 7),
+        status: "member"
+      },
+      {
+        groupId: getId(groups, 4),
+        userId: getId(users, 8),
         status: "member"
       },
     ]
